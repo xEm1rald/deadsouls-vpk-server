@@ -305,6 +305,8 @@ async def telegram_auth_oidc(request: Request):
             }
         )
 
+    print("[Telegram OIDC] Code exchange response:", response.status_code, response.text)
+
     if response.status_code != 200:
         return JSONResponse(
             {"success": False, "error": "Failed to exchange code", "details": response.json()},
