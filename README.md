@@ -11,7 +11,7 @@ DOMAIN="https://your-domain.com"
 
 # === DATABASE ===
 DATABASE_URL="postgresql+asyncpg://user:password@localhost:5432/dbname"
-INVENTORY_IMAGE_BASE="https://your.sdk.url"
+SDK_URL="https://your.sdk.url"
 HERO_RENDER_BASE="https://cdn.steamstatic.com/apps/dota2/videos/dota_react/heroes/renders"
 
 # === AUTH ===
