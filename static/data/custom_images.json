@@ -1,0 +1,23 @@
+{
+    "Default Kill Banners": {
+        "image_inventory": "econ/tools/killbanner_ti4"
+    },
+    "Default Loading Screen": {
+        "image_inventory": "econ/default_no_item"
+    },
+    "Default Emblem": {
+        "image_inventory": "econ/default_no_item"
+    },
+    "Default Ancient": {
+        "image_inventory": "econ/default_no_item"
+    },
+    "River Vial: Default": {
+        "image_inventory": "econ/default_no_item"
+    },
+    "Default Shaders": {
+        "image_inventory": "econ/default_no_item"
+    },
+    "Default Tormentor": {
+        "image_inventory": "econ/default_no_item"
+    }
+}

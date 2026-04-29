@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="DeadSouls ItemSettings — продвинутый VPK Skinchanger. Универсальная работа с любыми VPK."
+    />
+    <title>DeadSouls | ItemSettings — VPK Skinchanger</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles/styles.css" />
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+
+    <div class="topbar-wrap">
+      <header class="topbar">
+      <a href="/" class="logo" translate="no" style="text-decoration: none; color: inherit;">
+        <span class="logo-main">DeadSouls</span>
+        <span class="logo-sep"></span>
+        <span class="logo-sub"></span>
+      </a>
+        <div class="topbar-end">
+          <nav class="nav">
+            <a href="#intro">О продукте</a>
+            <a href="#features">Возможности</a>
+            <a href="#access">Доступ</a>
+          </nav>
+
+          <a
+            href="home"
+            class="gear-btn"
+            id="btn-user-profile"
+            aria-label="Личный кабинет"
+            style="display: flex; align-items: center; justify-content: center; text-decoration: none;"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </a>
+        </div>
+      </header>
+
+    </div>
+
+    <main>
+      <section id="intro" class="section hero">
+        <p class="eyebrow">Самый продвинутый VPK Skinchanger</p>
+        <h1 class="hero-title">
+          DeadSouls <span class="hero-sep">|</span> ItemSettings
+        </h1>
+        <p class="lead">
+          Наш софт уникален тем, что он полностью универсален: он работает с
+          любыми VPK-файлами. Неважно, используешь ли ты наши сборки, чужие моды
+          или стандартные файлы игры — ты можешь изменять, патчить и пересобирать
+          их под себя прямо в интерфейсе программы.
+        </p>
+        <p class="muted small bridge-hint">
+          Установи десктопный агент и запусти его: в браузере откроется связь с
+          локальным сервером на твоём ПК — подтверждение связи и передача
+          настроек без смены вкладки.
+        </p>
+      </section>
+
+      <section id="features" class="section features-section">
+        <h2 class="section-title">Возможности</h2>
+
+        <div class="features-marquees" aria-label="Возможности по категориям">
+          <!-- Верхняя лента → влево, пункты 1–8 -->
+          <div class="marquee-row marquee-row--left" style="--marquee-duration: 54s">
+            <div class="marquee-viewport">
+              <div class="marquee-track">
+                <div class="marquee-group" role="list">
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">01</span>
+                    <span class="feat-title">Погода</span>
+                    <span class="feat-desc">Все доступные эффекты: дождь, снег и другое</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">02</span>
+                    <span class="feat-title">Башни</span>
+                    <span class="feat-desc">Все доступные модели вышек обеих сторон</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">03</span>
+                    <span class="feat-title">Крипы</span>
+                    <span class="feat-desc">Замена обычных и осадных крипов</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">04</span>
+                    <span class="feat-title">Киллстрик-эффекты</span>
+                    <span class="feat-desc">Визуализация серий убийств</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">05</span>
+                    <span class="feat-title">Интерфейс</span>
+                    <span class="feat-desc">Огромная библиотека скинов панелей, целая коллекция</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">06</span>
+                    <span class="feat-title">Музыкальные наборы</span>
+                    <span class="feat-desc">Все саундтреки игры</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">07</span>
+                    <span class="feat-title">Курсоры</span>
+                    <span class="feat-desc">Полная коллекция тематических наборов указателей</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">08</span>
+                    <span class="feat-title">Рошаны</span>
+                    <span class="feat-desc">Все существующие модели аегисных груш</span>
+                  </article>
+                </div>
+                <div class="marquee-group" aria-hidden="true">
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">01</span>
+                    <span class="feat-title">Погода</span>
+                    <span class="feat-desc">Все доступные эффекты: дождь, снег и другое</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">02</span>
+                    <span class="feat-title">Башни</span>
+                    <span class="feat-desc">Все доступные модели вышек обеих сторон</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">03</span>
+                    <span class="feat-title">Крипы</span>
+                    <span class="feat-desc">Замена обычных и осадных крипов</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">04</span>
+                    <span class="feat-title">Киллстрик-эффекты</span>
+                    <span class="feat-desc">Визуализация серий убийств</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">05</span>
+                    <span class="feat-title">Интерфейс</span>
+                    <span class="feat-desc">Огромная библиотека скинов панелей, целая коллекция</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">06</span>
+                    <span class="feat-title">Музыкальные наборы</span>
+                    <span class="feat-desc">Все саундтреки игры</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">07</span>
+                    <span class="feat-title">Курсоры</span>
+                    <span class="feat-desc">Полная коллекция тематических наборов указателей</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">08</span>
+                    <span class="feat-title">Рошаны</span>
+                    <span class="feat-desc">Все существующие модели аегисных груш</span>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Средняя лента → вправо, пункты 9–16 -->
+          <div class="marquee-row marquee-row--right" style="--marquee-duration: 62s">
+            <div class="marquee-viewport">
+              <div class="marquee-track">
+                <div class="marquee-group" role="list">
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">09</span>
+                    <span class="feat-title">Торменторы</span>
+                    <span class="feat-desc">Все доступные облики для Терзателей</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">10</span>
+                    <span class="feat-title">Ландшафты (Terrains)</span>
+                    <span class="feat-desc">Любые карты, включая редкие и сезонные</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">11</span>
+                    <span class="feat-title">Экраны Versus</span>
+                    <span class="feat-desc">Все доступные заставки героев</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">12</span>
+                    <span class="feat-title">Эффекты убийства</span>
+                    <span class="feat-desc">Все доступные Kill Banners из игры</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">13</span>
+                    <span class="feat-title">Древние (трон)</span>
+                    <span class="feat-desc">Замена моделей главных строений</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">14</span>
+                    <span class="feat-title">Шейдеры экрана</span>
+                    <span class="feat-desc">Все уникальные цветовые фильтры игры</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">15</span>
+                    <span class="feat-title">Варды</span>
+                    <span class="feat-desc">Любые модели из коллекции игры</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">16</span>
+                    <span class="feat-title">Курьеры</span>
+                    <span class="feat-desc">Все доступные виды «осликов»</span>
+                  </article>
+                </div>
+                <div class="marquee-group" aria-hidden="true">
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">09</span>
+                    <span class="feat-title">Торменторы</span>
+                    <span class="feat-desc">Все доступные облики для Терзателей</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">10</span>
+                    <span class="feat-title">Ландшафты (Terrains)</span>
+                    <span class="feat-desc">Любые карты, включая редкие и сезонные</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">11</span>
+                    <span class="feat-title">Экраны Versus</span>
+                    <span class="feat-desc">Все доступные заставки героев</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">12</span>
+                    <span class="feat-title">Эффекты убийства</span>
+                    <span class="feat-desc">Все доступные Kill Banners из игры</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">13</span>
+                    <span class="feat-title">Древние (трон)</span>
+                    <span class="feat-desc">Замена моделей главных строений</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">14</span>
+                    <span class="feat-title">Шейдеры экрана</span>
+                    <span class="feat-desc">Все уникальные цветовые фильтры игры</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">15</span>
+                    <span class="feat-title">Варды</span>
+                    <span class="feat-desc">Любые модели из коллекции игры</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">16</span>
+                    <span class="feat-title">Курьеры</span>
+                    <span class="feat-desc">Все доступные виды «осликов»</span>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Нижняя лента → влево, пункты 17–23 -->
+          <div class="marquee-row marquee-row--left" style="--marquee-duration: 48s">
+            <div class="marquee-viewport">
+              <div class="marquee-track">
+                <div class="marquee-group" role="list">
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">17</span>
+                    <span class="feat-title">Эмблемы</span>
+                    <span class="feat-desc">Все редкие визуальные ауры под героем</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">18</span>
+                    <span class="feat-title">Загрузочные экраны</span>
+                    <span class="feat-desc">Полная библиотека артов</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">19</span>
+                    <span class="feat-title">Мега-киллы</span>
+                    <span class="feat-desc">Все озвучки серий убийств</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">20</span>
+                    <span class="feat-title">Аннонсеры</span>
+                    <span class="feat-desc">Все озвучки действий игрока в игре</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">21</span>
+                    <span class="feat-title">Окрашивание реки</span>
+                    <span class="feat-desc">Все доступные заклятия воды</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">22</span>
+                    <span class="feat-title">Unusual Effects</span>
+                    <span class="feat-desc">На любого героя и любую часть всех эффектов unusual</span>
+                  </article>
+                  <article class="feat-card" role="listitem">
+                    <span class="feat-num" aria-hidden="true">23</span>
+                    <span class="feat-title">SkinChanger</span>
+                    <span class="feat-desc">Выбор любой части тела, сета на героя</span>
+                  </article>
+                </div>
+                <div class="marquee-group" aria-hidden="true">
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">17</span>
+                    <span class="feat-title">Эмблемы</span>
+                    <span class="feat-desc">Все редкие визуальные ауры под героем</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">18</span>
+                    <span class="feat-title">Загрузочные экраны</span>
+                    <span class="feat-desc">Полная библиотека артов</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">19</span>
+                    <span class="feat-title">Мега-киллы</span>
+                    <span class="feat-desc">Все озвучки серий убийств</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">20</span>
+                    <span class="feat-title">Аннонсеры</span>
+                    <span class="feat-desc">Все озвучки действий игрока в игре</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">21</span>
+                    <span class="feat-title">Окрашивание реки</span>
+                    <span class="feat-desc">Все доступные заклятия воды</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">22</span>
+                    <span class="feat-title">Unusual Effects</span>
+                    <span class="feat-desc">На любого героя и любую часть всех эффектов unusual</span>
+                  </article>
+                  <article class="feat-card" tabindex="-1">
+                    <span class="feat-num" aria-hidden="true">23</span>
+                    <span class="feat-title">SkinChanger</span>
+                    <span class="feat-desc">Выбор любой части тела, сета на героя</span>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="comparison" class="section">
+        <h2 class="section-title" style="text-align: center;">Визуальное сравнение</h2>
+
+        <div class="comparison-container" id="comp-container" style="--pos: 50%;">
+          <div class="comp-layer base-layer">
+            <video src="videos/vanilla_1080p_hevc.mp4" muted loop autoplay playsinline></video>
+            <span class="comp-label label-right">Vanilla</span>
+          </div>
+
+          <div class="comp-layer overlay-layer" id="comp-overlay">
+            <video src="videos/modded_1080p_hevc.mp4" muted loop autoplay playsinline></video>
+            <span class="comp-label label-left">Modded</span>
+          </div>
+
+          <input type="range" min="0" max="100" value="50" class="comp-slider" id="comp-slider">
+
+          <div class="comp-handle">
+            <div class="handle-circle">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m18 8 4 4-4 4M6 8l-4 4 4 4"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="payments" class="section">
+        <h2 class="section-title" style="text-align: center;">Способы оплаты</h2>
+        <p class="muted small" style="text-align: center; margin-bottom: 2rem;">Мы поддерживаем большинство популярных методов оплаты для вашего удобства.</p>
+
+        <div class="payment-grid-main">
+          <article class="feat-card static-card">
+            <span class="feat-num">01</span>
+            <span class="feat-title">Funpay</span>
+            <span class="feat-desc">
+              <strong>Валюты:</strong> RUB, USD, UAH, USDT.<br>
+              <div class="network-icons-row">
+                <div class="net-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path xmlns="http://www.w3.org/2000/svg" d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.09997 22C7.78997 22.05 6.79997 20.68 5.95997 19.47C4.24997 17 2.93997 12.45 4.69997 9.39C5.56997 7.87 7.12997 6.91 8.81997 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/></svg>
+                  Apple Pay
+                </div>
+                <div class="net-badge" title="Google Pay">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 11h8v1c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8c2.187 0 4.168.879 5.61 2.304l-2.828 2.828A3.99 3.99 0 0 0 12 7c-2.209 0-4 1.791-4 4s1.791 4 4 4c1.858 0 3.411-1.27 3.858-3H12v-1z"/>
+                  </svg>
+                  Google Pay
+                </div>
+                <div class="net-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                  По номеру карты
+                </div>
+                <div class="net-badge" title="Система Быстрых Платежей">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M12 3v18"/></svg>
+                  СБП QR
+                </div>
+                <div class="net-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M6 12h12"/></svg>
+                  Криптовалюта
+                </div>
+                <div class="net-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"/></svg>
+                  Баланс сайта
+                </div>
+              </div>
+            </span>
+          </article>
+
+          <article class="feat-card static-card">
+            <span class="feat-num">02</span>
+            <span class="feat-title">Cryptocloud</span>
+            <div class="feat-desc">
+              <strong>Криптовалюты:</strong> Прямые переводы в популярных блокчейнах.
+
+              <div class="network-icons-row">
+                <div class="net-badge" title="Binance Smart Chain">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l-9.5 5.5v11L12 22l9.5-5.5v-11z"/><path d="M12 22V12"/><path d="M21.5 7.5L12 12 2.5 7.5"/><path d="M12 12l9.5 5.5"/><path d="M12 12L2.5 17.5"/></svg>
+                  BEP20
+                </div>
+                <div class="net-badge" title="TRON Network">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  TRC20
+                </div>
+                <div class="net-badge" title="Ethereum Network">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 7 4.5V17.5L12 22l-7-4.5V6.5Z"/><path d="m12 22 7-16-7 4.5-7-4.5Z"/><path d="M12 10.5v11.5"/></svg>
+                  ERC20
+                </div>
+                <div class="net-badge" title="Solana Network">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18L18 4H0zM21 17H3l3 3h18zM18 10.5H0l3 3h18z"/></svg>
+                  SOL
+                </div>
+                <div class="net-badge" title="The Open Network">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 20l9-4 9 4-9-18z"/><path d="M12 16v-4"/></svg>
+                  TON
+                </div>
+                <div class="net-badge" title="Base L2 Network">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>
+                  BASE
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="feat-card static-card">
+            <span class="feat-num">03</span>
+            <span class="feat-title">Monobank (Банка)</span>
+            <span class="feat-desc">
+              <strong>Валюта:</strong> UAH.<br>
+
+              <div class="network-icons-row">
+                <div class="net-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path xmlns="http://www.w3.org/2000/svg" d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.09997 22C7.78997 22.05 6.79997 20.68 5.95997 19.47C4.24997 17 2.93997 12.45 4.69997 9.39C5.56997 7.87 7.12997 6.91 8.81997 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/></svg>
+                  Apple Pay
+                </div>
+                <div class="net-badge" title="Google Pay">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 11h8v1c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8c2.187 0 4.168.879 5.61 2.304l-2.828 2.828A3.99 3.99 0 0 0 12 7c-2.209 0-4 1.791-4 4s1.791 4 4 4c1.858 0 3.411-1.27 3.858-3H12v-1z"/>
+                  </svg>
+                  Google Pay
+                </div>
+                <div class="net-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z"/></svg>
+                  Mono Pay
+                </div>
+                <div class="net-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                  По номеру карты
+                </div>
+              </div>
+            </span>
+          </article>
+        </div>
+      </section>
+
+      <section id="access" class="section" style="display: flex; flex-direction: column; align-items: center;">
+        <h2 class="section-title" style="text-align: center;">Присоединиться</h2>
+        <p class="muted" style="text-align: center; max-width: 500px; margin-bottom: 2.5rem;">
+          Скачивание софта, оплата и генерация уникальных билдов в личном кабинете. Никаких скучных регистраций — вход в один клик.
+        </p>
+
+        <div class="card" style="width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 2rem;">
+
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 1.5rem;">
+            <div>
+              <h3 style="margin: 0 0 0.25rem 0; font-size: 1.25rem; font-weight: 500;">Личный кабинет</h3>
+              <p class="muted small" style="margin: 0;">DeadSouls | ItemSettings</p>
+            </div>
+            <div style="opacity: 0.3;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+          </div>
+
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1rem;" class="muted small">
+            <li style="display: flex; align-items: center; gap: 12px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Моментальная активация после оплаты</span>
+            </li>
+            <li style="display: flex; align-items: center; gap: 12px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Загрузка защищенного агента</span>
+            </li>
+            <li style="display: flex; align-items: center; gap: 12px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Связь браузера с клиентом игры</span>
+            </li>
+          </ul>
+
+          <a href="/home" id="btn-tg-login" class="btn primary" style="display: flex; justify-content: center; align-items: center; gap: 10px; text-decoration: none; padding: 1rem;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 2l-2 20-7-4-3 3v-4l12-11-14 9-5-2 21-8z"></path>
+            </svg>
+            Войти через Telegram
+          </a>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer">
+      <span class="muted small" translate="no">DeadSouls 2026</span>
+    </footer>
+
+    <div
+      class="success-overlay"
+      id="success-overlay"
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="success-title"
+    >
+      <div class="success-panel">
+        <div class="success-ring" aria-hidden="true"></div>
+        <h2 id="success-title" class="success-title">Связь установлена</h2>
+        <p class="success-sub">
+          Локальный агент ответил. Сессия активна на этой машине.
+        </p>
+      </div>
+    </div>
+
+    <aside
+      class="settings-drawer"
+      id="settings-drawer"
+      hidden
+      aria-label="Настройки конфигурации"
+    >
+      <div class="settings-inner">
+        <header class="settings-head">
+          <h2 class="settings-title">Конфигурация</h2>
+          <button
+            type="button"
+            class="icon-btn"
+            id="btn-close-settings"
+            aria-label="Закрыть настройки"
+          >
+            ×
+          </button>
+        </header>
+        <p class="muted small">
+          Параметры собираются в браузере и отправляются агенту через
+          <code>POST</code> JSON. Путь и формат должны совпадать с твоим
+          приложением.
+        </p>
+
+        <form id="config-form" class="config-form">
+          <div class="field-row">
+            <label class="label" for="cfg-endpoint">Путь POST конфига</label>
+            <input
+              type="text"
+              id="cfg-endpoint"
+              class="input"
+              value="/bridge/config"
+              spellcheck="false"
+              autocomplete="off"
+            />
+          </div>
+          <div class="field-row">
+            <label class="label" for="cfg-app-name">Имя приложения</label>
+            <input
+              type="text"
+              id="cfg-app-name"
+              class="input"
+              value="DeadSouls | ItemSettings"
+              spellcheck="false"
+            />
+          </div>
+          <div class="field-row">
+            <label class="label" for="cfg-mode">Режим</label>
+            <select id="cfg-mode" class="input select">
+              <option value="standard">standard</option>
+              <option value="quiet">quiet</option>
+              <option value="debug">debug</option>
+            </select>
+          </div>
+          <div class="field-row checkbox-row">
+            <input type="checkbox" id="cfg-auto" checked />
+            <label for="cfg-auto">Автозапуск моста при старте агента</label>
+          </div>
+          <div class="field-row">
+            <label class="label" for="cfg-extra"
+              >Доп. JSON (сливается в тело запроса)</label
+            >
+            <textarea
+              id="cfg-extra"
+              class="input textarea"
+              rows="4"
+              spellcheck="false"
+              placeholder='{ "featureX": true }'
+            ></textarea>
+          </div>
+          <div class="settings-actions">
+            <button type="submit" class="btn primary" id="btn-send-config">
+              Применить к локальному агенту
+            </button>
+          </div>
+          <p class="status-line" id="config-status"></p>
+        </form>
+      </div>
+    </aside>
+
+    <script src="../scripts/app.js" type="module"></script>
+    <script src="../scripts/bridge.js"></script>
+  </body>
+</html>
