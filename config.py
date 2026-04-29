@@ -7,6 +7,8 @@ DOMAIN = os.getenv("DOMAIN")
 
 # === DATABASE ===
 DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL and DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql", "postgresql+asyncpg", 1)
 HERO_RENDER_BASE = os.getenv("HERO_RENDER_BASE")
 INVENTORY_IMAGE_BASE = os.getenv("INVENTORY_IMAGE_BASE")
 
