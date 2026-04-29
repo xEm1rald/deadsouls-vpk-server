@@ -1,7 +1,7 @@
 // panel.js — выбор из website_schema.json и POST на локальный агент
 
-const SCHEMA_URL = "data/website_schema.json";
-const CUSTOM_IMAGES_URL = "data/custom_images.json"; 
+const SCHEMA_URL = "/sdk/data/website_schema.json";
+const CUSTOM_IMAGES_URL = "/sdk/data/custom_images.json";
 const HERO_RENDER_BASE = window.APP_CONFIG.HERO_RENDER_BASE;
 const INVENTORY_IMAGE_BASE = window.APP_CONFIG.INVENTORY_IMAGE_BASE;
 const LS_SELECTIONS = "ds_selections";

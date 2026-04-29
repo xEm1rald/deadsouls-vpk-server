@@ -113,7 +113,7 @@ async def panel(request: Request):
         request=request,
         name="panel.html",
         context={
-            "HERO_RENDER_BASE": config.HERO_RENDER_BASE,
+            "HERO_RENDER_BASE": config.SDK_URL,
             "INVENTORY_IMAGE_BASE": config.INVENTORY_IMAGE_BASE
         }
     )
@@ -265,6 +265,15 @@ async def static_assets(request: Request, filename: str):
         return FileResponse(file_path)
     raise HTTPException(status_code=404, detail="File not found")
 
+@app.get('/sdk/{path:path}')
+@limiter.limit("600/minute")
+async def static_assets(request: Request, path: str):
+    link = config.SDK_URL + path
+    return RedirectResponse(
+        url=link,
+        status_code=307,
+        headers={"Cache-Control": "public, max-age=3600"} # Кешировать редирект на 1 час
+    )
 
 # ==========================================
 # 🌐 WEB API И ПЛАТЕЖИ
