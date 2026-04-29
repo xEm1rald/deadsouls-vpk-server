@@ -257,14 +257,6 @@ async def set_user_hwid(
 # FILES MANAGER
 # ==========================================
 
-@app.get('/{filename:path}')
-@limiter.limit("200/minute")
-async def static_assets(request: Request, filename: str):
-    file_path = BASE_DIR / filename
-    if file_path.exists() and file_path.is_file():
-        return FileResponse(file_path)
-    raise HTTPException(status_code=404, detail="File not found")
-
 @app.get('/sdk/{path:path}')
 @limiter.limit("600/minute")
 async def static_assets(request: Request, path: str):
@@ -274,6 +266,15 @@ async def static_assets(request: Request, path: str):
         status_code=307,
         headers={"Cache-Control": "public, max-age=3600"} # Кешировать редирект на 1 час
     )
+
+@app.get('/{filename:path}')
+@limiter.limit("200/minute")
+async def static_assets(request: Request, filename: str):
+    file_path = BASE_DIR / filename
+    if file_path.exists() and file_path.is_file():
+        return FileResponse(file_path)
+    raise HTTPException(status_code=404, detail="File not found")
+
 
 # ==========================================
 # 🌐 WEB API И ПЛАТЕЖИ
