@@ -2,7 +2,7 @@
 
 Для запуска проекта необходимо создать файл `.env` в корневой директории и заполнить его по шаблону ниже.
 
-- [**BotFather**](https://t.me/BotFather)
+- [**Telegram BotFather**](https://t.me/BotFather)
 - [**Monobank API**](https://api.monobank.ua/index.html)
 - [**Cryptocloud Dashboard**](https://app.cryptocloud.plus/)
 
