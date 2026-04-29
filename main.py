@@ -260,7 +260,7 @@ async def set_user_hwid(
 @app.get('/sdk/{path:path}')
 @limiter.limit("600/minute")
 async def static_assets(request: Request, path: str):
-    link = config.SDK_URL + path
+    link = f"{config.SDK_URL.strip('/')}/{path.strip('/')}"
     return RedirectResponse(
         url=link,
         status_code=307,
