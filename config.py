@@ -9,8 +9,8 @@ DOMAIN = os.getenv("DOMAIN")
 DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL and DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql", "postgresql+asyncpg", 1)
-SDK_URL = os.getenv("SDK_URL")
-INVENTORY_IMAGE_BASE = os.getenv("INVENTORY_IMAGE_BASE")
+CDN_URL = os.getenv("CDN_URL")
+HERO_RENDER_URL = os.getenv("HERO_RENDER_URL")
 
 # === AUTH ===
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")

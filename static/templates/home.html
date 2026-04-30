@@ -316,6 +316,11 @@
                     <span class="feat-title">Monobank</span>
                     <span class="feat-desc">Карты UAH (Украина)</span>
                   </article>
+
+                  <article class="feat-card payment-method-card" data-method="agent" role="button" tabindex="0">
+                    <span class="feat-title">Агент</span>
+                    <span class="feat-desc">Вся валюта мира</span>
+                  </article>
                 </div>
 
                 <div class="total-price-row" style="margin-top: 32px;">
@@ -490,7 +495,8 @@
         const currencyMap = {
           'cryptocloud': { key: 'usd', symbol: '$' },
           'paypal':      { key: 'rub', symbol: '₽' },
-          'monobank':    { key: 'uah', symbol: '₴' }
+          'monobank':    { key: 'uah', symbol: '₴' },
+          'agent':       { key: 'usd', symbol: '$' }
         };
 
         let productsData = {};
@@ -577,6 +583,13 @@
 
         checkoutBtn.addEventListener('click', async () => {
           if (!currentActivePlanId) return;
+
+          if (currentMethod === 'agent') {
+            const planTitle = productsData[currentActivePlanId].title; // Берем название тарифа (например, "30 дней")
+            const text = encodeURIComponent(`Хочу купить ${planTitle} VPKСкинченджера`);
+            window.open(`https://t.me/BLUADD?text=${text}`, '_blank');
+            return; // Прерываем функцию, чтобы не отправлять запрос на сервер
+          }
 
           const token = localStorage.getItem('token');
           const currencyInfo = currencyMap[currentMethod];

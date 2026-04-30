@@ -113,8 +113,8 @@ async def panel(request: Request):
         request=request,
         name="panel.html",
         context={
-            "HERO_RENDER_BASE": config.SDK_URL,
-            "INVENTORY_IMAGE_BASE": config.INVENTORY_IMAGE_BASE
+            "CDN_URL": config.CDN_URL,
+            "VALVE_HERO_RENDERS_CDN_URL": config.HERO_RENDER_URL
         }
     )
 
@@ -260,7 +260,7 @@ async def set_user_hwid(
 @app.get('/sdk/{path:path}')
 @limiter.limit("300/minute")
 async def static_assets(request: Request, path: str):
-    link = f"{config.SDK_URL.strip('/')}/{path.strip('/')}"
+    link = f"{config.CDN_URL.strip('/')}/{path.strip('/')}"
     return RedirectResponse(
         url=link,
         status_code=307,

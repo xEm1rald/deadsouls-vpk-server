@@ -64,13 +64,25 @@ main {
 }
 
 .preset-actions {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.6rem;
+  display: flex;
+  align-items: center; /* Выравнивает квадратную иконку и текстовые кнопки по центру по вертикали */
+  gap: 0.5rem; /* Аккуратное расстояние между кнопками */
+  width: 100%; /* Контейнер занимает всю ширину */
+  flex-wrap: wrap; /* Если экран узкий (телефон), кнопки, которые не влезли, аккуратно перенесутся на новую строку */
 }
 
 .preset-actions .btn {
-  justify-content: center;
+  flex: 1;
+  text-align: center; /* Текст точно по центру */
+  padding-left: 0;
+  padding-right: 0;
+  white-space: nowrap; /* Чтобы текст на кнопках не переносился на две строки */
+}
+
+/* Но для кнопки-иконки отменяем растягивание, оставляя её аккуратным квадратом */
+.preset-actions .home-icon-btn {
+  flex: 0 0 auto;
+  width: 2.35rem; /* Возвращаем её родную ширину */
 }
 
 .preset-select,
@@ -434,9 +446,12 @@ main {
 }
 
 .modal-card {
-  width: 100%;
-  max-width: 640px;
-  padding: 1.35rem;
+  width: 90vw;          /* Ширина до 90% от ширины экрана на мобилках */
+  max-width: 800px;     /* Максимальная ширина на ПК (можешь поставить 1000px, если нужно еще больше) */
+  height: 85vh;         /* Высота до 85% от высоты экрана */
+  max-height: 900px;    /* Максимальная высота */
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-header {
@@ -458,6 +473,18 @@ main {
   max-height: 350px;
   overflow-y: auto;
   margin-top: 0.25rem;
+}
+
+.modal-card .item-list {
+  flex: 1;              /* Заставляет список растягиваться на всю доступную высоту */
+  overflow-y: auto;     /* Добавляет скролл, если предметов много */
+  max-height: none;     /* Убираем жесткое ограничение высоты, если оно было */
+
+  /* Сетка предметов: делаем так, чтобы они располагались в 2-3 колонки на широком экране (опционально) */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 0.5rem;
+  align-content: start;
 }
 
 .search-box {
@@ -800,4 +827,25 @@ main {
   .skin-layout {
     grid-template-columns: 1fr;
   }
+}
+
+/* === Оверлей для Drag & Drop импорта пресетов === */
+body.drag-over-active::after {
+  content: "Отпустите файл .preset для загрузки";
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(10, 10, 10, 0.85);
+  border: 4px dashed var(--accent);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  backdrop-filter: blur(6px);
+  pointer-events: none;
 }

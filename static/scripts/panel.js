@@ -1,9 +1,9 @@
 // panel.js — выбор из website_schema.json и POST на локальный агент
 
-const SCHEMA_URL = "/sdk/website/data/website_schema.json";
+const SCHEMA_URL = "https://cdn.deadsouls.cc/website/data/website_schema.json";
 const CUSTOM_IMAGES_URL = "/data/custom_images.json";
-const HERO_RENDER_BASE = window.APP_CONFIG.HERO_RENDER_BASE;
-const INVENTORY_IMAGE_BASE = window.APP_CONFIG.INVENTORY_IMAGE_BASE;
+const VALVE_HERO_RENDERS_CDN_URL = window.APP_CONFIG.VALVE_HERO_RENDERS_CDN_URL;
+const CDN_URL = window.APP_CONFIG.CDN_URL;
 const LS_SELECTIONS = "ds_selections";
 const LS_HOST = "ds_bridge_host";
 const LS_PORT = "ds_bridge_port";
@@ -27,6 +27,19 @@ let presets = {};
 let collapsedGlobalSections = {};
 
 const el = (id) => document.getElementById(id);
+
+const RARITY_COLORS = {
+  "common": "#b0c3d9",
+  "uncommon": "#5e98d9",
+  "rare": "#4b69ff",
+  "mythical": "#8847ff",
+  "legendary": "#d32ce6",
+  "ancient": "#eb4b4b",
+  "immortal": "#e4ae39",
+  "arcana": "#ade55c",
+  "strange": "#CF6A32",
+  "seasonal": "#FFF34F"
+};
 
 const DEFAULT_VALUES = {
   ancients: "Default Ancient",
@@ -95,6 +108,11 @@ const GLOBAL_SECTION_LAYOUT = [
     items: ["couriers", "wards", "terrains", "dire_creep", "rad_creep", "dire_towers", "rad_towers", "ancients", "roshans", "tormentors", "shaders", "weathers", "emblems", "river_vials"],
   }
 ];
+
+function getItemColor(item) {
+  if (!item || !item.item_rarity) return "";
+  return RARITY_COLORS[item.item_rarity.toLowerCase()] || "";
+}
 
 function getCategoriesRecord() {
   if (!schema || typeof schema !== "object" || !("categories" in schema)) return null;
@@ -194,7 +212,8 @@ function buildGalleryData(sourceData) {
           slotName: globalCategoryTitle(cat),
           itemName: item.name,
           url: getItemImageUrl(item),
-          isEffect: false
+          isEffect: false,
+          color: getItemColor(item)
         });
       }
     }
@@ -223,7 +242,8 @@ function buildGalleryData(sourceData) {
               slotName: slot.replace(/_/g, " "),
               itemName: item ? item.name : "Неизвестный предмет",
               url: getItemImageUrl(item),
-              isEffect: false
+              isEffect: false,
+              color: getItemColor(item)
             });
           }
 
@@ -281,6 +301,12 @@ function renderGallery(containerId, sourceData, emptyMessage) {
       const imgWrap = document.createElement("div");
       imgWrap.className = "summary-img-wrap";
       if (item.isEffect) imgWrap.classList.add("effect-border");
+
+      if (item.color) {
+        imgWrap.style.borderColor = item.color;
+        // Добавим легкое свечение в цвет предмета
+        imgWrap.style.boxShadow = `0 0 12px ${item.color}33`;
+      }
 
       if (item.url) {
         const img = document.createElement("img");
@@ -474,21 +500,7 @@ function setSaveButtonState(isBuilding) {
 let presetTimeoutId = null;
 
 function setPresetStatus(text, kind) {
-  const node = el("preset-status");
-  if (!node) return;
-  node.textContent = text;
-  node.classList.remove("ok", "err");
-  if (kind === "ok") node.classList.add("ok");
-  if (kind === "err") node.classList.add("err");
-
-  if (presetTimeoutId) clearTimeout(presetTimeoutId);
-
-  if (text) {
-    presetTimeoutId = setTimeout(() => {
-      node.textContent = "";
-      node.classList.remove("ok", "err");
-    }, 3500);
-  }
+    setSaveStatus(text, kind);
 }
 
 function cloneSelections(source) {
@@ -667,7 +679,8 @@ function getItemImageUrl(item) {
   }
 
   if (!path) return "";
-  return `${INVENTORY_IMAGE_BASE}/${encodeURI(path)}.webp`;
+  const base = CDN_URL.replace(/\/+$/, "");
+  return `${base}/${encodeURI(path)}.webp`;
 }
 
 function labelForGlobal(catId) {
@@ -688,13 +701,11 @@ function labelForGlobal(catId) {
 function updateGlobalTiles() {
   for (const cat of getGlobalCategoryIds()) {
     const node = el(`val-${cat}`);
-    if (node) node.textContent = labelForGlobal(cat);
     const thumb = el(`thumb-${cat}`);
-    if (!(thumb instanceof HTMLImageElement)) continue;
 
     if (!schema || typeof schema !== "object" || !("categories" in schema)) {
-      thumb.hidden = true;
-      thumb.removeAttribute("src");
+      if (node) node.textContent = DEFAULT_VALUES[cat] || "По умолчанию";
+      if (thumb) { thumb.hidden = true; thumb.removeAttribute("src"); }
       continue;
     }
 
@@ -707,11 +718,15 @@ function updateGlobalTiles() {
       item = list.find((i) => i.id === selId);
     } else {
       const defaultName = DEFAULT_VALUES[cat];
-      if (defaultName) {
-        item = list.find((i) => i.name === defaultName);
-      }
+      if (defaultName) item = list.find((i) => i.name === defaultName);
     }
 
+    if (node) {
+      node.textContent = item ? item.name : (DEFAULT_VALUES[cat] || "По умолчанию");
+      node.style.color = getItemColor(item); // Применяем цвет редкости
+    }
+
+    if (!(thumb instanceof HTMLImageElement)) continue;
     const url = getItemImageUrl(item);
     if (!url) {
       thumb.hidden = true;
@@ -754,7 +769,7 @@ function updateHeroHeader() {
 
   const normalized = heroId.toLowerCase().replace(/\s+/g, "_");
   const heroSlug = normalized.replace(/[^a-z0-9_]/g, "");
-  const src = `${HERO_RENDER_BASE}/${heroSlug}.webm`;
+  const src = `${VALVE_HERO_RENDERS_CDN_URL}/${heroSlug}.webm`;
   syncVideo(preview, src);
 }
 
@@ -809,6 +824,7 @@ function renderHeroSlots(heroId) {
     const val = document.createElement("span");
     val.className = "tile-value";
     val.textContent = item ? item.name : "Стандарт";
+    val.style.color = getItemColor(item); // <--- ДОБАВИТЬ ЭТУ СТРОКУ
 
     const url = getItemImageUrl(item);
     if (url) {
@@ -894,9 +910,12 @@ function showPickerModal(title, items, currentId, defaultText = "По умолч
       opt.className = "item-option";
       if (i.id === currentId) opt.classList.add("selected");
       opt.dataset.pickId = i.id;
+
       const label = document.createElement("span");
       label.className = "item-option-label";
       label.textContent = i.name;
+      label.style.color = getItemColor(i);
+
       const url = getItemImageUrl(i);
       if (url) {
         const img = document.createElement("img");
@@ -1233,6 +1252,8 @@ function wireEvents() {
   el("btn-preset-save")?.addEventListener("click", savePresetFromInput);
   el("btn-preset-load")?.addEventListener("click", loadSelectedPreset);
   el("btn-preset-delete")?.addEventListener("click", deleteSelectedPreset);
+  el("btn-preset-export")?.addEventListener("click", exportSelectedPreset);
+  setupDragAndDrop();
   el("btn-reset-all")?.addEventListener("click", () => {
     resetSelectionsToDefault();
     setPresetStatus("Текущий выбор сброшен до стандартного.", "ok");
@@ -1347,29 +1368,6 @@ async function exportGalleryImages() {
   btn.textContent = "Создание...";
   btn.disabled = true;
 
-  // Ультимативный фикс: качаем картинку как бинарный файл и переводим в Base64.
-  // Это полностью исключает ошибки отрисовки в Canvas.
-async function getBase64Image(url) {
-    try {
-      // Генерируем уникальный URL, чтобы браузер и R2 отдали свежий файл с CORS
-      const bustUrl = url.includes('?') ? `${url}&nocache=${Date.now()}` : `${url}?nocache=${Date.now()}`;
-      
-      const res = await fetch(bustUrl, { mode: 'cors' });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      
-      const blob = await res.blob();
-      return await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(blob);
-      });
-    } catch (e) {
-      console.warn("Ошибка загрузки (CORS/Сеть):", url, e);
-      // Если все же ошибка, отдаем прозрачный пиксель, чтобы не "пачкать" холст
-      return "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-    }
-  }
-
   try {
     const { globals, heroesData } = buildGalleryData(selections);
     const heroKeys = Object.keys(heroesData).sort();
@@ -1379,7 +1377,7 @@ async function getBase64Image(url) {
       return;
     }
 
-    const ITEMS_PER_PAGE = 8; 
+    const ITEMS_PER_PAGE = 8;
     const pages = [];
     let currentPage = [];
 
@@ -1401,42 +1399,26 @@ async function getBase64Image(url) {
     for (let i = 0; i < pages.length; i++) {
       const pageData = pages[i];
       const exportContainer = document.createElement("div");
-      
-      // Размещаем блок прямо в документе, но под основным слоем (z-index: -10)
+
       exportContainer.style.position = "absolute";
-      exportContainer.style.top = "0";
+      exportContainer.style.top = "-9999px";
       exportContainer.style.left = "0";
-      exportContainer.style.width = "3840px"; 
+      exportContainer.style.width = "3840px";
       exportContainer.style.background = "#0a0a0a";
       exportContainer.style.padding = "2rem";
       exportContainer.style.display = "flex";
       exportContainer.style.flexDirection = "column";
-      exportContainer.style.zIndex = "-10";
-      
-const styleTag = document.createElement("style");
+
+      const styleTag = document.createElement("style");
       styleTag.textContent = `
-        /* Темный фон рядов */
         .export-row { background: #1a1a1a; border-bottom: 4px solid #000; width: 100%; display: flex; flex-direction: column; margin-bottom: 0; }
-        
-        /* Серая полоса с именем героя (как на скрине) */
         .export-header { background: #333333; padding: 1.2rem 2rem; text-align: center; font-family: 'IBM Plex Sans', sans-serif; font-weight: 700; font-size: 2.2rem; color: #ffffff; text-transform: uppercase; letter-spacing: 0.08em; border-top: 2px solid #4a4a4a; border-bottom: 2px solid #111; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); }
         .export-header.global { color: #3fb950; background: #223322; border-top-color: #2a4a2a; }
-        
-        /* flex-wrap: nowrap - строго в одну линию! */
-        .export-items { display: flex; flex-wrap: nowrap; justify-content: center; gap: 2rem; padding: 3rem 1rem; }
-        
-        /* Огромные карточки (320px) */
+        .export-items { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; padding: 3rem 1rem; }
         .export-card { width: 320px; display: flex; flex-direction: column; align-items: center; gap: 1rem; flex-shrink: 0; }
-        
-        /* Рамка картинки: 320x213px (пропорции Доты) */
         .export-img-wrap { width: 320px; height: 213px; background: #0a0a0a; border: 3px solid #555; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 6px 16px rgba(0,0,0,0.4); }
-        .export-img-wrap.effect { border-color: rgba(63, 185, 80, 0.9); box-shadow: 0 0 24px rgba(63, 185, 80, 0.4); }
         .export-img { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* Крупный текст названия слота */
         .export-label { font-family: 'IBM Plex Sans', sans-serif; font-size: 1.6rem; font-weight: 600; color: #b0b0b0; text-transform: uppercase; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
-        
-        /* Вотермарка внизу */
         .export-watermark { text-align: center; padding: 2.5rem 0; font-family: 'IBM Plex Mono', monospace; color: #555; font-size: 2rem; background: #0a0a0a; font-weight: 600; }
       `;
       exportContainer.appendChild(styleTag);
@@ -1446,7 +1428,6 @@ const styleTag = document.createElement("style");
       watermark.textContent = `@DeadSouls_VPK | ItemSettings (Часть ${i + 1} из ${pages.length})`;
       exportContainer.appendChild(watermark);
 
-      // Массив для ожидания загрузки всех картинок
       const imagePromises = [];
 
       for (const section of pageData) {
@@ -1466,19 +1447,31 @@ const styleTag = document.createElement("style");
           card.className = "export-card";
 
           const imgWrap = document.createElement("div");
-          imgWrap.className = `export-img-wrap ${item.isEffect ? "effect" : ""}`;
+          imgWrap.className = "export-img-wrap";
+
+          if (item.color) {
+            imgWrap.style.borderColor = item.color;
+            imgWrap.style.boxShadow = `0 0 20px ${item.color}40`;
+          } else if (item.isEffect) {
+            imgWrap.style.borderColor = "rgba(63, 185, 80, 0.9)";
+            imgWrap.style.boxShadow = "0 0 24px rgba(63, 185, 80, 0.4)";
+          }
 
           if (item.url) {
             const img = document.createElement("img");
             img.className = "export-img";
-            
-            // Превращаем ссылку в Base64 перед вставкой в тег
-            const promise = getBase64Image(item.url).then(b64 => {
-              img.src = b64;
-              return new Promise(res => {
-                img.onload = res;
-                img.onerror = res;
-              });
+
+            img.crossOrigin = "anonymous";
+            img.src = item.url + "?v=" + Date.now();
+
+            const promise = new Promise((resolve) => {
+              img.onload = resolve;
+              img.onerror = () => {
+                console.warn("Не удалось загрузить картинку для экспорта:", item.url);
+                img.style.display = "none";
+                imgWrap.innerHTML = `<span style="font-size:2rem;color:#555;">НЕТ ФОТО</span>`;
+                resolve();
+              };
             });
             imagePromises.push(promise);
 
@@ -1501,14 +1494,20 @@ const styleTag = document.createElement("style");
 
       document.body.appendChild(exportContainer);
 
-      // Строго ждем, пока все картинки конвертируются в Base64 и отрисуются
       await Promise.all(imagePromises);
       await new Promise(res => setTimeout(res, 300));
 
+      // MAGIC HAPPENS HERE:
+      // useCORS: true tells html2canvas to attempt loading images from external domains.
+      // allowTaint: true tells html2canvas to draw the image EVEN IF it fails CORS,
+      // but usually this prevents toDataURL.
+      // The ultimate fallback: if Cloudflare R2 is blocking the canvas export,
+      // html2canvas will just skip the image rendering but STILL output the rest of the UI.
       const canvas = await html2canvas(exportContainer, {
         backgroundColor: "#0a0a0a",
-        scale: 2, 
-        useCORS: true, 
+        scale: 2,
+        useCORS: true,
+        allowTaint: false, // Must be false to allow toDataURL
         logging: false
       });
 
@@ -1516,15 +1515,21 @@ const styleTag = document.createElement("style");
 
       const link = document.createElement("a");
       link.download = `deadsouls_loadout_part_${i + 1}.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
+
+      try {
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      } catch (e) {
+        console.error("Canvas export blocked by Cloudflare R2 CORS policy.", e);
+        alert("Ошибка безопасности: Ваш сервер Cloudflare R2 блокирует сохранение картинок. Требуется настройка CORS на стороне R2.");
+      }
 
       await new Promise(res => setTimeout(res, 800));
     }
 
   } catch (err) {
     console.error(err);
-    alert("Произошла ошибка при создании скриншотов.");
+    alert("Произошла ошибка при создании скриншотов. Проверьте консоль.");
   } finally {
     btn.textContent = originalText;
     btn.disabled = false;
@@ -1540,6 +1545,105 @@ function getEffectsList() {
     id: e.path,
     name: e.name
   }));
+}
+
+function exportSelectedPreset() {
+  const select = el("preset-select");
+  if (!(select instanceof HTMLSelectElement)) return;
+  const name = select.value;
+
+  if (!name || !presets[name]) {
+    setSaveStatus("Сначала выберите пресет для скачивания.", "err");
+    return;
+  }
+
+  // Превращаем пресет в текст
+  const dataStr = JSON.stringify(presets[name], null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+
+  // Убираем из имени спецсимволы, чтобы не сломать файл
+  const safeName = name.replace(/[^a-zа-я0-9_\-\s]/gi, '').trim() || "export";
+  link.download = `deadsouls.${safeName}.preset`;
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+
+  setSaveStatus(`Пресет "${name}" скачан.`, "ok");
+}
+
+function setupDragAndDrop() {
+  // Показываем оверлей при перетаскивании
+  document.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    if (e.dataTransfer.types.includes("Files")) {
+      document.body.classList.add('drag-over-active');
+    }
+  });
+
+  // Убираем оверлей, если мышку увели за пределы окна
+  document.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    if (!e.relatedTarget || e.relatedTarget.nodeName === "HTML") {
+       document.body.classList.remove('drag-over-active');
+    }
+  });
+
+  // Ловим брошенный файл
+  document.addEventListener('drop', (e) => {
+    e.preventDefault();
+    document.body.classList.remove('drag-over-active');
+
+    if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) return;
+    const file = e.dataTransfer.files[0];
+
+    // Проверяем расширение
+    if (!file.name.endsWith('.preset')) {
+      setSaveStatus("Неверный формат. Используйте файлы .preset", "err");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target.result);
+
+        // Вытаскиваем имя: убираем 'deadsouls.' спереди и '.preset' сзади
+        let presetName = file.name.replace(/^deadsouls\./i, '').replace(/\.preset$/i, '');
+        if (!presetName) presetName = "Imported";
+
+        // Сохраняем (перезапишет, если такое имя уже есть)
+        presets[presetName] = data;
+        savePresetsLocal();
+        renderPresetSelect();
+
+        // Автоматически выбираем загруженный пресет
+        const select = el("preset-select");
+        if (select instanceof HTMLSelectElement) {
+          select.value = presetName;
+          localStorage.setItem(LS_ACTIVE_PRESET, presetName);
+          renderPresetPreview(presetName);
+        }
+
+        setSaveStatus(`Пресет "${presetName}" успешно загружен!`, "ok");
+
+        // Автоматически открываем модалку пресетов, чтобы юзер увидел результат
+        const presetsSection = el("presets-section");
+        if (presetsSection && presetsSection.hidden) {
+           presetsSection.hidden = false;
+        }
+
+      } catch (err) {
+        setSaveStatus("Ошибка файла: код пресета поврежден.", "err");
+      }
+    };
+    reader.readAsText(file);
+  });
 }
 
 async function init() {

@@ -1322,6 +1322,10 @@ html.prevent-animation main {
   transform: none;
 }
 
+.base-layer {
+  z-index: 1;
+}
+
 /* Ползунок-невидимка поверх всего */
 .comp-slider {
   position: absolute;
@@ -1526,4 +1530,70 @@ html.prevent-animation main {
 @keyframes pulse-border {
   0% { transform: scale(1); opacity: 1; }
   100% { transform: scale(1.05); opacity: 0; }
+}
+
+/* === Плашка VAC-SAFE (Адаптированная под дизайн сайта) === */
+.vac-safe-card {
+  max-width: 650px;
+  /* Используем цвета из палитры сайта */
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  padding: 2.5rem 3rem;
+  text-align: center;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.vac-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  /* Используем фирменный зеленый акцент */
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.25rem;
+}
+
+.vac-badge svg {
+  opacity: 0.9;
+}
+
+.vac-title {
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 1.25rem;
+  letter-spacing: -0.01em;
+}
+
+.vac-desc {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+/* Стилизация inline-кода в стилистике твоего сайта */
+.vac-desc code {
+  font-family: var(--font-mono);
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-size: 0.85em;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+
+@media (max-width: 640px) {
+  .vac-safe-card {
+    padding: 2rem 1.5rem;
+  }
 }
