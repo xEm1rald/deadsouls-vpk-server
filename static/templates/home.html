@@ -363,6 +363,40 @@
         const btnApplyGift = document.getElementById('btn-apply-gift');
         const giftCodeInput = document.getElementById('gift-code-input');
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentStatus = urlParams.get('payment');
+
+        if (paymentStatus) {
+            if (paymentStatus === 'success') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Успешно!',
+                    text: 'Оплата успешно завершена!',
+                    background: '#1a1a1a',
+                    color: '#fff',
+                    confirmButtonColor: '#4caf50'
+                });
+
+                setTimeout(() => {
+                    const token = localStorage.getItem('token');
+                    if (token) {
+                        loadUserData(token);
+                    }
+                }, 3000);
+            } else if (paymentStatus === 'failure') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Ошибка',
+                    text: 'Ошибка при оплате.',
+                    background: '#1a1a1a',
+                    color: '#fff'
+                });
+            }
+
+            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+        }
+
         if (btnApplyGift && giftCodeInput) {
             btnApplyGift.addEventListener('click', async () => {
                 const code = giftCodeInput.value.trim();
