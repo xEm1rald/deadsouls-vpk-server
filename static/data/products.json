@@ -3,6 +3,7 @@
         "title": "1 Месяц",
         "name": "Подписка на 1 месяц",
         "secure_name": "1mon",
+        "funpay_url": "https://funpay.com/market/offer/101/",
         "prices": {
             "usd": 10,
             "uah": 10,

@@ -53,7 +53,7 @@ class Monobank:
                 print("[+] Вебхук Monobank успешно зарегистрирован.")
 
 
-class Paypal:
+class Funpay:
     PAYMENT_TEXT = "{} | {}"
 
     def __init__(self, user: str, amount: int, product: str):

@@ -624,35 +624,30 @@ async def handle_postback_monobank(request: Request):
         return end_response
 
 
-@app.post('/payment/paypal')
+@app.post('/payment/funpay')
+@limiter.limit("5/minute")
 async def paypal_payment(
-        user: str = Form(default=None),
-        currency: str = Form(default=""),
-        product_id: str = Form(default="")
+        request: Request,
+        req: PaymentRequest,
+        current_user: database.User = Depends(get_current_user)
 ):
-    product = products.get(product_id)
+    product = products.get(req.product_id)
 
-    if currency.lower() not in ["rub", "usd"]:
-        return PlainTextResponse("Invalid currency", status_code=401)
+    if req.currency.lower() not in ["rub", "usd"]:
+        return HTTPException(detail="Invalid currency", status_code=401)
     if not product:
-        return PlainTextResponse("Invalid product", status_code=401)
+        return HTTPException(detail="Invalid product", status_code=401)
 
     try:
-        link = (payment
-                .Paypal(
-            user=user,
-            amount=product.get("prices").get(currency.lower()),
-            product=product.get("name")
-        )
-                .create_link())
+        link = product.get("funpay_url")
 
         if link:
-            return RedirectResponse(url=link, status_code=303)
+            return JSONResponse({"url": link})
         else:
-            return PlainTextResponse("Ошибка: Ссылка на оплату не найдена.", status_code=404)
+            return HTTPException(detail="Ошибка: Ссылка на оплату не найдена.", status_code=404)
 
     except Exception as e:
-        return PlainTextResponse(f"Произошла внутренняя ошибка: {str(e)}", status_code=400)
+        return HTTPException(detail=f"Произошла внутренняя ошибка: {str(e)}", status_code=400)
 
 
 if __name__ == '__main__':
