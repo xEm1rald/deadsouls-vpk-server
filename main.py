@@ -639,7 +639,7 @@ async def paypal_payment(
         return HTTPException(detail="Invalid product", status_code=401)
 
     try:
-        link = product.get("funpay_url")
+        link = "https://funpay.com/users/19774215/"
 
         if link:
             return JSONResponse({"url": link})

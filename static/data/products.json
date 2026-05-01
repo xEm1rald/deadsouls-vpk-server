@@ -1,12 +1,33 @@
 {
+    "99": {
+        "title": "7 дней",
+        "name": "Подписка на 7 дней",
+        "secure_name": "7days",
+        "prices": {
+            "usd": 5,
+            "uah": 220,
+            "rub": 370
+        },
+        "duration": 7
+    },
+    "100": {
+        "title": "14 дней",
+        "name": "Подписка на 14 дней",
+        "secure_name": "14days",
+        "prices": {
+            "usd": 7,
+            "uah": 300,
+            "rub": 500
+        },
+        "duration": 14
+    },
     "101": {
         "title": "1 Месяц",
         "name": "Подписка на 1 месяц",
         "secure_name": "1mon",
-        "funpay_url": "https://funpay.com/market/offer/101/",
         "prices": {
             "usd": 10,
-            "uah": 10,
+            "uah": 440,
             "rub": 750
         },
         "duration": 30
@@ -16,9 +37,9 @@
         "name": "Подписка на 3 месяца",
         "secure_name": "3mon",
         "prices": {
-            "usd": 26,
-            "uah": 1050,
-            "rub": 2100
+            "usd": 25,
+            "uah": 1140,
+            "rub": 1940
         },
         "duration": 90
     },
@@ -28,8 +49,8 @@
         "secure_name": "6mon",
         "prices": {
             "usd": 45,
-            "uah": 1950,
-            "rub": 4000
+            "uah": 1970,
+            "rub": 3360
         },
         "duration": 180
     },
@@ -39,10 +60,10 @@
         "secure_name": "life",
         "prices": {
             "usd": 100,
-            "uah": 4100,
+            "uah": 4400,
             "rub": 7500
         },
         "color": "#f1c40f",
-        "duration": 99999
+        "duration": 36500
     }
 }
