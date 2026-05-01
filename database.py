@@ -1,9 +1,10 @@
 import asyncio
-from datetime import datetime
-from sqlalchemy import String, Float, DateTime, ForeignKey, select, Text
+from datetime import datetime, UTC, timedelta
+from sqlalchemy import String, Float, DateTime, ForeignKey, select, Text, Integer
 from sqlalchemy.sql import func
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, selectinload
+import secrets
 from config import DATABASE_URL
 
 # Создаем движок БД и фабрику сессий
@@ -15,6 +16,14 @@ async_session = async_sessionmaker(engine, expire_on_commit=False)
 class Base(DeclarativeBase):
     pass
 
+class GiftCode(Base):
+    __tablename__ = 'gift_codes'
+
+    code: Mapped[str] = mapped_column(String(50), primary_key=True)
+    subtime: Mapped[int] = mapped_column(Integer, nullable=False) # Количество дней
+    usedby: Mapped[int | None] = mapped_column(ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
+
+    user: Mapped["User"] = relationship(back_populates="used_gifts")
 
 class PaymentCryptocloud(Base):
     __tablename__ = 'payments_cryptocloud'
@@ -28,8 +37,20 @@ class PaymentCryptocloud(Base):
     product_id: Mapped[str] = mapped_column(String(50), nullable=False)
     date: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
-    user: Mapped["User"] = relationship(back_populates="payments")
+    user: Mapped["User"] = relationship(back_populates="cryptocloud_payments")
 
+class PaymentMonobank(Base):
+    __tablename__ = 'payments_monobank'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
+    amount: Mapped[float] = mapped_column(Float, nullable=False)
+    currency: Mapped[str] = mapped_column(String(10), default='UAH', nullable=False)
+    product_id: Mapped[str] = mapped_column(String(50), nullable=False)
+    comment: Mapped[str] = mapped_column(String(255), nullable=True)
+    date: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    user: Mapped["User"] = relationship(back_populates="monobank_payments")
 
 class User(Base):
     __tablename__ = 'users'
@@ -48,8 +69,10 @@ class User(Base):
     subscription_end_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     token: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
-    payments: Mapped[list["PaymentCryptocloud"]] = relationship(back_populates="user", cascade="all, delete-orphan")
-
+    used_gifts: Mapped[list["GiftCode"]] = relationship(back_populates="user")
+    cryptocloud_payments: Mapped[list["PaymentCryptocloud"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    monobank_payments: Mapped[list["PaymentMonobank"]] = relationship(back_populates="user",
+                                                                      cascade="all, delete-orphan")
 
 # --- Функции для работы с БД ---
 
@@ -100,7 +123,10 @@ async def get_user(
             query = query.where(User.tg_id == str(tg_id))
 
         if include_payments:
-            query = query.options(selectinload(User.payments))
+            query = query.options(
+                selectinload(User.cryptocloud_payments),
+                selectinload(User.monobank_payments)
+            )
 
         result = await session.execute(query)
         user = result.scalars().first()
@@ -198,3 +224,68 @@ async def update_payment_status(
         await session.commit()
         print(f"[+] Статус платежа {order_id} изменен на '{status}'.")
         return True
+
+
+# --- ДОБАВЛЯЕМ ФУНКЦИИ ДЛЯ ПОДАРКОВ И АДМИНКИ ---
+
+async def create_gift_codes(count: int, days: int) -> list[str]:
+    """Генерирует гифт-коды пачкой"""
+    codes = []
+    async with async_session() as session:
+        for _ in range(count):
+            # Генерируем красивый код вида: DS-A1B2-C3D4-E5F6
+            code = f"DS-{secrets.token_hex(2).upper()}-{secrets.token_hex(2).upper()}-{secrets.token_hex(2).upper()}"
+            codes.append(code)
+            new_gift = GiftCode(code=code, subtime=days)
+            session.add(new_gift)
+
+        await session.commit()
+    return codes
+
+
+async def apply_gift_code(user_id: int, code: str) -> dict:
+    """Применяет гифт-код к пользователю"""
+    async with async_session() as session:
+        gift = await session.get(GiftCode, code)
+
+        if not gift:
+            return {"success": False, "error": "Код не найден"}
+        if gift.usedby is not None:
+            return {"success": False, "error": "Код уже активирован"}
+
+        user = await session.get(User, user_id)
+        if not user:
+            return {"success": False, "error": "Пользователь не найден"}
+
+        # Добавляем дни
+        if user.subscription_end_date and user.subscription_end_date > datetime.now(UTC):
+            user.subscription_end_date += timedelta(days=gift.subtime)
+        else:
+            user.subscription_end_date = datetime.now(UTC) + timedelta(days=gift.subtime)
+
+        gift.usedby = user.id
+        await session.commit()
+
+        return {"success": True, "new_date": str(user.subscription_end_date), "days": gift.subtime}
+
+
+async def get_all_gift_codes():
+    """Получает все коды для админ-бота"""
+    async with async_session() as session:
+        result = await session.execute(select(GiftCode))
+        return result.scalars().all()
+
+async def create_monobank_payment(user_id: int, amount: float, product_id: str, comment: str):
+    """Создает новую запись о платеже через Monobank в БД."""
+    async with async_session() as session:
+        new_payment = PaymentMonobank(
+            user_id=user_id,
+            amount=amount,
+            currency="UAH",
+            product_id=product_id,
+            comment=comment
+        )
+
+        session.add(new_payment)
+        await session.commit()
+        print(f"[+] Транзакция Monobank сохранена в БД (User: {user_id}, Сумма: {amount} UAH).")

@@ -288,6 +288,13 @@
                   Выйти из аккаунта
                 </button>
               </div>
+              <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
+                <span class="label" style="display: block; margin-bottom: 8px;">Активация Gift-кода</span>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                  <input type="text" id="gift-code-input" class="input" placeholder="DS-XXXX-XXXX-XXXX" style="text-transform: uppercase; text-align: center; letter-spacing: 2px;">
+                  <button type="button" class="btn primary" id="btn-apply-gift" style="width: 100%; padding: 10px;">Активировать</button>
+                </div>
+              </div>
             </div>
 
             <div class="card">
@@ -352,6 +359,61 @@
         const subStatusEl = document.getElementById('sub-status');
         const subDateEl = document.getElementById('sub-end-date');
         const hwidEl = document.getElementById('user-hwid');
+
+        const btnApplyGift = document.getElementById('btn-apply-gift');
+        const giftCodeInput = document.getElementById('gift-code-input');
+
+        if (btnApplyGift && giftCodeInput) {
+            btnApplyGift.addEventListener('click', async () => {
+                const code = giftCodeInput.value.trim();
+                if (!code) return;
+
+                const token = localStorage.getItem('token');
+                btnApplyGift.disabled = true;
+                btnApplyGift.textContent = '...';
+
+                try {
+                    const response = await fetch('/api/v1/apply_gift', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ code: code })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Активировано!',
+                            text: data.message,
+                            background: '#1a1a1a',
+                            color: '#fff',
+                            confirmButtonColor: '#4caf50'
+                        });
+                        giftCodeInput.value = '';
+                        // Перезагружаем инфу юзера, чтобы обновить дату на экране
+                        loadUserData(token);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Ошибка',
+                            text: data.detail || 'Не удалось активировать код',
+                            background: '#1a1a1a',
+                            color: '#fff'
+                        });
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Ошибка сети");
+                } finally {
+                    btnApplyGift.disabled = false;
+                    btnApplyGift.textContent = 'Активировать';
+                }
+            });
+        }
 
         // Логика клика по HWID (Скрытие / Раскрытие)
         hwidEl.addEventListener('click', () => {

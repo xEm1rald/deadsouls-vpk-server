@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+import json
 import os
 
 load_dotenv()
@@ -17,6 +18,7 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CLIENT_ID = os.getenv("TELEGRAM_CLIENT_ID")
 TELEGRAM_CLIENT_SECRET = os.getenv("TELEGRAM_CLIENT_SECRET")
 TELEGRAM_REDIRECT_URI = DOMAIN + os.getenv("TELEGRAM_REDIRECT_URI")
+TELEGRAM_ADMIN_IDS = json.loads(os.getenv("TELEGRAM_ADMIN_IDS", "[]"))
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"

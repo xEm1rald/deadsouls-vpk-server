@@ -8,6 +8,7 @@ import time
 import base64
 import secrets
 import httpx
+import asyncio
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives import serialization
@@ -31,12 +32,15 @@ import database
 import config
 from payments import payment
 import products
+from admin_bot import bot, dp
 
 
 class PaymentRequest(BaseModel):
     currency: str
     product_id: str
 
+class GiftRequest(BaseModel):
+    code: str
 
 # Модели для десктопной авторизации
 class ChallengeRequest(BaseModel):
@@ -60,6 +64,10 @@ async def lifespan(app: FastAPI):
 
     print("[+] Установка Monobank Webhook...")
     await payment.Monobank.on_startup()
+
+    # Запускаем бота как фоновую задачу (чтобы он не блокировал веб-сервер)
+    print("[+] Запуск Telegram Админ-бота...")
+    bot_task = asyncio.create_task(dp.start_polling(bot))
 
     yield
 
@@ -147,6 +155,24 @@ async def get_user_info(current_user: database.User = Depends(get_current_user))
         "hwid": current_user.HWID
     })
 
+@app.post("/api/v1/apply_gift")
+@limiter.limit("5/minute")
+async def api_apply_gift(
+        request: Request,
+        body: GiftRequest,
+        current_user: database.User = Depends(get_current_user)
+):
+    result = await database.apply_gift_code(current_user.id, body.code.strip())
+
+    if not result["success"]:
+        raise HTTPException(status_code=400, detail=result["error"])
+
+    return JSONResponse({
+        "success": True,
+        "message": f"Успешно добавлено {result['days']} дней!",
+        "new_date": result["new_date"]
+    })
+
 
 # ==========================================
 # 🛡️ ZERO-TRUST API (Для десктопного клиента)
@@ -191,7 +217,7 @@ async def authenticate(request: Request, body: AuthRequest):
 
     # 2. Проверка HMAC подписи (ИСПОЛЬЗУЕМ CHALLENGE вместо APP_SECRET_KEY)
     expected_mac = hmac.new(
-        session["challenge"].encode('utf-8'),
+        (session["challenge"] + config.APP_SECRET_KEY).encode('utf-8'),
         body.ciphertext.encode('utf-8'),
         hashlib.sha256
     ).hexdigest()
@@ -200,7 +226,7 @@ async def authenticate(request: Request, body: AuthRequest):
         raise HTTPException(status_code=403, detail="Invalid signature")
 
     # 3. Попытка расшифровки (доказывает, что клиент знает HWID)
-    key_material = (session["challenge"] + session["hwid"]).encode('utf-8')
+    key_material = (session["challenge"] + session["hwid"] + config.APP_SECRET_KEY).encode('utf-8')
     aes_key = hashlib.sha256(key_material).digest()
 
     try:
@@ -270,10 +296,18 @@ async def static_assets(request: Request, path: str):
 @app.get('/{filename:path}')
 @limiter.limit("200/minute")
 async def static_assets(request: Request, filename: str):
-    file_path = BASE_DIR / filename
-    if file_path.exists() and file_path.is_file():
-        return FileResponse(file_path)
-    raise HTTPException(status_code=404, detail="File not found")
+    try:
+        file_path = (BASE_DIR / filename).resolve()
+        base_dir_resolved = BASE_DIR.resolve()
+
+        if not file_path.is_relative_to(base_dir_resolved):
+            raise HTTPException(status_code=403, detail="Forbidden")
+
+        if file_path.exists() and file_path.is_file():
+            return FileResponse(file_path)
+        raise HTTPException(status_code=404, detail="File not found")
+    except Exception:
+        raise HTTPException(status_code=404, detail="File not found")
 
 
 # ==========================================
@@ -511,6 +545,13 @@ def verify_mono_signature(x_sign_base64: str, body_bytes: bytes) -> bool:
 @app.post('/payment/monobank/callback')
 async def handle_postback_monobank(request: Request):
     raw = await request.body()
+    print(request.headers)
+    x_sign = request.headers.get("X-Sign")
+    print(x_sign)
+
+    if not x_sign or not verify_mono_signature(x_sign, raw):
+        return PlainTextResponse("Forbidden", status_code=403)
+
     end_response = PlainTextResponse("OK", status_code=200)
 
     try:
@@ -557,7 +598,14 @@ async def handle_postback_monobank(request: Request):
             user_id=user_db.id,
             subscription_end_date=new_end_date
         )
-        print(user_db.tg_data)
+
+        await database.create_monobank_payment(
+            user_id=user_db.id,
+            amount=operation_amount * 0.01,
+            product_id=product,  # Сюда запишется secure_name тарифа
+            comment=comment
+        )
+
         await payment.send_payment_webhook(
             tg_username=json.loads(user_db.tg_data).get("preferred_username", "-- missing --"),
             order_id="-1",

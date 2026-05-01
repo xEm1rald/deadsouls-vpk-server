@@ -19,6 +19,7 @@ TELEGRAM_BOT_TOKEN="your_bot_token"
 TELEGRAM_CLIENT_ID="your_client_id"
 TELEGRAM_CLIENT_SECRET="your_client_secret"
 TELEGRAM_REDIRECT_URI="/home"
+TELEGRAM_ADMIN_IDS="[111, 333]"
 
 SECRET_KEY="replace_with_32_character_secret"
 
