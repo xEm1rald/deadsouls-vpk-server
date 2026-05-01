@@ -109,7 +109,9 @@ async def home(request: Request):
         name="home.html",
         context={
             "CLIENT_ID": config.TELEGRAM_CLIENT_ID,
-            "REDIRECT_URI": config.TELEGRAM_REDIRECT_URI
+            "REDIRECT_URI": config.TELEGRAM_REDIRECT_URI,
+            "FUNPAY_URL": config.FUNPAY_URL,
+            "TELEGRAM_AGENT_URL": config.TELEGRAM_AGENT_URL
         }
     )
 
@@ -623,31 +625,6 @@ async def handle_postback_monobank(request: Request):
         print(f"Error processing Monobank callback: {str(e)}")
         return end_response
 
-
-@app.post('/payment/funpay')
-@limiter.limit("5/minute")
-async def paypal_payment(
-        request: Request,
-        req: PaymentRequest,
-        current_user: database.User = Depends(get_current_user)
-):
-    product = products.get(req.product_id)
-
-    if req.currency.lower() not in ["rub", "usd"]:
-        return HTTPException(detail="Invalid currency", status_code=401)
-    if not product:
-        return HTTPException(detail="Invalid product", status_code=401)
-
-    try:
-        link = "https://funpay.com/users/19774215/"
-
-        if link:
-            return JSONResponse({"url": link})
-        else:
-            return HTTPException(detail="Ошибка: Ссылка на оплату не найдена.", status_code=404)
-
-    except Exception as e:
-        return HTTPException(detail=f"Произошла внутренняя ошибка: {str(e)}", status_code=400)
 
 
 if __name__ == '__main__':

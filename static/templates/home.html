@@ -348,6 +348,8 @@
     <script>
       const CLIENT_ID = "{{ CLIENT_ID }}";
       const REDIRECT_URI = "{{ REDIRECT_URI }}";
+      const TELEGRAM_AGENT_URL = "{{ TELEGRAM_AGENT_URL }}";
+      const FUNPAY_URL = "{{ FUNPAY_URL }}";
 
       document.addEventListener('DOMContentLoaded', () => {
         const loginSection = document.getElementById('login-section');
@@ -682,9 +684,14 @@
 
           if (currentMethod === 'agent') {
             const planTitle = productsData[currentActivePlanId].title; // Берем название тарифа (например, "30 дней")
-            const text = encodeURIComponent(`Хочу купить ${planTitle} VPKСкинченджера`);
-            window.open(`https://t.me/BLUADD?text=${text}`, '_blank');
+            const text = encodeURIComponent(`Хочу купить ${planTitle} скинченджера`);
+            window.open(`{TELEGRAM_AGENT_URL}?text=${text}`, '_blank');
             return; // Прерываем функцию, чтобы не отправлять запрос на сервер
+          }
+
+          if (currentMethod === 'funpay') {
+            window.open(FUNPAY_URL, '_blank');
+            return; // Прерываем функцию, чтобы запрос не полетел на бэкенд
           }
 
           const token = localStorage.getItem('token');

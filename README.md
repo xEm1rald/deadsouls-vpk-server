@@ -20,6 +20,7 @@ TELEGRAM_CLIENT_ID="your_client_id"
 TELEGRAM_CLIENT_SECRET="your_client_secret"
 TELEGRAM_REDIRECT_URI="/home"
 TELEGRAM_ADMIN_IDS="[111, 333]"
+TELEGRAM_AGENT_URL="https://t.me/username"
 
 SECRET_KEY="replace_with_32_character_secret"
 
@@ -31,6 +32,8 @@ MONOBANK_WEBHOOK_URL="/payment/monobank/callback_secure_string"
 CRYPTOCLOUD_API_KEY="your_api_key"
 CRYPTOCLOUD_SHOP_ID="your_shop_id"
 CRYPTOCLOUD_SECRET_KEY="your_secret_key"
+
+FUNPAY_URL="https://funpay.com/users/0000000"
 
 DISCORD_PAYMENT_INFO_WEBHOOK="https://discord.com/api/webhooks/xxxx/xxxx"
 
