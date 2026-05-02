@@ -68,11 +68,8 @@ class Funpay:
 
 async def send_payment_webhook(
     tg_username: str,
-    #order_id: str = "",
-    #invoice_id: str = "",
     paid_value: str = "",
     product_name: str = "",
-    #user_id: str | int = "",
     author_name: str = "DeadSouls Billing",
     avatar_url: str = "https://i.imgur.com/AfFp7pu.png",
     fields: dict = None,
@@ -85,7 +82,7 @@ async def send_payment_webhook(
     payload = {
         "embeds": [
             {
-                "title": "Successfully Payment",
+                "title": "Successful Payment",
                 "description": f"**[@{tg_username}](https://t.me/{tg_username})** paid **{paid_value}** for **{product_name}** \n",
                 "color": color,
                 "fields": fields,
