@@ -246,7 +246,9 @@ async def create_gift_codes(count: int, days: int) -> list[str]:
 async def apply_gift_code(user_id: int, code: str) -> dict:
     """Применяет гифт-код к пользователю"""
     async with async_session() as session:
-        gift = await session.get(GiftCode, code)
+        query = select(GiftCode).where(GiftCode.code == code).with_for_update()
+        result = await session.execute(query)
+        gift = result.scalar_one_or_none()
 
         if not gift:
             return {"success": False, "error": "Код не найден"}
@@ -274,6 +276,12 @@ async def get_all_gift_codes():
     async with async_session() as session:
         result = await session.execute(select(GiftCode))
         return result.scalars().all()
+
+async def get_gift_code(code: str) -> GiftCode | None:
+    async with async_session() as session:
+        # Так как code является primary_key, мы можем использовать session.get()
+        gift_code = await session.get(GiftCode, code)
+        return gift_code
 
 async def create_monobank_payment(user_id: int, amount: float, product_id: str, comment: str):
     """Создает новую запись о платеже через Monobank в БД."""

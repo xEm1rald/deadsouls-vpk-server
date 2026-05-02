@@ -10,6 +10,7 @@
     <title>DeadSouls | Личный кабинет</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="icon" href="https://cdn.deadsouls.cc/website/favicon.ico">
     <link
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
@@ -319,10 +320,10 @@
                     <span class="feat-desc">BTC, ETH, USDT и другие</span>
                   </article>
 
-                  <article class="feat-card payment-method-card" data-method="monobank" role="button" tabindex="0">
-                    <span class="feat-title">Monobank</span>
-                    <span class="feat-desc">Карты UAH (Украина)</span>
-                  </article>
+<!--                  <article class="feat-card payment-method-card" data-method="monobank" role="button" tabindex="0">-->
+<!--                    <span class="feat-title">Monobank</span>-->
+<!--                    <span class="feat-desc">Карты UAH (Украина)</span>-->
+<!--                  </article>-->
 
                   <article class="feat-card payment-method-card" data-method="agent" role="button" tabindex="0">
                     <span class="feat-title">Агент</span>
@@ -591,7 +592,7 @@
         const checkoutBtn = document.getElementById('btn-checkout');
 
         const currencyMap = {
-          'funpay':      { key: 'rub', symbol: '₽' },
+          'funpay':      { key: 'usd', symbol: '$' },
           'cryptocloud': { key: 'usd', symbol: '$' },
           'monobank':    { key: 'uah', symbol: '₴' },
           'agent':       { key: 'usd', symbol: '$' }

@@ -68,50 +68,34 @@ class Funpay:
 
 async def send_payment_webhook(
     tg_username: str,
-    order_id: str = "",
-    invoice_id: str = "",
-    amount: float = "",
-    currency: str = "",
+    #order_id: str = "",
+    #invoice_id: str = "",
+    paid_value: str = "",
     product_name: str = "",
-    user_id: str | int = "",
+    #user_id: str | int = "",
     author_name: str = "DeadSouls Billing",
-    avatar_url: str = "https://i.imgur.com/AfFp7pu.png"
+    avatar_url: str = "https://i.imgur.com/AfFp7pu.png",
+    fields: dict = None,
+    color: int = 0x2ecc71
 ):
-    # Формируем структуру Embed
-    embed = {
-        "title": "Successfully Payment",
-        "description": f"User paid **{amount} {currency}** for **{product_name}** \n",
-        "color": 0x2ecc71,  # Зеленый цвет
-        "fields": [
-            {
-                "name": "user_db",
-                "value": f"`{user_id}`",
-                "inline": True
-            },
-            {
-                "name": "order_id",
-                "value": f"`{order_id}`",
-                "inline": True
-            },
-            {
-                "name": "invoice_id",
-                "value": f"`{invoice_id}`",
-                "inline": True
-            },
-            {
-                "name": "tg_username",
-                "value": f"[@{tg_username}](https://t.me/{tg_username})",
-                "inline": True
-            },
-        ],
-        "author": {
-            "name": author_name,
-            "icon_url": avatar_url
-        }
-    }
+
+    if fields:
+        fields = [{"name": k, "value": f"`{v}`", "inline": True} for k, v in fields.items()]
 
     payload = {
-        "embeds": [embed]
+        "embeds": [
+            {
+                "title": "Successfully Payment",
+                "description": f"**[@{tg_username}](https://t.me/{tg_username})** paid **{paid_value}** for **{product_name}** \n",
+                "color": color,
+                "fields": fields,
+                "author": {
+                    "name": author_name,
+                    "icon_url": avatar_url
+                }
+            }
+        ],
+
     }
 
     # Отправляем запрос асинхронно, чтобы не тормозить основной сервер

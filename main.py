@@ -62,8 +62,8 @@ async def lifespan(app: FastAPI):
     print("[+] Запуск сервера. Инициализация БД...")
     await database.init_db()
 
-    print("[+] Установка Monobank Webhook...")
-    await payment.Monobank.on_startup()
+    # print("[+] Установка Monobank Webhook...")
+    # await payment.Monobank.on_startup()
 
     # Запускаем бота как фоновую задачу (чтобы он не блокировал веб-сервер)
     print("[+] Запуск Telegram Админ-бота...")
@@ -168,6 +168,17 @@ async def api_apply_gift(
 
     if not result["success"]:
         raise HTTPException(status_code=400, detail=result["error"])
+
+    gift_code = await database.get_gift_code(body.code.strip())
+
+    await payment.send_payment_webhook(
+        tg_username=json.loads(current_user.tg_data).get("preferred_username", "-- missing --"),
+        paid_value="?",
+        fields={"gift_code": body.code.strip(), "used_by": gift_code.usedby, "user_id": current_user.id},
+        product_name=f"Подписка на {gift_code.subtime} дней",
+        author_name="Funpay (Gift-code)",
+        avatar_url="https://cdn.discordapp.com/attachments/1500110526792073317/1500110555120406624/image_1.png?ex=69f73e53&is=69f5ecd3&hm=4ee976493e0e11c09a5f61034773ceb077e3b493d85133f7b4587e772a7b436b"
+    )
 
     return JSONResponse({
         "success": True,
@@ -471,14 +482,11 @@ async def handle_postback_cryptocloud(request: Request):
 
         await payment.send_payment_webhook(
             tg_username=json.loads(user_db.tg_data).get("preferred_username", "-- missing --"),
-            order_id=payment_db.order_id,
-            amount=payment_db.amount,
-            currency=payment_db.currency,
-            invoice_id=invoice_id,
+            fields={"order_id": order_id, "invoice_id": invoice_id, "userdb_id": user_db.id},
+            paid_value=f"{payment_db.amount} {payment_db.currency}",
             product_name=product.get('name'),
-            user_id=user_db.id,
             author_name="CryptoCloud",
-            avatar_url="https://app.cryptocloud.plus/img/icons/cc.svg"
+            avatar_url="https://cdn.discordapp.com/attachments/1500110526792073317/1500118140544221224/cc.png?ex=69f74563&is=69f5f3e3&hm=874b0713fb033c8c94cb5b8fba8856f44bd0d5d0cdf11892cd3a09c9dcb58636"
         )
 
         return end_response
@@ -486,144 +494,145 @@ async def handle_postback_cryptocloud(request: Request):
         return PlainTextResponse("Invalid token", status_code=400)
 
 
-@app.post('/payment/monobank')
-@limiter.limit("2/minute")
-async def monobank_payment(
-        request: Request,
-        req: PaymentRequest,
-        current_user: database.User = Depends(get_current_user)
-):
-    product = products.get(req.product_id)
+# @app.post('/payment/monobank')
+# @limiter.limit("2/minute")
+# async def monobank_payment(
+#         request: Request,
+#         req: PaymentRequest,
+#         current_user: database.User = Depends(get_current_user)
+# ):
+#     product = products.get(req.product_id)
+#
+#     if req.currency.lower() != "uah":
+#         raise HTTPException(status_code=400, detail="Invalid currency")
+#     if not product:
+#         raise HTTPException(status_code=400, detail="Invalid product")
+#
+#     price_uah = product.get("prices", {}).get("uah")
+#     if price_uah is None:
+#         raise HTTPException(status_code=400, detail="Для этого товара не указана цена в UAH")
+#
+#     try:
+#         link = (payment
+#                 .Monobank(
+#             user=str(current_user.tg_id),
+#             amount=int(price_uah),
+#             product=product.get("secure_name")
+#         )
+#                 .create_link())
+#
+#         if not link:
+#             raise HTTPException(status_code=404, detail="Payment url not found.")
+#
+#         print("[Monobank] {} - Created url for {} UAH  - {}".format(current_user.id, price_uah, product.get("name")))
+#
+#         return JSONResponse({"url": link})
+#
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
 
-    if req.currency.lower() != "uah":
-        raise HTTPException(status_code=400, detail="Invalid currency")
-    if not product:
-        raise HTTPException(status_code=400, detail="Invalid product")
 
-    price_uah = product.get("prices", {}).get("uah")
-    if price_uah is None:
-        raise HTTPException(status_code=400, detail="Для этого товара не указана цена в UAH")
+# def verify_mono_signature(x_sign_base64: str, body_bytes: bytes) -> bool:
+#     try:
+#         # 1. Декодируем подпись из Base64
+#         signature = base64.b64decode(x_sign_base64)
+#
+#         # 2. Загружаем публичный ключ Monobank
+#         public_key = serialization.load_pem_public_key(
+#             config.MONOBANK_TOKEN.encode('utf-8')
+#         )
+#
+#         # 3. Проверяем подпись (Monobank использует ECDSA с SHA256)
+#         public_key.verify(
+#             signature,
+#             body_bytes,
+#             ec.ECDSA(hashes.SHA256())
+#         )
+#         return True
+#     except Exception as e:
+#         print(f"[Monobank] Ошибка верификации подписи: {e}")
+#         return False
 
-    try:
-        link = (payment
-                .Monobank(
-            user=str(current_user.tg_id),
-            amount=int(price_uah),
-            product=product.get("secure_name")
-        )
-                .create_link())
-
-        if not link:
-            raise HTTPException(status_code=404, detail="Payment url not found.")
-
-        print("[Monobank] {} - Created url for {} UAH  - {}".format(current_user.id, price_uah, product.get("name")))
-
-        return JSONResponse({"url": link})
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-def verify_mono_signature(x_sign_base64: str, body_bytes: bytes) -> bool:
-    try:
-        # 1. Декодируем подпись из Base64
-        signature = base64.b64decode(x_sign_base64)
-
-        # 2. Загружаем публичный ключ Monobank
-        public_key = serialization.load_pem_public_key(
-            config.MONOBANK_TOKEN.encode('utf-8')
-        )
-
-        # 3. Проверяем подпись (Monobank использует ECDSA с SHA256)
-        public_key.verify(
-            signature,
-            body_bytes,
-            ec.ECDSA(hashes.SHA256())
-        )
-        return True
-    except Exception as e:
-        print(f"[Monobank] Ошибка верификации подписи: {e}")
-        return False
-
-@app.post('/payment/monobank/callback')
-async def handle_postback_monobank(request: Request):
-    raw = await request.body()
-    print(request.headers)
-    x_sign = request.headers.get("X-Sign")
-    print(x_sign)
-
-    if not x_sign or not verify_mono_signature(x_sign, raw):
-        return PlainTextResponse("Forbidden", status_code=403)
-
-    end_response = PlainTextResponse("OK", status_code=200)
-
-    try:
-        data = json.loads(raw)
-
-        if data.get("type") != "StatementItem":
-            return end_response
-
-        comment = data.get('data', {}).get("statementItem", {}).get("comment", None)
-        if not comment:
-            return end_response
-
-        operation_amount = int(data.get('data', {}).get("statementItem", {}).get("operationAmount", 0))
-        user, product = comment.split(" | ")
-
-        product_data = {p.get("secure_name"): p for p in products.get_list().values()}.get(product)
-
-        if not product_data:
-            print("Invalid product")
-            return end_response
-
-        if product_data.get("prices", {}).get("uah") != int(operation_amount * 0.01):
-            return end_response
-
-        print(
-            f"[Monobank] {user} paid {int(operation_amount * 0.01)} UAH for {product_data.get('name')} - successfully")
-
-        try:
-            user = int(user)
-        except:
-            print("[Monobank] Unavailable to give subscription: Invalid user '{}'".format(user))
-            return end_response
-
-        user_db = await database.get_user(tg_id=str(user))
-        if not user_db:
-            print("[Monobank] Unavailable to give subscription: User not exists '{}'".format(user))
-
-        if user_db.subscription_end_date and user_db.subscription_end_date > datetime.now(UTC):
-            new_end_date = user_db.subscription_end_date + timedelta(days=product_data.get("duration", 0))
-        else:
-            new_end_date = datetime.now(UTC) + timedelta(days=product_data.get("duration", 0))
-
-        await database.update_user(
-            user_id=user_db.id,
-            subscription_end_date=new_end_date
-        )
-
-        await database.create_monobank_payment(
-            user_id=user_db.id,
-            amount=operation_amount * 0.01,
-            product_id=product,  # Сюда запишется secure_name тарифа
-            comment=comment
-        )
-
-        await payment.send_payment_webhook(
-            tg_username=json.loads(user_db.tg_data).get("preferred_username", "-- missing --"),
-            order_id="-1",
-            amount=int(operation_amount * 0.01),
-            currency="UAH",
-            product_name=product_data.get('name'),
-            user_id=user_db.id or str(user),
-            author_name="Monobank",
-            avatar_url="https://send.monobank.ua/img/favicon/android/android-icon-144x144.png"
-        )
-
-        return end_response
-
-    except Exception as e:
-        print(f"Error processing Monobank callback: {str(e)}")
-        return end_response
+# @app.post('/payment/monobank/callback')
+# async def handle_postback_monobank(request: Request):
+#     raw = await request.body()
+#     print(request.headers)
+#     x_sign = request.headers.get("X-Sign")
+#     print(x_sign)
+#
+#     if not x_sign or not verify_mono_signature(x_sign, raw):
+#         return PlainTextResponse("Forbidden", status_code=403)
+#
+#     end_response = PlainTextResponse("OK", status_code=200)
+#
+#     try:
+#         data = json.loads(raw)
+#
+#         if data.get("type") != "StatementItem":
+#             return end_response
+#
+#         comment = data.get('data', {}).get("statementItem", {}).get("comment", None)
+#         if not comment:
+#             return end_response
+#
+#         operation_amount = int(data.get('data', {}).get("statementItem", {}).get("operationAmount", 0))
+#         user, product = comment.split(" | ")
+#
+#         product_data = {p.get("secure_name"): p for p in products.get_list().values()}.get(product)
+#
+#         if not product_data:
+#             print("Invalid product")
+#             return end_response
+#
+#         if product_data.get("prices", {}).get("uah") != int(operation_amount * 0.01):
+#             return end_response
+#
+#         print(
+#             f"[Monobank] {user} paid {int(operation_amount * 0.01)} UAH for {product_data.get('name')} - successfully")
+#
+#         try:
+#             user = int(user)
+#         except:
+#             print("[Monobank] Unavailable to give subscription: Invalid user '{}'".format(user))
+#             return end_response
+#
+#         user_db = await database.get_user(tg_id=str(user))
+#         if not user_db:
+#             print("[Monobank] Unavailable to give subscription: User not exists '{}'".format(user))
+#
+#         if user_db.subscription_end_date and user_db.subscription_end_date > datetime.now(UTC):
+#             new_end_date = user_db.subscription_end_date + timedelta(days=product_data.get("duration", 0))
+#         else:
+#             new_end_date = datetime.now(UTC) + timedelta(days=product_data.get("duration", 0))
+#
+#         await database.update_user(
+#             user_id=user_db.id,
+#             subscription_end_date=new_end_date
+#         )
+#
+#         await database.create_monobank_payment(
+#             user_id=user_db.id,
+#             amount=operation_amount * 0.01,
+#             product_id=product,  # Сюда запишется secure_name тарифа
+#             comment=comment
+#         )
+#
+#         await payment.send_payment_webhook(
+#             tg_username=json.loads(user_db.tg_data).get("preferred_username", "-- missing --"),
+#             order_id="-1",
+#             amount=int(operation_amount * 0.01),
+#             currency="UAH",
+#             product_name=product_data.get('name'),
+#             user_id=user_db.id or str(user),
+#             author_name="Monobank",
+#             avatar_url="https://send.monobank.ua/img/favicon/android/android-icon-144x144.png"
+#         )
+#
+#         return end_response
+#
+#     except Exception as e:
+#         print(f"Error processing Monobank callback: {str(e)}")
+#         return end_response
 
 
 
