@@ -686,7 +686,7 @@
           if (currentMethod === 'agent') {
             const planTitle = productsData[currentActivePlanId].title; // Берем название тарифа (например, "30 дней")
             const text = encodeURIComponent(`Хочу купить ${planTitle} скинченджера`);
-            window.open(`{TELEGRAM_AGENT_URL}?text=${text}`, '_blank');
+            window.open(`${TELEGRAM_AGENT_URL}?text=${text}`, '_blank');
             return; // Прерываем функцию, чтобы не отправлять запрос на сервер
           }
 

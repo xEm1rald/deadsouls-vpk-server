@@ -174,7 +174,7 @@ async def api_apply_gift(
     await payment.send_payment_webhook(
         tg_username=json.loads(current_user.tg_data).get("preferred_username", "-- missing --"),
         paid_value="?",
-        fields={"gift_code": body.code.strip(), "used_by": gift_code.usedby, "user_id": current_user.id},
+        fields={"gift_code": body.code.strip(), "used_by": gift_code.usedby, "userdb_id": current_user.id},
         product_name=f"Подписка на {gift_code.subtime} дней",
         author_name="Funpay (Gift-code)",
         avatar_url="https://cdn.discordapp.com/attachments/1500110526792073317/1500110555120406624/image_1.png?ex=69f73e53&is=69f5ecd3&hm=4ee976493e0e11c09a5f61034773ceb077e3b493d85133f7b4587e772a7b436b"
