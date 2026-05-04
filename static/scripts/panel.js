@@ -14,7 +14,7 @@ const LS_GLOBAL_COLLAPSED = "ds_global_collapsed_sections";
 /** @type {Record<string, unknown> | null} */
 let schema = null;
 /** @type {Record<string, { image_inventory?: string }>} */
-let customImages = {}; 
+let customImages = {};
 /** @type {Record<string, string>} */
 let selections = {};
 
@@ -28,85 +28,128 @@ let collapsedGlobalSections = {};
 
 const el = (id) => document.getElementById(id);
 
+// --- КЭШИРОВАНИЕ ДАННЫХ (JSON) ---
+const CACHE_NAME = 'deadsouls-schema-v1';
+const CACHE_TTL = 1000 * 60 * 60 * 6; // 6 часов
+
+async function fetchCachedJson(url) {
+  const cacheKey = `ds_cache_time_${url}`;
+  const now = Date.now();
+  const cachedTime = localStorage.getItem(cacheKey);
+
+  try {
+    if ('caches' in window) {
+      const cache = await caches.open(CACHE_NAME);
+      if (cachedTime && (now - parseInt(cachedTime)) < CACHE_TTL) {
+        const cachedResponse = await cache.match(url);
+        if (cachedResponse) return await cachedResponse.json();
+      }
+      const response = await fetch(url);
+      if (response.ok) {
+        cache.put(url, response.clone());
+        localStorage.setItem(cacheKey, now.toString());
+        return await response.json();
+      }
+    }
+  } catch (e) {
+    console.warn("[Cache Error] Ошибка кэширования JSON:", e);
+  }
+  const fallbackResponse = await fetch(url);
+  if (fallbackResponse.ok) return await fallbackResponse.json();
+  return null;
+}
+
+// --- КЭШИРОВАНИЕ КАРТИНОК ---
+const IMAGE_CACHE_NAME = 'deadsouls-images-v1';
+const blobCache = new Map();
+
+async function applyCachedImage(imgElement, url) {
+  if (!url) {
+    imgElement.hidden = true;
+    imgElement.removeAttribute("src");
+    return;
+  }
+
+  imgElement.dataset.loadingUrl = url;
+
+  if (blobCache.has(url)) {
+    if (imgElement.src !== blobCache.get(url)) {
+      imgElement.src = blobCache.get(url);
+      imgElement.hidden = false;
+    }
+    return;
+  }
+
+  try {
+    if ('caches' in window) {
+      const cache = await caches.open(IMAGE_CACHE_NAME);
+      const cachedResponse = await cache.match(url);
+
+      if (cachedResponse) {
+        const blob = await cachedResponse.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        blobCache.set(url, objectUrl);
+
+        if (imgElement.dataset.loadingUrl === url && imgElement.src !== objectUrl) {
+          imgElement.src = objectUrl;
+          imgElement.hidden = false;
+        }
+        return;
+      }
+
+      if (imgElement.dataset.loadingUrl === url && imgElement.src !== url) {
+        imgElement.src = url;
+        imgElement.hidden = false;
+      }
+
+      fetch(url, { mode: 'cors' }).then(async (res) => {
+        if (res.ok) {
+          cache.put(url, res.clone());
+          const blob = await res.blob();
+          blobCache.set(url, URL.createObjectURL(blob));
+        }
+      }).catch(() => {});
+
+      return;
+    }
+  } catch (e) {}
+
+  if (imgElement.dataset.loadingUrl === url && imgElement.src !== url) {
+    imgElement.src = url;
+    imgElement.hidden = false;
+  }
+}
+
 const RARITY_COLORS = {
-  "common": "#b0c3d9",
-  "uncommon": "#5e98d9",
-  "rare": "#4b69ff",
-  "mythical": "#8847ff",
-  "legendary": "#d32ce6",
-  "ancient": "#eb4b4b",
-  "immortal": "#e4ae39",
-  "arcana": "#ade55c",
-  "strange": "#CF6A32",
-  "seasonal": "#FFF34F"
+  "common": "#b0c3d9", "uncommon": "#5e98d9", "rare": "#4b69ff", "mythical": "#8847ff",
+  "legendary": "#d32ce6", "ancient": "#eb4b4b", "immortal": "#e4ae39", "arcana": "#ade55c",
+  "strange": "#CF6A32", "seasonal": "#FFF34F"
 };
 
 const DEFAULT_VALUES = {
-  ancients: "Default Ancient",
-  announcers: "Default Announcer",
-  couriers: "Default Courier",
-  current_hero: "Abaddon",
-  cursors: "Default Cursor Pack",
-  dire_creep: "Default Dire Creeps",
-  dire_towers: "Default Dire Towers",
-  emblems: "Default Emblem",
-  huds: "Default Hud Skin",
-  kill_banners: "Default Kill Banners",
-  killstreaks: "Default KillStreak",
-  loading_screens: "Default Loading Screen",
-  megakills: "Default Mega-Kill Announcer",
-  music_packs: "Default Music",
-  rad_creep: "Default Radiant Creeps",
-  rad_towers: "Default Radiant Towers",
-  river_vials: "River Vial: Default",
-  roshans: "Default Roshan",
-  shaders: "Default Shaders",
-  terrains: "Default Terrain",
-  tormentors: "Default Tormentor",
-  versus_screens: "Default Versus Screen",
-  wards: "Default Ward",
-  weathers: "Default Weather"
+  ancients: "Default Ancient", announcers: "Default Announcer", couriers: "Default Courier",
+  current_hero: "Abaddon", cursors: "Default Cursor Pack", dire_creep: "Default Dire Creeps",
+  dire_towers: "Default Dire Towers", emblems: "Default Emblem", huds: "Default Hud Skin",
+  kill_banners: "Default Kill Banners", killstreaks: "Default KillStreak", loading_screens: "Default Loading Screen",
+  megakills: "Default Mega-Kill Announcer", music_packs: "Default Music", rad_creep: "Default Radiant Creeps",
+  rad_towers: "Default Radiant Towers", river_vials: "River Vial: Default", roshans: "Default Roshan",
+  shaders: "Default Shaders", terrains: "Default Terrain", tormentors: "Default Tormentor",
+  versus_screens: "Default Versus Screen", wards: "Default Ward", weathers: "Default Weather"
 };
 
 const GLOBAL_CATEGORY_TITLE = {
-  ancients: "Древние",
-  announcers: "Аннонсер",
-  couriers: "Курьер",
-  cursors: "Курсоры",
-  dire_creep: "Крипы (Dire)",
-  dire_towers: "Башни (Dire)",
-  emblems: "Эмблемы",
-  huds: "Интерфейс (HUD)",
-  kill_banners: "Сообщения о серии убийств",
-  killstreaks: "Киллстрики",
-  loading_screens: "Загрузочные экраны",
-  megakills: "Мега-киллы",
-  music_packs: "Музыка",
-  rad_creep: "Крипы (Radiant)",
-  rad_towers: "Башни (Radiant)",
-  river_vials: "Виалы реки",
-  roshans: "Рошан",
-  shaders: "Шейдеры экрана",
-  terrains: "Ландшафты",
-  tormentors: "Торменторы",
-  versus_screens: "Экраны Versus",
-  wards: "Варды",
-  weathers: "Погода",
+  ancients: "Древние", announcers: "Аннонсер", couriers: "Курьер", cursors: "Курсоры",
+  dire_creep: "Крипы (Dire)", dire_towers: "Башни (Dire)", emblems: "Эмблемы", huds: "Интерфейс (HUD)",
+  kill_banners: "Сообщения о серии убийств", killstreaks: "Киллстрики", loading_screens: "Загрузочные экраны",
+  megakills: "Мега-киллы", music_packs: "Музыка", rad_creep: "Крипы (Radiant)", rad_towers: "Башни (Radiant)",
+  river_vials: "Виалы реки", roshans: "Рошан", shaders: "Шейдеры экрана", terrains: "Ландшафты",
+  tormentors: "Торменторы", versus_screens: "Экраны Versus", wards: "Варды", weathers: "Погода",
 };
 
 const GLOBAL_SECTION_LAYOUT = [
-  {
-    title: "Звук",
-    items: ["music_packs", "announcers", "megakills"],
-  },
-  {
-    title: "Интерфейс",
-    items: ["loading_screens", "versus_screens", "huds", "killstreaks", "cursors",  "kill_banners"],
-  },
-  {
-    title: "Окружение",
-    items: ["couriers", "wards", "terrains", "dire_creep", "rad_creep", "dire_towers", "rad_towers", "ancients", "roshans", "tormentors", "shaders", "weathers", "emblems", "river_vials"],
-  }
+  { title: "Звук", items: ["music_packs", "announcers", "megakills"] },
+  { title: "Интерфейс", items: ["loading_screens", "versus_screens", "huds", "killstreaks", "cursors",  "kill_banners"] },
+  { title: "Окружение", items: ["couriers", "wards", "terrains", "dire_creep", "rad_creep", "dire_towers", "rad_towers", "ancients", "roshans", "tormentors", "shaders", "weathers", "emblems", "river_vials"] }
 ];
 
 function getItemColor(item) {
@@ -116,8 +159,7 @@ function getItemColor(item) {
 
 function getCategoriesRecord() {
   if (!schema || typeof schema !== "object" || !("categories" in schema)) return null;
-  const c = schema.categories;
-  return c && typeof c === "object" ? c : null;
+  return schema.categories;
 }
 
 function getGlobalCategoryIds() {
@@ -127,9 +169,7 @@ function getGlobalCategoryIds() {
 }
 
 function globalCategoryTitle(catId) {
-  const titled = GLOBAL_CATEGORY_TITLE[catId];
-  if (typeof titled === "string") return titled;
-  return catId.split("_").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  return GLOBAL_CATEGORY_TITLE[catId] || catId.split("_").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 }
 
 function getConfiguredGlobalSections() {
@@ -151,8 +191,7 @@ function getConfiguredGlobalSections() {
 function loadGlobalSectionState() {
   try {
     const raw = localStorage.getItem(LS_GLOBAL_COLLAPSED);
-    const parsed = raw ? JSON.parse(raw) : {};
-    collapsedGlobalSections = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    collapsedGlobalSections = raw ? JSON.parse(raw) : {};
   } catch {
     collapsedGlobalSections = {};
   }
@@ -186,21 +225,17 @@ function buildGlobalTile(catId) {
   thumb.className = "tile-thumb";
   thumb.id = `thumb-${catId}`;
   thumb.hidden = true;
-  thumb.loading = "lazy";
-  thumb.decoding = "async";
 
   btn.append(lab, val, thumb);
   return btn;
 }
 
-// --- УНИВЕРСАЛЬНАЯ ЛОГИКА ГАЛЕРЕИ ИНВЕНТАРЯ ---
 function buildGalleryData(sourceData) {
   const globals = [];
   const heroesData = {};
 
   if (!schema || typeof schema !== "object") return { globals, heroesData };
 
-  // Глобальные
   const globalCats = getGlobalCategoryIds();
   for (const cat of globalCats) {
     const selId = sourceData[cat];
@@ -219,29 +254,42 @@ function buildGalleryData(sourceData) {
     }
   }
 
-  // Герои
-  if (schema.skin_changer && typeof schema.skin_changer === "object") {
+  if (schema.skin_changer) {
     for (const hero of Object.keys(schema.skin_changer)) {
       const heroData = schema.skin_changer[hero];
-      if (!heroData || typeof heroData !== "object") continue;
+      const currentPersona = String(sourceData[`${hero}_active_persona`] || "0");
 
       for (const slot of Object.keys(heroData)) {
-        const itemKey = `${hero}_${slot}`;
-        const effKey = `${hero}_${slot}_effect`;
+        if (slot === "persona_selector") continue;
 
-        const selectedItemId = sourceData[itemKey];
-        const selectedEffId = sourceData[effKey];
+        const isPersonaMatch = slot.match(/_persona_(\d+)$/i);
+        if (currentPersona === "0") {
+          if (isPersonaMatch) continue;
+        } else {
+          if (!isPersonaMatch || isPersonaMatch[1] !== currentPersona) continue;
+        }
+
+        const selectedItemId = sourceData[`${hero}_${slot}`];
+        const selectedEffId = sourceData[`${hero}_${slot}_effect`];
 
         if (selectedItemId || selectedEffId) {
           if (!heroesData[hero]) heroesData[hero] = [];
+          const visualSlotName = slot.replace(/_persona_\d+$/i, "").replace(/_/g, " ");
 
           if (selectedItemId) {
             const items = asItemList(heroData[slot]);
             const item = items.find((i) => i.id === selectedItemId);
+
+            let imgUrl = getItemImageUrl(item);
+            if (!imgUrl) {
+               const baseUrl = CDN_URL ? CDN_URL.replace(/\/+$/, "") : "https://cdn.deadsouls.cc";
+               imgUrl = `${baseUrl}/econ/default_no_item.webp`;
+            }
+
             heroesData[hero].push({
-              slotName: slot.replace(/_/g, " "),
+              slotName: visualSlotName,
               itemName: item ? item.name : "Неизвестный предмет",
-              url: getItemImageUrl(item),
+              url: imgUrl,
               isEffect: false,
               color: getItemColor(item)
             });
@@ -251,7 +299,7 @@ function buildGalleryData(sourceData) {
             const effList = getEffectsList();
             const effItem = effList.find((e) => e.id === selectedEffId);
             heroesData[hero].push({
-              slotName: slot.replace(/_/g, " "),
+              slotName: visualSlotName,
               itemName: effItem ? `✨ ${effItem.name}` : "✨ Неизвестный эффект",
               url: "",
               isEffect: true
@@ -261,7 +309,6 @@ function buildGalleryData(sourceData) {
       }
     }
   }
-
   return { globals, heroesData };
 }
 
@@ -296,7 +343,6 @@ function renderGallery(containerId, sourceData, emptyMessage) {
     for (const item of itemsData) {
       const card = document.createElement("div");
       card.className = "summary-item-card";
-      // БЕЗ атрибута title — ничего не вылезет при наведении
 
       const imgWrap = document.createElement("div");
       imgWrap.className = "summary-img-wrap";
@@ -304,16 +350,22 @@ function renderGallery(containerId, sourceData, emptyMessage) {
 
       if (item.color) {
         imgWrap.style.borderColor = item.color;
-        // Добавим легкое свечение в цвет предмета
         imgWrap.style.boxShadow = `0 0 12px ${item.color}33`;
       }
 
       if (item.url) {
         const img = document.createElement("img");
         img.className = "summary-item-img";
-        img.src = item.url;
-        img.loading = "lazy";
-        img.alt = item.itemName; // Альт оставим для валидности, он обычно не всплывает как title
+        applyCachedImage(img, item.url);
+        img.alt = item.itemName;
+
+        img.onerror = () => {
+          imgWrap.innerHTML = "";
+          const ph = document.createElement("div");
+          ph.className = "summary-item-placeholder";
+          ph.textContent = "?";
+          imgWrap.appendChild(ph);
+        };
         imgWrap.appendChild(img);
       } else {
         const ph = document.createElement("div");
@@ -329,7 +381,6 @@ function renderGallery(containerId, sourceData, emptyMessage) {
       card.append(imgWrap, txt);
       flex.appendChild(card);
     }
-
     row.appendChild(flex);
     return row;
   }
@@ -339,8 +390,7 @@ function renderGallery(containerId, sourceData, emptyMessage) {
 
   const heroesKeys = Object.keys(heroesData).sort();
   for (const h of heroesKeys) {
-    const hTitle = h.replace(/_/g, " ");
-    const hRow = buildRow(hTitle, heroesData[h]);
+    const hRow = buildRow(h.replace(/_/g, " "), heroesData[h]);
     if (hRow) frag.appendChild(hRow);
   }
 
@@ -348,20 +398,10 @@ function renderGallery(containerId, sourceData, emptyMessage) {
 }
 
 function renderPresetPreview(presetName) {
-  let presetData;
-  let isCurrent = false;
-
-  if (!presetName || !presets[presetName]) {
-    presetData = selections;
-    isCurrent = true;
-  } else {
-    presetData = presets[presetName];
-  }
-
-  const msg = isCurrent 
-    ? "В текущем выборе пока нет нестандартных предметов." 
+  let presetData = (!presetName || !presets[presetName]) ? selections : presets[presetName];
+  const msg = (!presetName || !presets[presetName])
+    ? "В текущем выборе пока нет нестандартных предметов."
     : "В этом пресете нет нестандартных предметов.";
-
   renderGallery("preset-preview-area", presetData, msg);
 }
 
@@ -385,22 +425,18 @@ function renderGlobalGrid() {
     heading.type = "button";
     heading.className = "global-subsection-title";
     heading.dataset.toggleGlobalSection = sectionKey;
-    heading.setAttribute("aria-expanded", isCollapsed ? "false" : "true");
 
     const headingText = document.createElement("span");
     headingText.textContent = section.title;
     const chevron = document.createElement("span");
     chevron.className = "global-subsection-chevron";
     chevron.textContent = "▸";
-    chevron.setAttribute("aria-hidden", "true");
     heading.append(headingText, chevron);
 
     const grid = document.createElement("div");
     grid.className = "global-grid-inner";
     if (isCollapsed) grid.hidden = true;
-    for (const catId of section.items) {
-      grid.appendChild(buildGlobalTile(catId));
-    }
+    for (const catId of section.items) grid.appendChild(buildGlobalTile(catId));
 
     block.append(heading, grid);
     frag.appendChild(block);
@@ -411,51 +447,32 @@ function renderGlobalGrid() {
 function loadSelections() {
   try {
     const raw = localStorage.getItem(LS_SELECTIONS);
-    const parsed = raw ? JSON.parse(raw) : {};
-    selections = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
-  } catch {
-    selections = {};
-  }
-
-  if (!selections.current_hero) {
-    selections.current_hero = DEFAULT_VALUES.current_hero;
-  }
+    selections = raw ? JSON.parse(raw) : {};
+  } catch { selections = {}; }
+  if (!selections.kinetics) selections.kinetics = {};
+  if (!selections.current_hero) selections.current_hero = DEFAULT_VALUES.current_hero;
 }
 
 function saveSelectionsLocal() {
   localStorage.setItem(LS_SELECTIONS, JSON.stringify(selections));
 }
 
-function trimSlash(s) {
-  return s.replace(/\/+$/, "");
-}
-
-function joinUrl(base, path) {
-  const b = trimSlash(base);
-  const p = path.startsWith("/") ? path : `/${path}`;
-  return `${b}${p}`;
-}
-
 function getAgentBaseUrl() {
   const host = localStorage.getItem(LS_HOST)?.trim() || "127.0.0.1";
-  const portRaw = localStorage.getItem(LS_PORT)?.trim() || "3847";
-  const port = parseInt(portRaw, 10);
+  const port = parseInt(localStorage.getItem(LS_PORT)?.trim() || "3847", 10);
   if (!Number.isFinite(port) || port < 1 || port > 65535) return "";
   return `http://${host}:${port}`;
 }
 
 let saveTimeoutId = null;
-
 function setSaveStatus(text, kind) {
   const node = el("save-status");
   if (!node) return;
   node.textContent = text;
   node.classList.remove("ok", "err");
-  if (kind === "ok") node.classList.add("ok");
-  if (kind === "err") node.classList.add("err");
+  if (kind) node.classList.add(kind);
 
   if (saveTimeoutId) clearTimeout(saveTimeoutId);
-
   if (text) {
     saveTimeoutId = setTimeout(() => {
       node.textContent = "";
@@ -468,69 +485,37 @@ function setApplyVpkState(isEnabled) {
   const btn = el("btn-apply-all");
   if (!btn) return;
   btn.disabled = !isEnabled;
-  if (isEnabled) {
-    btn.style.opacity = "1";
-    btn.style.cursor = "pointer";
-    btn.title = "Установить созданный VPK";
-  } else {
-    btn.style.opacity = "0.5";
-    btn.style.cursor = "not-allowed";
-    btn.title = "Сначала создайте VPK (кнопка сохранения)";
-  }
+  btn.style.opacity = isEnabled ? "1" : "0.5";
+  btn.style.cursor = isEnabled ? "pointer" : "not-allowed";
 }
-
-let isBuildingVpk = false;
 
 function setSaveButtonState(isBuilding) {
   const btn = el("btn-save-all");
   if (!btn) return;
   btn.disabled = isBuilding;
-
-  if (isBuilding) {
-    btn.style.opacity = "0.5";
-    btn.style.cursor = "wait"; 
-    btn.textContent = "Сборка VPK...";
-  } else {
-    btn.style.opacity = "1";
-    btn.style.cursor = "pointer";
-    btn.textContent = "Создать VPK"; 
-  }
+  btn.style.opacity = isBuilding ? "0.5" : "1";
+  btn.style.cursor = isBuilding ? "wait" : "pointer";
+  btn.textContent = isBuilding ? "Сборка VPK..." : "Создать VPK";
 }
 
-let presetTimeoutId = null;
+function setPresetStatus(text, kind) { setSaveStatus(text, kind); }
 
-function setPresetStatus(text, kind) {
-    setSaveStatus(text, kind);
-}
-
-function cloneSelections(source) {
-  return JSON.parse(JSON.stringify(source));
-}
-
-function sanitizedPresetName(raw) {
-  const name = raw.trim().replace(/\s+/g, " ");
-  return name.slice(0, 48);
-}
+function cloneSelections(source) { return JSON.parse(JSON.stringify(source)); }
 
 function loadPresets() {
   try {
     const raw = localStorage.getItem(LS_PRESETS);
-    const parsed = raw ? JSON.parse(raw) : {};
-    presets = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
-  } catch {
-    presets = {};
-  }
+    presets = raw ? JSON.parse(raw) : {};
+  } catch { presets = {}; }
 }
 
-function savePresetsLocal() {
-  localStorage.setItem(LS_PRESETS, JSON.stringify(presets));
-}
+function savePresetsLocal() { localStorage.setItem(LS_PRESETS, JSON.stringify(presets)); }
 
 function renderPresetSelect() {
   const select = el("preset-select");
-  if (!(select instanceof HTMLSelectElement)) return;
+  if (!select) return;
   const active = localStorage.getItem(LS_ACTIVE_PRESET) || "";
-  const names = Object.keys(presets).sort((a, b) => a.localeCompare(b, "ru"));
+  const names = Object.keys(presets).sort();
   select.innerHTML = "";
 
   const placeholder = document.createElement("option");
@@ -560,41 +545,29 @@ function resetSelectionsToDefault() {
 function clearActivePreset() {
   localStorage.removeItem(LS_ACTIVE_PRESET);
   const select = el("preset-select");
-  if (select instanceof HTMLSelectElement) {
+  if (select) {
     select.value = "";
-    if (typeof renderPresetPreview === "function") {
-      renderPresetPreview("");
-    }
+    renderPresetPreview("");
   }
 }
 
 function savePresetFromInput() {
   const input = el("preset-name");
-  if (!(input instanceof HTMLInputElement)) return;
-  const name = sanitizedPresetName(input.value);
-  if (!name) {
-    setPresetStatus("Введите имя пресета.", "err");
-    return;
-  }
+  const name = input.value.trim().replace(/\s+/g, " ").slice(0, 48);
+  if (!name) return setPresetStatus("Введите имя пресета.", "err");
 
   presets[name] = cloneSelections(selections);
   savePresetsLocal();
   localStorage.setItem(LS_ACTIVE_PRESET, name);
   renderPresetSelect();
-  const select = el("preset-select");
-  if (select instanceof HTMLSelectElement) select.value = name;
   input.value = "";
   setPresetStatus(`Пресет "${name}" сохранен.`, "ok");
 }
 
 function loadSelectedPreset() {
   const select = el("preset-select");
-  if (!(select instanceof HTMLSelectElement)) return;
-  const name = select.value;
-  if (!name || !presets[name]) {
-    setPresetStatus("Выберите сохраненный пресет.", "err");
-    return;
-  }
+  const name = select?.value;
+  if (!name || !presets[name]) return setPresetStatus("Выберите сохраненный пресет.", "err");
 
   selections = cloneSelections(presets[name]);
   if (!selections.current_hero) selections.current_hero = DEFAULT_VALUES.current_hero;
@@ -607,12 +580,8 @@ function loadSelectedPreset() {
 
 function deleteSelectedPreset() {
   const select = el("preset-select");
-  if (!(select instanceof HTMLSelectElement)) return;
-  const name = select.value;
-  if (!name || !presets[name]) {
-    setPresetStatus("Нечего удалять: пресет не выбран.", "err");
-    return;
-  }
+  const name = select?.value;
+  if (!name || !presets[name]) return setPresetStatus("Нечего удалять.", "err");
 
   delete presets[name];
   savePresetsLocal();
@@ -621,34 +590,106 @@ function deleteSelectedPreset() {
   setPresetStatus(`Пресет "${name}" удален.`, "ok");
 }
 
-function shortServerNote(data) {
-  if (!data) return "Конфиг принят.";
-  if (typeof data === "string") return data.slice(0, 72);
-  if (typeof data === "object") {
-    const msg = data.message || data.status || data.result;
-    if (typeof msg === "string" && msg.trim()) return msg.slice(0, 72);
+// ВОЗВРАЩЕНО ИЗ ОРИГИНАЛА: Экспорт пресета
+function exportSelectedPreset() {
+  const select = el("preset-select");
+  if (!select) return;
+  const name = select.value;
+
+  if (!name || !presets[name]) {
+    setSaveStatus("Сначала выберите пресет для скачивания.", "err");
+    return;
   }
-  return "Конфиг принят.";
+
+  const dataStr = JSON.stringify(presets[name], null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+
+  const safeName = name.replace(/[^a-zа-я0-9_\-\s]/gi, '').trim() || "export";
+  link.download = `deadsouls.${safeName}.preset`;
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+
+  setSaveStatus(`Пресет "${name}" скачан.`, "ok");
 }
 
-function prettySaveMessage(data, ok) {
-  const body = shortServerNote(data);
-  return ok ? `Готово - ${body}` : body;
+// ВОЗВРАЩЕНО ИЗ ОРИГИНАЛА: Импорт пресетов через drag & drop
+function setupDragAndDrop() {
+  document.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    if (e.dataTransfer.types.includes("Files")) {
+      document.body.classList.add('drag-over-active');
+    }
+  });
+
+  document.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    if (!e.relatedTarget || e.relatedTarget.nodeName === "HTML") {
+       document.body.classList.remove('drag-over-active');
+    }
+  });
+
+  document.addEventListener('drop', (e) => {
+    e.preventDefault();
+    document.body.classList.remove('drag-over-active');
+
+    if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) return;
+    const file = e.dataTransfer.files[0];
+
+    if (!file.name.endsWith('.preset')) {
+      setSaveStatus("Неверный формат. Используйте файлы .preset", "err");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target.result);
+        let presetName = file.name.replace(/^deadsouls\./i, '').replace(/\.preset$/i, '');
+        if (!presetName) presetName = "Imported";
+
+        presets[presetName] = data;
+        savePresetsLocal();
+        renderPresetSelect();
+
+        const select = el("preset-select");
+        if (select) {
+          select.value = presetName;
+          localStorage.setItem(LS_ACTIVE_PRESET, presetName);
+          renderPresetPreview(presetName);
+        }
+
+        setSaveStatus(`Пресет "${presetName}" успешно загружен!`, "ok");
+
+        const presetsSection = el("presets-section");
+        if (presetsSection && presetsSection.hidden) {
+           presetsSection.hidden = false;
+        }
+      } catch (err) {
+        setSaveStatus("Ошибка файла: код пресета поврежден.", "err");
+      }
+    };
+    reader.readAsText(file);
+  });
 }
 
 function setHeroListOpen(open) {
   const list = el("hero-drop-list");
-  const btn = el("btn-toggle-hero");
-  if (!list || !btn) return;
-  list.hidden = !open;
-  btn.setAttribute("aria-expanded", open ? "true" : "false");
+  if (list) list.hidden = !open;
 }
 
 function setPickerOpen(open) {
   const modal = el("picker-modal");
-  if (!modal) return;
-  modal.hidden = !open;
-  if (open) el("item-search")?.focus();
+  if (modal) {
+    modal.hidden = !open;
+    if (open) el("item-search")?.focus();
+  }
 }
 
 function closePicker() {
@@ -656,87 +697,43 @@ function closePicker() {
   setPickerOpen(false);
 }
 
-function asItemList(cat) {
-  if (!Array.isArray(cat)) return [];
-  return cat.filter(
-    (i) =>
-      i &&
-      typeof i === "object" &&
-      "id" in i &&
-      "name" in i &&
-      typeof i.id === "string" &&
-      typeof i.name === "string"
-  );
-}
+function asItemList(cat) { return Array.isArray(cat) ? cat : []; }
 
 function getItemImageUrl(item) {
   if (!item) return "";
   let path = item.image_inventory;
-
   const override = customImages[item.name] || customImages[item.id];
-  if (override && override.image_inventory) {
-    path = override.image_inventory;
-  }
-
+  if (override?.image_inventory) path = override.image_inventory;
   if (!path) return "";
   const base = CDN_URL.replace(/\/+$/, "");
   return `${base}/${encodeURI(path)}.webp`;
-}
-
-function labelForGlobal(catId) {
-  const fallback = DEFAULT_VALUES[catId] || "По умолчанию";
-
-  if (!schema || typeof schema !== "object" || !("categories" in schema))
-    return fallback;
-  const cats = schema.categories;
-  if (!cats || typeof cats !== "object") return fallback;
-  const id = selections[catId];
-  if (!id) return fallback;
-  const list = asItemList(cats[catId]);
-  const item = list.find((i) => i.id === id);
-
-  return item?.name ?? fallback;
 }
 
 function updateGlobalTiles() {
   for (const cat of getGlobalCategoryIds()) {
     const node = el(`val-${cat}`);
     const thumb = el(`thumb-${cat}`);
+    if (!schema || typeof schema !== "object" || !("categories" in schema)) continue;
 
-    if (!schema || typeof schema !== "object" || !("categories" in schema)) {
-      if (node) node.textContent = DEFAULT_VALUES[cat] || "По умолчанию";
-      if (thumb) { thumb.hidden = true; thumb.removeAttribute("src"); }
-      continue;
-    }
-
-    const cats = schema.categories;
-    const list = asItemList(cats[cat]);
+    const list = asItemList(schema.categories[cat]);
     const selId = selections[cat];
-    let item = null;
-
-    if (selId) {
-      item = list.find((i) => i.id === selId);
-    } else {
-      const defaultName = DEFAULT_VALUES[cat];
-      if (defaultName) item = list.find((i) => i.name === defaultName);
-    }
+    let item = selId ? list.find((i) => i.id === selId) : list.find((i) => i.name === DEFAULT_VALUES[cat]);
 
     if (node) {
       node.textContent = item ? item.name : (DEFAULT_VALUES[cat] || "По умолчанию");
-      node.style.color = getItemColor(item); // Применяем цвет редкости
+      node.style.color = getItemColor(item);
     }
 
-    if (!(thumb instanceof HTMLImageElement)) continue;
-    const url = getItemImageUrl(item);
-    if (!url) {
-      thumb.hidden = true;
-      thumb.removeAttribute("src");
-      continue;
+    if (thumb) {
+      const url = getItemImageUrl(item);
+      if (url) {
+        applyCachedImage(thumb, url);
+        thumb.alt = item?.name ?? "";
+      } else {
+        thumb.hidden = true;
+        thumb.removeAttribute("src");
+      }
     }
-
-    thumb.src = url;
-    thumb.alt = item?.name ?? "";
-    thumb.hidden = false;
   }
 }
 
@@ -744,136 +741,271 @@ function updateHeroHeader() {
   const nameEl = el("current-hero-name");
   const preview = el("hero-preview-video");
   const heroId = selections.current_hero;
-  if (!nameEl) return;
-
-  const syncVideo = (video, src) => {
-    if (!(video instanceof HTMLVideoElement)) return;
-    if (!src) {
-      video.removeAttribute("src");
-      video.load();
-      return;
-    }
-    if (video.src !== src) {
-      video.src = src;
-      video.load();
-    }
-  };
 
   if (!heroId) {
-    nameEl.textContent = "Выберите героя…";
-    syncVideo(preview, "");
+    if (nameEl) nameEl.textContent = "Выберите героя…";
+    if (preview) { preview.removeAttribute("src"); preview.load(); }
     return;
   }
-  const heroName = heroId.replace(/_/g, " ");
-  nameEl.textContent = heroName;
 
-  const normalized = heroId.toLowerCase().replace(/\s+/g, "_");
-  const heroSlug = normalized.replace(/[^a-z0-9_]/g, "");
-  const src = `${VALVE_HERO_RENDERS_CDN_URL}/${heroSlug}.webm`;
-  syncVideo(preview, src);
+  if (nameEl) nameEl.textContent = heroId.replace(/_/g, " ");
+  if (preview) {
+    const src = `${VALVE_HERO_RENDERS_CDN_URL}/${heroId.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "")}.webm`;
+    if (preview.src !== src) { preview.src = src; preview.load(); }
+  }
 }
 
 function getHeroSlots(heroId) {
-  if (!schema || typeof schema !== "object" || !("skin_changer" in schema)) return null;
-  const sc = schema.skin_changer;
-  if (!sc || typeof sc !== "object") return null;
-  const hero = sc[heroId];
-  if (!hero || typeof hero !== "object") return null;
-  return hero;
+  return schema?.skin_changer?.[heroId] || null;
 }
 
 function renderHeroSlots(heroId) {
   const area = el("hero-slots-area");
   if (!area) return;
   const heroData = getHeroSlots(heroId);
-  if (!heroData) {
-    area.hidden = true;
-    area.innerHTML = "";
-    return;
-  }
+  if (!heroData) { area.hidden = true; return; }
   area.hidden = false;
-  area.innerHTML = "";
-  const frag = document.createDocumentFragment();
+
+  const getPersonaIconUrl = (heroName, personaId) => {
+    let name = heroName.toLowerCase().replace(/ /g, "_").replace(/[^a-z0-9_]/g, "");
+    const aliases = {
+      "zeus": "zuus", "nature's_prophet": "furion", "natures_prophet": "furion",
+      "anti_mage": "antimage", "shadow_fiend": "nevermore", "clockwerk": "rattletrap",
+      "timbersaw": "shredder", "treant_protector": "treant", "doom": "doom_bringer",
+      "lifestealer": "life_stealer", "magnus": "magnataur", "outworld_destroyer": "obsidian_destroyer",
+      "outworld_devourer": "obsidian_destroyer", "wraith_king": "skeleton_king",
+      "underlord": "abyssal_underlord", "vengeful_spirit": "vengefulspirit",
+      "windranger": "windrunner", "centaur_warrunner": "centaur", "necrophos": "necrolyte"
+    };
+    if (aliases[name]) name = aliases[name];
+    const baseUrl = CDN_URL ? CDN_URL.replace(/\/+$/, "") : "https://cdn.deadsouls.cc";
+    return personaId === "0" ? `${baseUrl}/econ/icons/npc_dota_hero_${name}_png.png` : `${baseUrl}/econ/icons/npc_dota_hero_${name}_persona${personaId}_png.png`;
+  };
+
+  const availablePersonas = new Set();
+  let hasBaseSlots = false;
 
   for (const slot of Object.keys(heroData)) {
-    const list = asItemList(heroData[slot]);
-    const selId = selections[`${heroId}_${slot}`];
-    let item = null;
+    if (slot === "persona_selector") continue;
+    const match = slot.match(/_persona_(\d+)$/i);
+    if (match) availablePersonas.add(match[1]);
+    else hasBaseSlots = true;
+  }
 
-    if (selId) {
-      item = list.find((i) => i.id === selId);
-    } else {
-      item = list.find((i) => i.name.toLowerCase().includes("default"));
+  let currentPersona = String(selections[`${heroId}_active_persona`] || "0");
+  if (currentPersona === "0" && !hasBaseSlots && availablePersonas.size > 0) {
+    currentPersona = Array.from(availablePersonas)[0];
+  }
+
+  if (area.dataset.hero !== heroId || area.dataset.persona !== currentPersona || area.children.length === 0) {
+    area.innerHTML = "";
+    area.dataset.hero = heroId;
+    area.dataset.persona = currentPersona;
+    const frag = document.createDocumentFragment();
+
+    if (availablePersonas.size > 0) {
+      const switchWrapper = document.createElement("div");
+      switchWrapper.className = "persona-switch-wrapper card";
+      switchWrapper.style.gridColumn = "1 / -1";
+      switchWrapper.style.display = "flex";
+      switchWrapper.style.width = "100%";
+      switchWrapper.style.marginBottom = "8px";
+      switchWrapper.style.padding = "6px";
+      switchWrapper.style.gap = "6px";
+
+      const createPersonaBtn = (id, text) => {
+        const isActive = currentPersona === id;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.style.flex = "1";
+        btn.style.display = "flex";
+        btn.style.alignItems = "center";
+        btn.style.justifyContent = "center";
+        btn.style.gap = "8px";
+        btn.style.borderRadius = "6px";
+        btn.style.padding = "8px 16px";
+        btn.style.fontWeight = "600";
+        btn.style.fontSize = "0.95rem";
+        btn.style.transition = "all 0.2s ease";
+        btn.style.margin = "0";
+        btn.style.border = "none";
+        btn.style.cursor = "pointer";
+
+        const icon = document.createElement("img");
+        applyCachedImage(icon, getPersonaIconUrl(heroId, id));
+        icon.style.height = "22px";
+        icon.style.width = "auto";
+        icon.style.borderRadius = "3px";
+        icon.onerror = () => { icon.style.display = "none"; };
+
+        const span = document.createElement("span");
+        span.textContent = text;
+
+        btn.append(icon, span);
+
+        if (isActive) {
+          btn.style.background = "rgba(255, 255, 255, 0.15)";
+          btn.style.color = "#ffffff";
+          btn.style.boxShadow = "0 2px 4px rgba(0,0,0,0.2)";
+        } else {
+          btn.style.background = "transparent";
+          btn.style.color = "#8b949e";
+          btn.onmouseover = () => { btn.style.background = "rgba(255, 255, 255, 0.05)"; btn.style.color = "#c9d1d9"; };
+          btn.onmouseout = () => { btn.style.background = "transparent"; btn.style.color = "#8b949e"; };
+        }
+
+        btn.onclick = () => {
+          selections[`${heroId}_active_persona`] = id;
+          saveSelectionsLocal();
+          updateUI();
+          setApplyVpkState(false);
+          clearActivePreset();
+        };
+        return btn;
+      };
+
+      if (hasBaseSlots) switchWrapper.appendChild(createPersonaBtn("0", "Основа"));
+      const sortedPersonas = Array.from(availablePersonas).sort((a,b) => Number(a) - Number(b));
+      for (const p of sortedPersonas) switchWrapper.appendChild(createPersonaBtn(p, `Персона ${p}`));
+
+      frag.appendChild(switchWrapper);
     }
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "slot-wrapper";
+    const slotsGrid = document.createElement("div");
+    slotsGrid.style.display = "contents";
 
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "card tile";
-    btn.dataset.openHeroPicker = "";
-    btn.dataset.hero = heroId;
-    btn.dataset.slot = slot;
-    btn.setAttribute("aria-haspopup", "dialog");
+    for (const slot of Object.keys(heroData)) {
+      if (slot === "persona_selector") continue;
+      const isPersonaSlotMatch = slot.match(/_persona_(\d+)$/i);
 
-    const lab = document.createElement("span");
-    lab.className = "tile-label";
-    lab.textContent = slot;
+      if (currentPersona === "0") {
+        if (isPersonaSlotMatch) continue;
+      } else {
+        if (!isPersonaSlotMatch || isPersonaSlotMatch[1] !== currentPersona) continue;
+      }
 
-    const val = document.createElement("span");
-    val.className = "tile-value";
-    val.textContent = item ? item.name : "Стандарт";
-    val.style.color = getItemColor(item); // <--- ДОБАВИТЬ ЭТУ СТРОКУ
+      const wrapper = document.createElement("div");
+      wrapper.className = "slot-wrapper";
+      const safeSlot = slot.replace(/[^a-zA-Z0-9]/g, '_');
 
-    const url = getItemImageUrl(item);
-    if (url) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "card tile";
+      btn.dataset.openHeroPicker = "";
+      btn.dataset.hero = heroId;
+      btn.dataset.slot = slot;
+
+      const lab = document.createElement("span");
+      lab.className = "tile-label";
+      lab.textContent = slot.replace(/_persona_\d+$/i, "");
+
+      const val = document.createElement("span");
+      val.className = "tile-value";
+      val.id = `val-hero-${safeSlot}`;
+
       const thumb = document.createElement("img");
       thumb.className = "tile-thumb";
-      thumb.src = url;
-      thumb.alt = item?.name ?? "";
+      thumb.id = `thumb-hero-${safeSlot}`;
       thumb.loading = "lazy";
-      thumb.decoding = "async";
+      thumb.hidden = true;
+
       btn.append(lab, val, thumb);
-    } else {
-      btn.append(lab, val);
+
+      const effBtn = document.createElement("button");
+      effBtn.type = "button";
+      effBtn.className = "effect-btn";
+      effBtn.dataset.openEffectPicker = "";
+      effBtn.dataset.hero = heroId;
+      effBtn.dataset.slot = slot;
+      effBtn.id = `eff-hero-${safeSlot}`;
+
+      wrapper.append(btn, effBtn);
+      slotsGrid.appendChild(wrapper);
+    }
+    frag.appendChild(slotsGrid);
+    area.appendChild(frag);
+  }
+
+  for (const slot of Object.keys(heroData)) {
+    if (slot === "persona_selector") continue;
+
+    const safeSlot = slot.replace(/[^a-zA-Z0-9]/g, '_');
+    const valNode = el(`val-hero-${safeSlot}`);
+    const thumbNode = el(`thumb-hero-${safeSlot}`);
+    const effNode = el(`eff-hero-${safeSlot}`);
+
+    if (!valNode && !thumbNode && !effNode) continue;
+
+    const list = asItemList(heroData[slot]);
+    const selId = selections[`${heroId}_${slot}`];
+    let item = selId ? list.find((i) => i.id === selId) : list.find((i) => i.name.toLowerCase().includes("default"));
+
+    if (valNode) {
+      valNode.textContent = item ? item.name : "Стандарт";
+      valNode.style.color = getItemColor(item);
     }
 
-    const effSelId = selections[`${heroId}_${slot}_effect`];
-    const effList = getEffectsList();
-    const effItem = effList.find((e) => e.id === effSelId);
+    if (thumbNode) {
+      let url = getItemImageUrl(item);
+      if (!url) {
+        const baseUrl = CDN_URL ? CDN_URL.replace(/\/+$/, "") : "https://cdn.deadsouls.cc";
+        url = `${baseUrl}/econ/default_no_item.webp`;
+      }
 
-    const effBtn = document.createElement("button");
-    effBtn.type = "button";
-    effBtn.className = "effect-btn";
-    effBtn.dataset.openEffectPicker = "";
-    effBtn.dataset.hero = heroId;
-    effBtn.dataset.slot = slot;
-    effBtn.textContent = effItem ? `✨ ${effItem.name}` : "✨ Без эффекта";
-    effBtn.title = "Выбрать Unusual Эффект";
+      thumbNode.onerror = () => { thumbNode.hidden = true; };
+      applyCachedImage(thumbNode, url);
+      thumbNode.alt = item?.name ?? "";
+    }
 
-    wrapper.append(btn, effBtn);
-    frag.appendChild(wrapper);
+    if (effNode) {
+      const effSelId = selections[`${heroId}_${slot}_effect`];
+      const effItem = getEffectsList().find((e) => e.id === effSelId);
+      effNode.textContent = effItem ? `✨ ${effItem.name}` : "✨ Без эффекта";
+    }
   }
-  area.appendChild(frag);
 }
 
 function renderHeroGrid() {
   const grid = el("hero-grid");
   const input = el("hero-search");
-  if (!grid || !schema || typeof schema !== "object" || !("skin_changer" in schema)) return;
-  const sc = schema.skin_changer;
+  if (!grid || !schema?.skin_changer) return;
   const q = (input?.value ?? "").toLowerCase().trim();
-  const heroes = Object.keys(sc).sort();
+  const heroes = Object.keys(schema.skin_changer).sort();
   grid.innerHTML = "";
   const frag = document.createDocumentFragment();
+
+  const getHeroIconUrl = (heroName) => {
+    let name = heroName.toLowerCase().replace(/ /g, "_").replace(/[^a-z0-9_]/g, "");
+    const aliases = {
+      "zeus": "zuus", "nature's_prophet": "furion", "anti_mage": "antimage", "shadow_fiend": "nevermore",
+      "clockwerk": "rattletrap", "timbersaw": "shredder", "treant_protector": "treant", "doom": "doom_bringer",
+      "lifestealer": "life_stealer", "magnus": "magnataur", "outworld_destroyer": "obsidian_destroyer",
+      "outworld_devourer": "obsidian_destroyer", "wraith_king": "skeleton_king", "underlord": "abyssal_underlord",
+      "vengeful_spirit": "vengefulspirit", "windranger": "windrunner", "centaur_warrunner": "centaur", "necrophos": "necrolyte"
+    };
+    if (aliases[name]) name = aliases[name];
+    const baseUrl = CDN_URL ? CDN_URL.replace(/\/+$/, "") : "https://cdn.deadsouls.cc";
+    return `${baseUrl}/econ/icons/npc_dota_hero_${name}_png.png`;
+  };
+
   for (const h of heroes) {
-    if (q && !h.toLowerCase().includes(q)) continue;
+    const displayName = h.replace(/_/g, " ");
+    if (q && !displayName.toLowerCase().includes(q)) continue;
+
     const b = document.createElement("button");
     b.type = "button";
     b.className = "hero-chip";
     b.dataset.hero = h;
-    b.textContent = h.replace(/_/g, " ");
+    b.style.display = "flex"; b.style.alignItems = "center"; b.style.gap = "8px"; b.style.padding = "6px 12px";
+
+    const icon = document.createElement("img");
+    applyCachedImage(icon, getHeroIconUrl(h));
+    icon.style.height = "24px"; icon.style.width = "auto"; icon.style.borderRadius = "3px";
+    icon.onerror = () => { icon.style.display = "none"; };
+
+    const text = document.createElement("span");
+    text.textContent = displayName;
+    b.append(icon, text);
     frag.appendChild(b);
   }
   grid.appendChild(frag);
@@ -883,8 +1015,7 @@ function showPickerModal(title, items, currentId, defaultText = "По умолч
   const titleEl = el("modal-title");
   const list = el("modal-item-list");
   const search = el("item-search");
-  const modal = el("picker-modal");
-  if (!titleEl || !list || !modal) return;
+  if (!titleEl || !list) return;
 
   titleEl.textContent = title;
   if (search) search.value = "";
@@ -896,7 +1027,6 @@ function showPickerModal(title, items, currentId, defaultText = "По умолч
 
     if (pickerContext && pickerContext.type !== "global") {
       const noneBtn = document.createElement("button");
-      noneBtn.type = "button";
       noneBtn.className = "item-option none-opt";
       noneBtn.dataset.pickId = "";
       noneBtn.textContent = `— ${defaultText} —`;
@@ -906,7 +1036,6 @@ function showPickerModal(title, items, currentId, defaultText = "По умолч
     for (const i of items) {
       if (q && !i.name.toLowerCase().includes(q)) continue;
       const opt = document.createElement("button");
-      opt.type = "button";
       opt.className = "item-option";
       if (i.id === currentId) opt.classList.add("selected");
       opt.dataset.pickId = i.id;
@@ -916,14 +1045,16 @@ function showPickerModal(title, items, currentId, defaultText = "По умолч
       label.textContent = i.name;
       label.style.color = getItemColor(i);
 
-      const url = getItemImageUrl(i);
+      let url = getItemImageUrl(i);
+      if (!url && pickerContext && pickerContext.type === "hero") {
+         const baseUrl = CDN_URL ? CDN_URL.replace(/\/+$/, "") : "https://cdn.deadsouls.cc";
+         url = `${baseUrl}/econ/default_no_item.webp`;
+      }
+
       if (url) {
         const img = document.createElement("img");
         img.className = "item-option-thumb";
-        img.src = url;
-        img.alt = i.name;
-        img.loading = "lazy";
-        img.decoding = "async";
+        applyCachedImage(img, url);
         opt.append(img, label);
       } else {
         opt.append(label);
@@ -934,56 +1065,93 @@ function showPickerModal(title, items, currentId, defaultText = "По умолч
   }
 
   renderList("");
-  if (search) {
-    search.oninput = (e) => {
-      const t = e.target;
-      if (t instanceof HTMLInputElement) renderList(t.value);
-    };
-  }
-
+  if (search) search.oninput = (e) => renderList(e.target.value);
   setPickerOpen(true);
 }
 
 function openGlobalPicker(catId) {
-  if (!schema || typeof schema !== "object" || !("categories" in schema)) return;
-  const cats = schema.categories;
-  const items = asItemList(cats?.[catId]);
+  const items = asItemList(schema?.categories?.[catId]);
   pickerContext = { type: "global", id: catId };
-
-  const fallback = DEFAULT_VALUES[catId] || "По умолчанию";
-  showPickerModal(globalCategoryTitle(catId), items, selections[catId], fallback);
+  showPickerModal(globalCategoryTitle(catId), items, selections[catId], DEFAULT_VALUES[catId] || "По умолчанию");
 }
 
 function openHeroPicker(heroId, slot) {
-  const heroData = getHeroSlots(heroId);
-  if (!heroData) return;
-  const items = asItemList(heroData[slot]);
+  const items = asItemList(getHeroSlots(heroId)?.[slot]);
   pickerContext = { type: "hero", hero: heroId, slot };
-
   showPickerModal(slot, items, selections[`${heroId}_${slot}`], "Стандарт");
 }
 
 function applyPick(id) {
   if (!pickerContext) return;
+  const key = pickerContext.type === "global" ? pickerContext.id
+            : pickerContext.type === "effect" ? `${pickerContext.hero}_${pickerContext.slot}_effect`
+            : `${pickerContext.hero}_${pickerContext.slot}`;
 
-  if (pickerContext.type === "global") {
-    if (!id) delete selections[pickerContext.id];
-    else selections[pickerContext.id] = id;
-  } else if (pickerContext.type === "hero") {
-    const key = `${pickerContext.hero}_${pickerContext.slot}`;
-    if (!id) delete selections[key];
-    else selections[key] = id;
-  } else if (pickerContext.type === "effect") {
-    const key = `${pickerContext.hero}_${pickerContext.slot}_effect`;
-    if (!id) delete selections[key];
-    else selections[key] = id;
+  if (!id) delete selections[key];
+  else selections[key] = id;
+
+  saveSelectionsLocal(); updateUI(); closePicker(); setApplyVpkState(false); clearActivePreset();
+}
+
+function renderHeroKinetics(heroId) {
+  let kinArea = el("hero-kinetics-area");
+  if (!kinArea) {
+    kinArea = document.createElement("div");
+    kinArea.id = "hero-kinetics-area";
+    kinArea.className = "card";
+    kinArea.style.marginTop = "16px"; kinArea.style.padding = "16px";
+    document.querySelector(".hero-selector-wrapper")?.appendChild(kinArea);
+  }
+  if (!schema.kinetics) return kinArea.hidden = true;
+
+  const heroNameLower = heroId.replace(/_/g, " ").toLowerCase();
+  const kineticHeroKey = Object.keys(schema.kinetics).find(k => k.toLowerCase() === heroNameLower || k.toLowerCase().replace(/ /g, "_") === heroNameLower);
+
+  if (!kineticHeroKey || schema.kinetics[kineticHeroKey].length === 0) return kinArea.hidden = true;
+  kinArea.hidden = false;
+
+  const availableGems = schema.kinetics[kineticHeroKey];
+  const selectedGems = selections.kinetics?.[kineticHeroKey] || [];
+
+  if (kinArea.dataset.hero !== kineticHeroKey || kinArea.innerHTML === "") {
+    kinArea.dataset.hero = kineticHeroKey;
+    kinArea.innerHTML = "";
+    const headerFlex = document.createElement("div");
+    headerFlex.style.display = "flex"; headerFlex.style.justifyContent = "space-between"; headerFlex.style.marginBottom = "12px";
+    const title = document.createElement("span"); title.className = "label"; title.textContent = "Кинетические самоцветы";
+    const gemIcon = document.createElement("img");
+    const baseUrl = CDN_URL ? CDN_URL.replace(/\/+$/, "") : "https://cdn.deadsouls.cc";
+    gemIcon.src = `${baseUrl}/econ/gem_animation_png.webp`;
+    gemIcon.style.height = "24px"; gemIcon.style.width = "auto";
+    headerFlex.append(title, gemIcon);
+    kinArea.appendChild(headerFlex);
+
+    const kinGrid = document.createElement("div");
+    kinGrid.id = "kinetics-btn-grid";
+    kinGrid.style.display = "flex"; kinGrid.style.flexWrap = "wrap"; kinGrid.style.gap = "8px";
+    kinArea.appendChild(kinGrid);
   }
 
-  saveSelectionsLocal();
-  updateUI();
-  closePicker();
-  setApplyVpkState(false);
-  clearActivePreset();
+  const kinGrid = kinArea.querySelector("#kinetics-btn-grid");
+  if (kinGrid) {
+    kinGrid.innerHTML = "";
+    for (const gem of availableGems) {
+      const btn = document.createElement("button");
+      const isActive = selectedGems.includes(gem.id);
+      btn.className = isActive ? "btn primary" : "btn ghost";
+      btn.textContent = gem.name;
+      btn.style.padding = "6px 12px"; btn.style.fontSize = "0.85rem"; btn.style.borderRadius = "6px";
+      btn.onclick = () => {
+        if (!selections.kinetics) selections.kinetics = {};
+        if (!selections.kinetics[kineticHeroKey]) selections.kinetics[kineticHeroKey] = [];
+        const arr = selections.kinetics[kineticHeroKey];
+        const idx = arr.indexOf(gem.id);
+        if (idx === -1) arr.push(gem.id); else arr.splice(idx, 1);
+        saveSelectionsLocal(); updateUI(); setApplyVpkState(false); clearActivePreset();
+      };
+      kinGrid.appendChild(btn);
+    }
+  }
 }
 
 function updateUI() {
@@ -992,211 +1160,124 @@ function updateUI() {
   const heroId = selections.current_hero;
   if (heroId) {
     renderHeroSlots(heroId);
+    renderHeroKinetics(heroId);
   } else {
-    const area = el("hero-slots-area");
-    if (area) {
-      area.hidden = true;
-      area.innerHTML = "";
-    }
+    const area = el("hero-slots-area"), kinArea = el("hero-kinetics-area");
+    if (area) { area.hidden = true; area.innerHTML = ""; }
+    if (kinArea) { kinArea.hidden = true; kinArea.innerHTML = ""; }
   }
-  // Рендерим для окна "Галерея" (текущие изменения)
   renderGallery("main-gallery-area", selections, "Вы пока не выбрали ни одного нестандартного предмета.");
 }
 
 function getDefaultItemId(hero, slot) {
-  if (!schema || !schema.effect_targets) return null;
+  if (!schema?.effect_targets) return null;
   const heroNameLower = hero.replace(/_/g, " ").toLowerCase();
-
   const target = schema.effect_targets.find(t => {
     const tName = t.name.toLowerCase();
     if (!tName.includes(heroNameLower)) return false;
-
     if (tName.includes(`(${slot.toLowerCase()})`)) return true;
-    if (slot.toLowerCase() === "weapon" && tName.includes("(unknown)")) return true;
-
-    return false;
+    return slot.toLowerCase() === "weapon" && tName.includes("(unknown)");
   });
-
   return target ? target.id : null;
 }
 
 async function saveToAgent() {
   setSaveStatus("Создание VPK...", undefined);
   const base = getAgentBaseUrl();
-  if (!base) {
-    setSaveStatus("Задай порт на главной (шестерёнка).", "err");
-    return;
-  }
+  if (!base) return setSaveStatus("Задай порт на главной (шестерёнка).", "err");
+  const url = `${base.replace(/\/+$/, "")}/bridge/action/mastervpk`;
 
-  const path = "/bridge/action/mastervpk";
-  const url = joinUrl(base, path);
-
-  const formattedSelections = {
-    skin_changer: {},
-    effect_targets: {}
-  };
-
+  const formattedSelections = { skin_changer: {}, effect_targets: {} };
   const globalCats = getGlobalCategoryIds();
 
   for (const [key, val] of Object.entries(selections)) {
     if (!val) continue;
-
     if (key === "current_hero" || globalCats.includes(key)) {
       formattedSelections[key] = val;
-    } else if (schema && schema.skin_changer) {
+    } else if (schema?.skin_changer) {
       for (const hero of Object.keys(schema.skin_changer)) {
         const prefix = `${hero}_`;
         if (key.startsWith(prefix)) {
+          if (key.endsWith("_active_persona")) continue; // Блокируем отправку персоны в VPK
+
           const isEffect = key.endsWith("_effect");
           const slot = isEffect ? key.substring(prefix.length, key.length - 7) : key.substring(prefix.length);
           const heroLower = hero.toLowerCase();
 
-          if (!formattedSelections.skin_changer[heroLower]) {
-            formattedSelections.skin_changer[heroLower] = {};
-          }
-          if (!formattedSelections.skin_changer[heroLower][slot]) {
-            formattedSelections.skin_changer[heroLower][slot] = { id: "", style: 1 };
-          }
+          if (!formattedSelections.skin_changer[heroLower]) formattedSelections.skin_changer[heroLower] = {};
+          if (!formattedSelections.skin_changer[heroLower][slot]) formattedSelections.skin_changer[heroLower][slot] = { id: "", style: 1 };
 
-          if (isEffect) {
-            formattedSelections.skin_changer[heroLower][slot]._effect = val;
-          } else {
-            formattedSelections.skin_changer[heroLower][slot].id = val;
-          }
+          if (isEffect) formattedSelections.skin_changer[heroLower][slot]._effect = val;
+          else formattedSelections.skin_changer[heroLower][slot].id = val;
           break;
         }
       }
     }
   }
 
-  if (schema && schema.skin_changer) {
+  if (schema?.skin_changer) {
     for (const heroLower of Object.keys(formattedSelections.skin_changer)) {
       const origHero = Object.keys(schema.skin_changer).find(h => h.toLowerCase() === heroLower);
       if (!origHero) continue;
 
       const slots = formattedSelections.skin_changer[heroLower];
       for (const [slot, data] of Object.entries(slots)) {
-
         if (data._effect) {
           const defaultId = getDefaultItemId(origHero, slot);
-          if (defaultId) {
-            formattedSelections.effect_targets[defaultId] = data._effect;
-          }
+          if (defaultId) formattedSelections.effect_targets[defaultId] = data._effect;
         }
-
         delete data._effect;
-
-        if (!data.id) {
-          delete slots[slot];
-        }
+        if (!data.id) delete slots[slot];
       }
-
-      if (Object.keys(slots).length === 0) {
-        delete formattedSelections.skin_changer[heroLower];
-      }
+      if (Object.keys(slots).length === 0) delete formattedSelections.skin_changer[heroLower];
     }
   }
 
+  formattedSelections.kinetics = {};
+  if (selections.kinetics) {
+    for (const [kHero, kArr] of Object.entries(selections.kinetics)) {
+      if (kArr?.length) formattedSelections.kinetics[kHero] = [...kArr];
+    }
+  }
+  if (Object.keys(formattedSelections.kinetics).length === 0) delete formattedSelections.kinetics;
   if (Object.keys(formattedSelections.skin_changer || {}).length === 0) delete formattedSelections.skin_changer;
   if (Object.keys(formattedSelections.effect_targets || {}).length === 0) delete formattedSelections.effect_targets;
 
   try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formattedSelections),
-    });
-
-    const text = await res.text();
-    let data = null;
-    if (text) {
-      try {
-        data = JSON.parse(text);
-      } catch {
-        data = text;
-      }
-    }
-
-    if (res.ok) {
-      setSaveStatus(prettySaveMessage("VPK Создан", true), "ok");
-      setApplyVpkState(true);
-    } else {
-      setSaveStatus(`Ошибка ${res.status}: ${prettySaveMessage(data, false)}`, "err");
-    }
+    const res = await fetch(url, { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: JSON.stringify(formattedSelections) });
+    if (res.ok) { setSaveStatus("VPK Создан", "ok"); setApplyVpkState(true); }
+    else { setSaveStatus(`Ошибка ${res.status}`, "err"); }
   } catch (e) {
-    setSaveStatus(
-      e instanceof Error ? e.message : "Агент недоступен (сеть / CORS).",
-      "err"
-    );
+    setSaveStatus("Агент недоступен (сеть / CORS).", "err");
   }
 }
 
 async function applyVpk() {
   setSaveStatus("Установка VPK...", undefined);
   const base = getAgentBaseUrl();
-  if (!base) {
-    setSaveStatus("Задай порт на главной (шестерёнка).", "err");
-    return;
-  }
-  const path = "/bridge/action/applyvpk";
-  const url = joinUrl(base, path);
+  if (!base) return setSaveStatus("Задай порт на главной.", "err");
 
   try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({}),
-    });
-
-    const text = await res.text();
-    let data = null;
-    if (text) {
-      try {
-        data = JSON.parse(text);
-      } catch {
-        data = text;
-      }
-    }
-
-    if (res.ok) {
-      setSaveStatus(prettySaveMessage("VPK Установлен", true), "ok");
-    } else {
-      setSaveStatus(`Ошибка ${res.status}: ${prettySaveMessage(data, false)}`, "err");
-    }
-  } catch (e) {
-    setSaveStatus(
-      e instanceof Error ? e.message : "Агент недоступен (сеть / CORS).",
-      "err"
-    );
-  }
+    const res = await fetch(`${base.replace(/\/+$/, "")}/bridge/action/applyvpk`, { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: "{}" });
+    if (res.ok) setSaveStatus("VPK Установлен", "ok");
+    else setSaveStatus(`Ошибка ${res.status}`, "err");
+  } catch (e) { setSaveStatus("Агент недоступен.", "err"); }
 }
 
+// ВОЗВРАЩЕНО ИЗ ОРИГИНАЛА: Закрытие на Escape и клик вне окна
 function onDocumentKeydown(e) {
   if (e.key !== "Escape") return;
-
   const galleryModal = el("gallery-section");
   if (galleryModal && !galleryModal.hidden) {
-    galleryModal.hidden = true;
-    document.body.style.overflow = ""; // Сбрасываем скролл
-    return;
+    galleryModal.hidden = true; document.body.style.overflow = ""; return;
   }
-
   const presetsModal = el("presets-section");
   if (presetsModal && !presetsModal.hidden) {
-    presetsModal.hidden = true;
-    return;
+    presetsModal.hidden = true; return;
   }
-
   const modal = el("picker-modal");
   if (modal && !modal.hidden) {
-    closePicker();
-    return;
+    closePicker(); return;
   }
   setHeroListOpen(false);
 }
@@ -1206,155 +1287,91 @@ function onModalBackdropClick(e) {
 }
 
 function wireEvents() {
-  el("btn-save-all")?.addEventListener("click", () => void saveToAgent());
-  el("btn-apply-all")?.addEventListener("click", () => void applyVpk());
+  el("btn-save-all")?.addEventListener("click", () => saveToAgent());
+  el("btn-apply-all")?.addEventListener("click", () => applyVpk());
 
-// Кнопка открытия/закрытия Галереи
   el("btn-open-gallery")?.addEventListener("click", () => {
     const section = el("gallery-section");
     if (section) {
-      if (section.hidden) {
-        // Если закрыта -> Открываем
-        section.hidden = false;
-        document.body.style.overflow = "hidden"; // Блокируем скролл сайта
-        renderGallery("main-gallery-area", selections, "Вы пока не выбрали ни одного нестандартного предмета.");
-      } else {
-        // Если открыта -> Закрываем
-        section.hidden = true;
-        document.body.style.overflow = ""; // Возвращаем скролл
-      }
+      section.hidden = !section.hidden;
+      document.body.style.overflow = section.hidden ? "" : "hidden";
+      if (!section.hidden) renderGallery("main-gallery-area", selections, "Пусто.");
     }
   });
 
-  // Кнопка открытия Пресетов
   el("btn-open-presets")?.addEventListener("click", () => {
-    const presetsSection = el("presets-section");
-    if (presetsSection) {
-      if (presetsSection.hidden) {
-        presetsSection.hidden = false;
-        const select = el("preset-select");
-        if (select instanceof HTMLSelectElement) {
-           renderPresetPreview(select.value);
-        }
-      } else {
-        presetsSection.hidden = true;
-      }
+    const section = el("presets-section");
+    if (section) {
+      section.hidden = !section.hidden;
+      if (!section.hidden) renderPresetPreview(el("preset-select")?.value);
     }
   });
 
-  // Закрытие Пресетов по фону
-  el("presets-section")?.addEventListener("click", (e) => {
-    if (e.target === el("presets-section")) {
-      el("presets-section").hidden = true;
-    }
-  });
+  el("presets-section")?.addEventListener("click", (e) => { if (e.target === el("presets-section")) el("presets-section").hidden = true; });
 
   el("btn-preset-save")?.addEventListener("click", savePresetFromInput);
   el("btn-preset-load")?.addEventListener("click", loadSelectedPreset);
   el("btn-preset-delete")?.addEventListener("click", deleteSelectedPreset);
+  el("btn-reset-all")?.addEventListener("click", resetSelectionsToDefault);
+  el("preset-select")?.addEventListener("change", (e) => renderPresetPreview(e.target.value));
+
+  // ВОЗВРАЩЕНО ИЗ ОРИГИНАЛА: Кнопки экспорта
   el("btn-preset-export")?.addEventListener("click", exportSelectedPreset);
+  el("btn-export-gallery")?.addEventListener("click", () => void exportGalleryImages());
   setupDragAndDrop();
-  el("btn-reset-all")?.addEventListener("click", () => {
-    resetSelectionsToDefault();
-    setPresetStatus("Текущий выбор сброшен до стандартного.", "ok");
-  });
-  el("preset-select")?.addEventListener("change", (e) => {
-    const target = e.target;
-    if (!(target instanceof HTMLSelectElement)) return;
-    if (!target.value) return;
-    localStorage.setItem(LS_ACTIVE_PRESET, target.value);
-    renderPresetPreview(target.value);
-  });
-  el("preset-name")?.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      savePresetFromInput();
-    }
-  });
 
   el("btn-toggle-hero")?.addEventListener("click", () => {
-    const list = el("hero-drop-list");
-    const open = list?.hidden ?? true;
+    const open = el("hero-drop-list")?.hidden ?? true;
     setHeroListOpen(open);
     if (open) renderHeroGrid();
   });
-
-  el("hero-search")?.addEventListener("input", () => renderHeroGrid());
+  el("hero-search")?.addEventListener("input", renderHeroGrid);
 
   el("global-grid")?.addEventListener("click", (e) => {
-    const t = e.target;
-    if (!(t instanceof HTMLElement)) return;
-
-    const toggler = t.closest("[data-toggle-global-section]");
-    if (toggler && toggler instanceof HTMLElement) {
+    const toggler = e.target.closest("[data-toggle-global-section]");
+    if (toggler) {
       const key = toggler.dataset.toggleGlobalSection;
-      if (!key) return;
       collapsedGlobalSections[key] = !collapsedGlobalSections[key];
-      saveGlobalSectionState();
-      renderGlobalGrid();
-      updateGlobalTiles();
-      return;
+      saveGlobalSectionState(); renderGlobalGrid(); updateGlobalTiles(); return;
     }
-
-    const btn = t.closest("[data-open-picker]");
-    if (!btn || !(btn instanceof HTMLElement)) return;
-    const id = btn.dataset.openPicker;
-    if (id) openGlobalPicker(id);
+    const btn = e.target.closest("[data-open-picker]");
+    if (btn) openGlobalPicker(btn.dataset.openPicker);
   });
 
   el("hero-grid")?.addEventListener("click", (e) => {
-    const t = e.target;
-    if (!(t instanceof HTMLElement)) return;
-    const chip = t.closest("[data-hero]");
-    if (!chip || !(chip instanceof HTMLElement)) return;
-    const h = chip.dataset.hero;
-    if (!h) return;
-    selections.current_hero = h;
-    saveSelectionsLocal();
-    setHeroListOpen(false);
-    updateUI();
-    clearActivePreset();
+    const chip = e.target.closest("[data-hero]");
+    if (!chip) return;
+    selections.current_hero = chip.dataset.hero;
+    saveSelectionsLocal(); setHeroListOpen(false); updateUI(); clearActivePreset();
   });
 
+  // ПОЧИНИЛИ ВЫБОР ЭФФЕКТОВ:
   el("hero-slots-area")?.addEventListener("click", (e) => {
-    const t = e.target;
-    if (!(t instanceof HTMLElement)) return;
-
-    const btnEff = t.closest("[data-open-effect-picker]");
-    if (btnEff && btnEff instanceof HTMLElement) {
-      const hero = btnEff.dataset.hero;
-      const slot = btnEff.dataset.slot;
-      if (hero && slot) {
-         const items = getEffectsList();
-         pickerContext = { type: "effect", hero, slot };
-         showPickerModal(`Эффект: ${slot}`, items, selections[`${hero}_${slot}_effect`], "Без эффекта");
-      }
-      return;
+    const btnEff = e.target.closest("[data-open-effect-picker]");
+    if (btnEff) {
+        const hero = btnEff.dataset.hero;
+        const slot = btnEff.dataset.slot;
+        pickerContext = { type: "effect", hero, slot }; // Вот из-за чего ломалось!
+        return showPickerModal(`Эффект: ${slot}`, getEffectsList(), selections[`${hero}_${slot}_effect`], "Без эффекта");
     }
 
-    const btn = t.closest("[data-open-hero-picker]");
-    if (!btn || !(btn instanceof HTMLElement)) return;
-    const hero = btn.dataset.hero;
-    const slot = btn.dataset.slot;
-    if (hero && slot) openHeroPicker(hero, slot);
+    const btn = e.target.closest("[data-open-hero-picker]");
+    if (btn) openHeroPicker(btn.dataset.hero, btn.dataset.slot);
   });
 
   el("modal-item-list")?.addEventListener("click", (e) => {
-    const t = e.target;
-    if (!(t instanceof HTMLElement)) return;
-    const opt = t.closest("[data-pick-id]");
-    if (!opt || !(opt instanceof HTMLElement)) return;
-    const raw = opt.dataset.pickId;
-    applyPick(raw === undefined || raw === "" ? "" : raw);
+    const opt = e.target.closest("[data-pick-id]");
+    if (opt) applyPick(opt.dataset.pickId || "");
   });
 
-  el("btn-close-picker")?.addEventListener("click", () => closePicker());
-  el("picker-modal")?.addEventListener("click", onModalBackdropClick);
-  el("btn-export-gallery")?.addEventListener("click", () => void exportGalleryImages());
+  el("btn-close-picker")?.addEventListener("click", closePicker);
 
+  // ВОЗВРАЩЕНО ИЗ ОРИГИНАЛА: Закрытие по клавишам
   document.addEventListener("keydown", onDocumentKeydown);
+  el("picker-modal")?.addEventListener("click", onModalBackdropClick);
 }
 
+// ВОЗВРАЩЕНО ИЗ ОРИГИНАЛА: Экспорт картинок галереи (html2canvas)
 async function exportGalleryImages() {
   if (typeof html2canvas === "undefined") {
     alert("Библиотека html2canvas не загружена. Проверьте подключение в HTML.");
@@ -1392,9 +1409,7 @@ async function exportGalleryImages() {
       }
       currentPage.push({ title: h.replace(/_/g, " "), data: heroesData[h], isGlobal: false });
     }
-    if (currentPage.length > 0) {
-      pages.push(currentPage);
-    }
+    if (currentPage.length > 0) pages.push(currentPage);
 
     for (let i = 0; i < pages.length; i++) {
       const pageData = pages[i];
@@ -1460,21 +1475,18 @@ async function exportGalleryImages() {
           if (item.url) {
             const img = document.createElement("img");
             img.className = "export-img";
-
             img.crossOrigin = "anonymous";
-            img.src = item.url + "?v=" + Date.now();
+            img.src = item.url + "?v=" + Date.now(); // Для html2canvas нужен чистый url, кэш Blob он ломает
 
             const promise = new Promise((resolve) => {
               img.onload = resolve;
               img.onerror = () => {
-                console.warn("Не удалось загрузить картинку для экспорта:", item.url);
                 img.style.display = "none";
                 imgWrap.innerHTML = `<span style="font-size:2rem;color:#555;">НЕТ ФОТО</span>`;
                 resolve();
               };
             });
             imagePromises.push(promise);
-
             imgWrap.appendChild(img);
           } else {
             imgWrap.innerHTML = `<span style="font-size:5rem;color:#8b949e;">${item.isEffect ? "✨" : "?"}</span>`;
@@ -1493,26 +1505,14 @@ async function exportGalleryImages() {
       }
 
       document.body.appendChild(exportContainer);
-
       await Promise.all(imagePromises);
       await new Promise(res => setTimeout(res, 300));
 
-      // MAGIC HAPPENS HERE:
-      // useCORS: true tells html2canvas to attempt loading images from external domains.
-      // allowTaint: true tells html2canvas to draw the image EVEN IF it fails CORS,
-      // but usually this prevents toDataURL.
-      // The ultimate fallback: if Cloudflare R2 is blocking the canvas export,
-      // html2canvas will just skip the image rendering but STILL output the rest of the UI.
       const canvas = await html2canvas(exportContainer, {
-        backgroundColor: "#0a0a0a",
-        scale: 2,
-        useCORS: true,
-        allowTaint: false, // Must be false to allow toDataURL
-        logging: false
+        backgroundColor: "#0a0a0a", scale: 2, useCORS: true, allowTaint: false, logging: false
       });
 
       document.body.removeChild(exportContainer);
-
       const link = document.createElement("a");
       link.download = `deadsouls_loadout_part_${i + 1}.png`;
 
@@ -1520,15 +1520,11 @@ async function exportGalleryImages() {
         link.href = canvas.toDataURL("image/png");
         link.click();
       } catch (e) {
-        console.error("Canvas export blocked by Cloudflare R2 CORS policy.", e);
         alert("Ошибка безопасности: Ваш сервер Cloudflare R2 блокирует сохранение картинок. Требуется настройка CORS на стороне R2.");
       }
-
       await new Promise(res => setTimeout(res, 800));
     }
-
   } catch (err) {
-    console.error(err);
     alert("Произошла ошибка при создании скриншотов. Проверьте консоль.");
   } finally {
     btn.textContent = originalText;
@@ -1537,143 +1533,21 @@ async function exportGalleryImages() {
 }
 
 function getEffectsList() {
-  if (!schema || typeof schema !== "object" || !("effects" in schema)) return [];
-  const effs = schema.effects;
-  if (!Array.isArray(effs)) return [];
-
-  return effs.map((e) => ({
-    id: e.path,
-    name: e.name
-  }));
-}
-
-function exportSelectedPreset() {
-  const select = el("preset-select");
-  if (!(select instanceof HTMLSelectElement)) return;
-  const name = select.value;
-
-  if (!name || !presets[name]) {
-    setSaveStatus("Сначала выберите пресет для скачивания.", "err");
-    return;
-  }
-
-  // Превращаем пресет в текст
-  const dataStr = JSON.stringify(presets[name], null, 2);
-  const blob = new Blob([dataStr], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement("a");
-  link.href = url;
-
-  // Убираем из имени спецсимволы, чтобы не сломать файл
-  const safeName = name.replace(/[^a-zа-я0-9_\-\s]/gi, '').trim() || "export";
-  link.download = `deadsouls.${safeName}.preset`;
-
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-
-  setSaveStatus(`Пресет "${name}" скачан.`, "ok");
-}
-
-function setupDragAndDrop() {
-  // Показываем оверлей при перетаскивании
-  document.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    if (e.dataTransfer.types.includes("Files")) {
-      document.body.classList.add('drag-over-active');
-    }
-  });
-
-  // Убираем оверлей, если мышку увели за пределы окна
-  document.addEventListener('dragleave', (e) => {
-    e.preventDefault();
-    if (!e.relatedTarget || e.relatedTarget.nodeName === "HTML") {
-       document.body.classList.remove('drag-over-active');
-    }
-  });
-
-  // Ловим брошенный файл
-  document.addEventListener('drop', (e) => {
-    e.preventDefault();
-    document.body.classList.remove('drag-over-active');
-
-    if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) return;
-    const file = e.dataTransfer.files[0];
-
-    // Проверяем расширение
-    if (!file.name.endsWith('.preset')) {
-      setSaveStatus("Неверный формат. Используйте файлы .preset", "err");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const data = JSON.parse(event.target.result);
-
-        // Вытаскиваем имя: убираем 'deadsouls.' спереди и '.preset' сзади
-        let presetName = file.name.replace(/^deadsouls\./i, '').replace(/\.preset$/i, '');
-        if (!presetName) presetName = "Imported";
-
-        // Сохраняем (перезапишет, если такое имя уже есть)
-        presets[presetName] = data;
-        savePresetsLocal();
-        renderPresetSelect();
-
-        // Автоматически выбираем загруженный пресет
-        const select = el("preset-select");
-        if (select instanceof HTMLSelectElement) {
-          select.value = presetName;
-          localStorage.setItem(LS_ACTIVE_PRESET, presetName);
-          renderPresetPreview(presetName);
-        }
-
-        setSaveStatus(`Пресет "${presetName}" успешно загружен!`, "ok");
-
-        // Автоматически открываем модалку пресетов, чтобы юзер увидел результат
-        const presetsSection = el("presets-section");
-        if (presetsSection && presetsSection.hidden) {
-           presetsSection.hidden = false;
-        }
-
-      } catch (err) {
-        setSaveStatus("Ошибка файла: код пресета поврежден.", "err");
-      }
-    };
-    reader.readAsText(file);
-  });
+  return schema?.effects?.map((e) => ({ id: e.path, name: e.name })) || [];
 }
 
 async function init() {
   setApplyVpkState(false);
-
   loadSelections();
   loadPresets();
   loadGlobalSectionState();
   wireEvents();
 
-  try {
-    const resCustom = await fetch(CUSTOM_IMAGES_URL);
-    if (resCustom.ok) {
-      customImages = await resCustom.json();
-    }
-  } catch {
-    console.log("Кастомные картинки не найдены, используем стандартные.");
-  }
+  const fetchedCustomImages = await fetchCachedJson(CUSTOM_IMAGES_URL);
+  if (fetchedCustomImages) customImages = fetchedCustomImages;
 
-  try {
-    const res = await fetch(SCHEMA_URL);
-    if (!res.ok) {
-      setSaveStatus(`Схема: HTTP ${res.status}`, "err");
-      return;
-    }
-    schema = await res.json();
-  } catch {
-    setSaveStatus("Не удалось загрузить website_schema.json", "err");
-    return;
-  }
+  const fetchedSchema = await fetchCachedJson(SCHEMA_URL);
+  if (fetchedSchema) schema = fetchedSchema;
 
   renderGlobalGrid();
   renderPresetSelect();
