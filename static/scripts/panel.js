@@ -400,8 +400,8 @@ function renderGallery(containerId, sourceData, emptyMessage) {
 function renderPresetPreview(presetName) {
   let presetData = (!presetName || !presets[presetName]) ? selections : presets[presetName];
   const msg = (!presetName || !presets[presetName])
-    ? "В текущем выборе пока нет нестандартных предметов."
-    : "В этом пресете нет нестандартных предметов.";
+    ? window.t('empty_gallery')
+    : window.t('preset_no_custom');
   renderGallery("preset-preview-area", presetData, msg);
 }
 
@@ -495,7 +495,7 @@ function setSaveButtonState(isBuilding) {
   btn.disabled = isBuilding;
   btn.style.opacity = isBuilding ? "0.5" : "1";
   btn.style.cursor = isBuilding ? "wait" : "pointer";
-  btn.textContent = isBuilding ? "Сборка VPK..." : "Создать VPK";
+  btn.textContent = isBuilding ? window.t('vpk_building') : window.t('create_vpk');
 }
 
 function setPresetStatus(text, kind) { setSaveStatus(text, kind); }
@@ -720,7 +720,7 @@ function updateGlobalTiles() {
     let item = selId ? list.find((i) => i.id === selId) : list.find((i) => i.name === DEFAULT_VALUES[cat]);
 
     if (node) {
-      node.textContent = item ? item.name : (DEFAULT_VALUES[cat] || "По умолчанию");
+      node.textContent = item ? item.name : (DEFAULT_VALUES[cat] || window.t('default_val'));
       node.style.color = getItemColor(item);
     }
 
@@ -743,7 +743,7 @@ function updateHeroHeader() {
   const heroId = selections.current_hero;
 
   if (!heroId) {
-    if (nameEl) nameEl.textContent = "Выберите героя…";
+    if (nameEl) nameEl.textContent = window.t('select_hero');
     if (preview) { preview.removeAttribute("src"); preview.load(); }
     return;
   }
@@ -864,9 +864,9 @@ function renderHeroSlots(heroId) {
         return btn;
       };
 
-      if (hasBaseSlots) switchWrapper.appendChild(createPersonaBtn("0", "Основа"));
+      if (hasBaseSlots) switchWrapper.appendChild(createPersonaBtn("0", window.t('base_persona')));
       const sortedPersonas = Array.from(availablePersonas).sort((a,b) => Number(a) - Number(b));
-      for (const p of sortedPersonas) switchWrapper.appendChild(createPersonaBtn(p, `Персона ${p}`));
+      for (const p of sortedPersonas) switchWrapper.appendChild(createPersonaBtn(p, `${window.t('persona_prefix')} ${p}`));
 
       frag.appendChild(switchWrapper);
     }
@@ -941,7 +941,7 @@ function renderHeroSlots(heroId) {
     let item = selId ? list.find((i) => i.id === selId) : list.find((i) => i.name.toLowerCase().includes("default"));
 
     if (valNode) {
-      valNode.textContent = item ? item.name : "Стандарт";
+      valNode.textContent = item ? item.name : window.t('standard');
       valNode.style.color = getItemColor(item);
     }
 
@@ -960,7 +960,7 @@ function renderHeroSlots(heroId) {
     if (effNode) {
       const effSelId = selections[`${heroId}_${slot}_effect`];
       const effItem = getEffectsList().find((e) => e.id === effSelId);
-      effNode.textContent = effItem ? `✨ ${effItem.name}` : "✨ Без эффекта";
+      effNode.textContent = effItem ? `✨ ${effItem.name}` : `✨ ${window.t('effect_none')}`;
     }
   }
 }
@@ -1015,6 +1015,7 @@ function showPickerModal(title, items, currentId, defaultText = "По умолч
   const titleEl = el("modal-title");
   const list = el("modal-item-list");
   const search = el("item-search");
+
   if (!titleEl || !list) return;
 
   titleEl.textContent = title;
@@ -1028,13 +1029,26 @@ function showPickerModal(title, items, currentId, defaultText = "По умолч
     if (pickerContext && pickerContext.type !== "global") {
       const noneBtn = document.createElement("button");
       noneBtn.className = "item-option none-opt";
+
+      if (!currentId) noneBtn.classList.add("selected");
       noneBtn.dataset.pickId = "";
-      noneBtn.textContent = `— ${defaultText} —`;
+
+      const baseUrl = CDN_URL ? CDN_URL.replace(/\/+$/, "") : "https://cdn.deadsouls.cc";
+      const img = document.createElement("img");
+      img.className = "item-option-thumb";
+      applyCachedImage(img, `${baseUrl}/econ/default_no_item.webp`);
+
+      const label = document.createElement("span");
+      label.className = "item-option-label";
+      label.textContent = `— ${defaultText} —`;
+
+      noneBtn.append(img, label);
       frag.appendChild(noneBtn);
     }
 
     for (const i of items) {
       if (q && !i.name.toLowerCase().includes(q)) continue;
+
       const opt = document.createElement("button");
       opt.className = "item-option";
       if (i.id === currentId) opt.classList.add("selected");
@@ -1046,9 +1060,10 @@ function showPickerModal(title, items, currentId, defaultText = "По умолч
       label.style.color = getItemColor(i);
 
       let url = getItemImageUrl(i);
+
       if (!url && pickerContext && pickerContext.type === "hero") {
-         const baseUrl = CDN_URL ? CDN_URL.replace(/\/+$/, "") : "https://cdn.deadsouls.cc";
-         url = `${baseUrl}/econ/default_no_item.webp`;
+        const baseUrl = CDN_URL ? CDN_URL.replace(/\/+$/, "") : "https://cdn.deadsouls.cc";
+        url = `${baseUrl}/econ/default_no_item.webp`;
       }
 
       if (url) {
@@ -1059,13 +1074,16 @@ function showPickerModal(title, items, currentId, defaultText = "По умолч
       } else {
         opt.append(label);
       }
+
       frag.appendChild(opt);
     }
+
     list.appendChild(frag);
   }
 
   renderList("");
   if (search) search.oninput = (e) => renderList(e.target.value);
+
   setPickerOpen(true);
 }
 
@@ -1166,7 +1184,7 @@ function updateUI() {
     if (area) { area.hidden = true; area.innerHTML = ""; }
     if (kinArea) { kinArea.hidden = true; kinArea.innerHTML = ""; }
   }
-  renderGallery("main-gallery-area", selections, "Вы пока не выбрали ни одного нестандартного предмета.");
+  renderGallery("main-gallery-area", selections, window.t('empty_gallery'));
 }
 
 function getDefaultItemId(hero, slot) {
@@ -1182,7 +1200,7 @@ function getDefaultItemId(hero, slot) {
 }
 
 async function saveToAgent() {
-  setSaveStatus("Создание VPK...", undefined);
+  setSaveStatus(window.t('vpk_building'), undefined);
   const base = getAgentBaseUrl();
   if (!base) return setSaveStatus("Задай порт на главной (шестерёнка).", "err");
   const url = `${base.replace(/\/+$/, "")}/bridge/action/mastervpk`;
@@ -1198,7 +1216,34 @@ async function saveToAgent() {
       for (const hero of Object.keys(schema.skin_changer)) {
         const prefix = `${hero}_`;
         if (key.startsWith(prefix)) {
-          if (key.endsWith("_active_persona")) continue; // Блокируем отправку персоны в VPK
+
+          // --- ЛОГИКА ДЛЯ PERSONA SELECTOR ---
+          if (key.endsWith("_active_persona")) {
+            if (val === "0") break; // Основа, предмет-персона не нужен
+
+            const heroLower = hero.toLowerCase();
+            const pList = schema.skin_changer[hero].persona_selector;
+
+            // Если у героя в схеме есть список предметов для persona_selector
+            if (pList && Array.isArray(pList) && pList.length > 0) {
+              // val обычно "1", "2" и т.д. Сопоставляем с индексом массива (1 -> индекс 0)
+              const pIndex = Math.max(0, parseInt(val, 10) - 1);
+              const pItem = pList[pIndex] || pList[0]; // Fallback на первый элемент
+
+              if (pItem && pItem.id) {
+                if (!formattedSelections.skin_changer[heroLower]) {
+                  formattedSelections.skin_changer[heroLower] = {};
+                }
+                // Записываем реальный ID предмета из схемы
+                formattedSelections.skin_changer[heroLower]["persona_selector"] = {
+                  id: String(pItem.id),
+                  style: 1
+                };
+              }
+            }
+            break; // Переходим к следующему ключу
+          }
+          // ------------------------------------
 
           const isEffect = key.endsWith("_effect");
           const slot = isEffect ? key.substring(prefix.length, key.length - 7) : key.substring(prefix.length);
@@ -1245,7 +1290,7 @@ async function saveToAgent() {
 
   try {
     const res = await fetch(url, { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: JSON.stringify(formattedSelections) });
-    if (res.ok) { setSaveStatus("VPK Создан", "ok"); setApplyVpkState(true); }
+    if (res.ok) { setSaveStatus(window.t('vpk_created'), "ok"); setApplyVpkState(true); }
     else { setSaveStatus(`Ошибка ${res.status}`, "err"); }
   } catch (e) {
     setSaveStatus("Агент недоступен (сеть / CORS).", "err");
@@ -1253,13 +1298,13 @@ async function saveToAgent() {
 }
 
 async function applyVpk() {
-  setSaveStatus("Установка VPK...", undefined);
+  setSaveStatus(window.t('vpk_installing'), undefined);
   const base = getAgentBaseUrl();
   if (!base) return setSaveStatus("Задай порт на главной.", "err");
 
   try {
     const res = await fetch(`${base.replace(/\/+$/, "")}/bridge/action/applyvpk`, { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: "{}" });
-    if (res.ok) setSaveStatus("VPK Установлен", "ok");
+    if (res.ok) setSaveStatus(window.t('vpk_installed'), "ok");
     else setSaveStatus(`Ошибка ${res.status}`, "err");
   } catch (e) { setSaveStatus("Агент недоступен.", "err"); }
 }
@@ -1382,7 +1427,7 @@ async function exportGalleryImages() {
   if (!btn) return;
 
   const originalText = btn.textContent;
-  btn.textContent = "Создание...";
+  btn.textContent = window.t('generating');
   btn.disabled = true;
 
   try {

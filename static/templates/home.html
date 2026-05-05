@@ -226,6 +226,7 @@
       }
     </style>
     <script src="../scripts/page-fadein.js"></script>
+    <script src="../scripts/i18n.js"></script>
   </head>
   <body>
     <div class="noise" aria-hidden="true"></div>
@@ -238,6 +239,11 @@
           <span class="logo-sub">Home</span>
         </a>
         <div class="topbar-end">
+          <select class="input lang-switcher" style="width: auto; padding: 0.2rem 0.5rem; height: 2.35rem; cursor: pointer; background: var(--bg-elevated); margin-right: 12px; margin-left: 12px;">
+            <option value="ru">🇷🇺 RU</option>
+            <option value="uk">🇺🇦 UK</option>
+            <option value="en">🇬🇧 EN</option>
+          </select>
           <a class="btn ghost btn-with-icon" href="/panel" id="nav-panel-btn" title="Панель">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect width="7" height="9" x="3" y="3" rx="1"/>
@@ -245,7 +251,7 @@
               <rect width="7" height="9" x="14" y="12" rx="1"/>
               <rect width="7" height="5" x="3" y="16" rx="1"/>
             </svg>
-            Панель
+            <span data-i18n="nav_panel">Панель</span>
           </a>
         </div>
       </header>
@@ -253,71 +259,71 @@
 
     <main>
       <section class="section" aria-labelledby="label-dashboard">
-        <span id="label-dashboard" class="section-label section-label--fat">Личный кабинет</span>
+        <span id="label-dashboard" class="section-label section-label--fat" data-i18n="dashboard">Личный кабинет</span>
 
         <div id="login-section" class="card auth-prompt-card" style="display: none;">
-            <h3>Требуется авторизация</h3>
-            <p>Для управления подпиской и оплаты необходимо войти в аккаунт.</p>
+            <h3 data-i18n="auth_req">Требуется авторизация</h3>
+            <p data-i18n="auth_desc">Для управления подпиской и оплаты необходимо войти в аккаунт.</p>
             <a id="tg-login-button" href="#" class="telegram-button">
                 <img src="https://telegram.org/img/t_logo.png" width="24" height="24" alt="TG">
-                Войти через Telegram
+                <span data-i18n="login_tg">Войти через Telegram</span>
             </a>
         </div>
 
         <div id="dashboard-content" style="display: none;">
           <div class="dashboard-grid">
             <div class="card">
-              <h3 class="card-title">Твой аккаунт</h3>
+              <h3 class="card-title" data-i18n="your_account">Твой аккаунт</h3>
               <div class="field-row" style="margin-top: 16px;">
-                <span class="muted small">Статус подписки:</span>
+                <span class="muted small" data-i18n="sub_status">Статус подписки:</span>
                 <div><span class="status-badge" id="sub-status">Проверка...</span></div>
               </div>
               <div class="field-row">
-                <span class="muted small">Истекает:</span>
+                <span class="muted small" data-i18n="expires">Истекает:</span>
                 <p style="font-family: 'IBM Plex Mono', monospace;" id="sub-end-date">...</p>
               </div>
               <div class="field-row">
-                <span class="muted small">HWID:</span>
+                <span class="muted small" data-i18n="hwid_label">HWID:</span>
                 <p style="font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; cursor: pointer; transition: color 0.2s ease;" id="user-hwid" title="Нажмите, чтобы показать/скрыть">...</p>
               </div>
               <div class="field-row">
-                <span class="muted small">Уникальный ID:</span>
+                <span class="muted small" data-i18n="unique_id">Уникальный ID:</span>
                 <p style="font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem;" id="user-internal-id">Загрузка...</p>
               </div>
               <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
-                <button type="button" class="btn ghost" id="btn-logout" style="display: none; width: 100%; justify-content: center; color: #f85149; border-color: rgba(248, 81, 73, 0.35);">
+                <button type="button" class="btn ghost" id="btn-logout" style="display: none; width: 100%; justify-content: center; color: #f85149; border-color: rgba(248, 81, 73, 0.35);" data-i18n="logout">
                   Выйти из аккаунта
                 </button>
               </div>
               <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
-                <span class="label" style="display: block; margin-bottom: 8px;">Активация Gift-кода</span>
+                <span class="label" style="display: block; margin-bottom: 8px;" data-i18n="activate_gift_title">Активация Gift-кода</span>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
                   <input type="text" id="gift-code-input" class="input" placeholder="DS-XXXX-XXXX-XXXX" style="text-transform: uppercase; text-align: center; letter-spacing: 2px;">
-                  <button type="button" class="btn primary" id="btn-apply-gift" style="width: 100%; padding: 10px;">Активировать</button>
+                  <button type="button" class="btn primary" id="btn-apply-gift" style="width: 100%; padding: 10px;" data-i18n="btn_apply">Активировать</button>
                 </div>
               </div>
             </div>
 
             <div class="card">
-              <h3 class="card-title">Оформление подписки</h3>
-              <p class="muted small" style="margin-bottom: 20px;">
+              <h3 class="card-title" data-i18n="checkout">Оформление подписки</h3>
+              <p class="muted small" style="margin-bottom: 20px;" data-i18n="checkout_desc">
                 Выбери период подписки. Доступ к ItemSettings выдается моментально после оплаты.
               </p>
 
               <div class="plans-grid" id="plans-container"></div>
 
               <div class="checkout-section">
-                <span class="label" style="margin-bottom: 12px; display: block;">Выберите способ оплаты</span>
+                <span class="label" style="margin-bottom: 12px; display: block;" data-i18n="choose_payment">Выберите способ оплаты</span>
 
                 <div class="payment-mosaic" id="payment-methods-grid">
                   <article class="feat-card payment-method-card active" data-method="funpay" role="button" tabindex="0">
                     <span class="feat-title">Funpay</span>
-                    <span class="feat-desc">Оплата в RUB, USD, UAH, USDT и другие</span>
+                    <span class="feat-desc" data-i18n="funpay_desc">Оплата в RUB, USD, UAH, USDT и другие</span>
                   </article>
 
                   <article class="feat-card payment-method-card" data-method="cryptocloud" role="button" tabindex="0">
                     <span class="feat-title">Cryptocloud</span>
-                    <span class="feat-desc">BTC, ETH, USDT и другие</span>
+                    <span class="feat-desc" data-i18n="crypto_desc">BTC, ETH, USDT и другие</span>
                   </article>
 
 <!--                  <article class="feat-card payment-method-card" data-method="monobank" role="button" tabindex="0">-->
@@ -327,16 +333,16 @@
 
                   <article class="feat-card payment-method-card" data-method="agent" role="button" tabindex="0">
                     <span class="feat-title">Агент</span>
-                    <span class="feat-desc">Вся валюта мира</span>
+                    <span class="feat-desc" data-i18n="agent_desc">Вся валюта мира</span>
                   </article>
                 </div>
 
                 <div class="total-price-row" style="margin-top: 32px;">
-                  <span>Итого к оплате:</span>
+                  <span data-i18n="total">Итого к оплате:</span>
                   <span class="total-value" id="total-price">...</span>
                 </div>
 
-                <button type="button" class="btn primary" id="btn-checkout" style="width: 100%;">
+                <button type="button" class="btn primary" id="btn-checkout" style="width: 100%;" data-i18n="btn_pay">
                   Перейти к оплате
                 </button>
               </div>
@@ -493,8 +499,8 @@
               const panelBtn = document.getElementById('nav-panel-btn');
 
               if (data.subscription_end_date === 'None' || !data.subscription_end_date) {
-                subDateEl.textContent = 'Нет активной подписки';
-                subStatusEl.textContent = 'Неактивна';
+                subDateEl.textContent = window.t('no_sub');
+                subStatusEl.textContent = window.t('status_inactive');
                 subStatusEl.className = 'status-badge inactive';
 
                 if (panelBtn) {
@@ -507,8 +513,8 @@
                 const now = new Date();
 
                 if (subDate < now) {
-                  subDateEl.textContent = 'Подписка истекла';
-                  subStatusEl.textContent = 'Истекла';
+                  subDateEl.textContent = window.t('sub_expired');
+                  subStatusEl.textContent = window.t('status_inactive');
                   subStatusEl.className = 'status-badge inactive';
 
                   if (panelBtn) {
@@ -518,7 +524,7 @@
                   }
                 } else {
                   subDateEl.textContent = data.subscription_end_date.split(' ')[0];
-                  subStatusEl.textContent = 'Активна';
+                  subStatusEl.textContent = window.t('status_active');
                   subStatusEl.className = 'status-badge';
 
                   if (panelBtn) {
@@ -531,7 +537,7 @@
 
               // -- НОВАЯ Обработка HWID --
               if (data.hwid === 'None' || !data.hwid) {
-                hwidEl.textContent = 'Не привязан';
+                hwidEl.textContent = window.t('hwid_unbound');
                 hwidEl.style.cursor = 'default';
                 hwidEl.title = '';
               } else {
