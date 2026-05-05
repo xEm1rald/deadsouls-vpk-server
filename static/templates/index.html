@@ -1,20 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="DeadSouls ItemSettings — продвинутый VPK Skinchanger. Универсальная работа с любыми VPK."
-    />
+    <meta name="description" content="DeadSouls ItemSettings — продвинутый VPK Skinchanger. Универсальная работа с любыми VPK." />
     <title>DeadSouls | ItemSettings — VPK Skinchanger</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="icon" href="https://cdn.deadsouls.cc/website/favicon.ico">
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="../styles/styles.css" />
     <script src="../scripts/i18n.js"></script>
   </head>
@@ -29,11 +23,6 @@
         <span class="logo-sub"></span>
       </a>
         <div class="topbar-end">
-          <select class="input lang-switcher" style="width: auto; padding: 0.2rem 0.5rem; height: 2.35rem; cursor: pointer; background: var(--bg-elevated); margin-right: 12px; margin-left: 12px;">
-            <option value="ru">🇷🇺 RU</option>
-            <option value="uk">🇺🇦 UK</option>
-            <option value="en">🇬🇧 EN</option>
-          </select>
           <nav class="nav">
             <a href="#intro" data-i18n="nav_intro">О продукте</a>
             <a href="#features" data-i18n="nav_features">Возможности</a>
@@ -75,6 +64,9 @@
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
           </a>
+          <button type="button" class="btn gear-btn home-icon-btn lang-switcher-btn">
+            RU
+          </button>
         </div>
       </header>
 
@@ -418,11 +410,12 @@
         <p class="muted small" style="text-align: center; margin-bottom: 2rem;" data-i18n="payments_sub">Мы поддерживаем большинство популярных методов оплаты для вашего удобства.</p>
 
         <div class="payment-grid-main">
+          <!-- 01 Funpay -->
           <article class="feat-card static-card">
             <span class="feat-num">01</span>
             <span class="feat-title">Funpay</span>
             <span class="feat-desc">
-              <strong>Валюты:</strong> RUB, USD, UAH, USDT.<br>
+              <strong data-i18n="pay_currencies">Валюты:</strong> RUB, USD, UAH, USDT.<br>
               <div class="network-icons-row">
                 <div class="net-badge">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -437,29 +430,30 @@
                 </div>
                 <div class="net-badge">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                  По номеру карты
+                  <span data-i18n="pay_card">По номеру карты</span>
                 </div>
                 <div class="net-badge" title="Система Быстрых Платежей">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M12 3v18"/></svg>
-                  СБП QR
+                  <span data-i18n="pay_sbp">СБП QR</span>
                 </div>
                 <div class="net-badge">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M6 12h12"/></svg>
-                  Криптовалюта
+                  <span data-i18n="pay_crypto">Криптовалюта</span>
                 </div>
                 <div class="net-badge">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"/></svg>
-                  Баланс сайта
+                  <span data-i18n="pay_balance">Баланс сайта</span>
                 </div>
               </div>
             </span>
           </article>
 
+          <!-- 02 Cryptocloud -->
           <article class="feat-card static-card">
             <span class="feat-num">02</span>
             <span class="feat-title">Cryptocloud</span>
             <div class="feat-desc">
-              <strong>Криптовалюты:</strong> Прямые переводы в популярных блокчейнах.
+              <strong data-i18n="pay_crypto_label">Криптовалюты:</strong> <span data-i18n="pay_crypto_sub">Прямые переводы в популярных блокчейнах.</span>
 
               <div class="network-icons-row">
                 <div class="net-badge" title="Binance Smart Chain">
@@ -490,40 +484,31 @@
             </div>
           </article>
 
-<!--          <article class="feat-card static-card">-->
-<!--            <span class="feat-num">03</span>-->
-<!--            <span class="feat-title">Monobank (Банка)</span>-->
-<!--            <span class="feat-desc">-->
-<!--              <strong>Валюта:</strong> UAH.<br>-->
-<!--              <div class="network-icons-row">-->
-<!--                <div class="net-badge">-->
-<!--                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">-->
-<!--                    <path xmlns="http://www.w3.org/2000/svg" d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.09997 22C7.78997 22.05 6.79997 20.68 5.95997 19.47C4.24997 17 2.93997 12.45 4.69997 9.39C5.56997 7.87 7.12997 6.91 8.81997 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/></svg>-->
-<!--                  Apple Pay-->
-<!--                </div>-->
-<!--                <div class="net-badge" title="Google Pay">-->
-<!--                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">-->
-<!--                    <path d="M12 11h8v1c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8c2.187 0 4.168.879 5.61 2.304l-2.828 2.828A3.99 3.99 0 0 0 12 7c-2.209 0-4 1.791-4 4s1.791 4 4 4c1.858 0 3.411-1.27 3.858-3H12v-1z"/>-->
-<!--                  </svg>-->
-<!--                  Google Pay-->
-<!--                </div>-->
-<!--                <div class="net-badge">-->
-<!--                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z"/></svg>-->
-<!--                  Mono Pay-->
-<!--                </div>-->
-<!--                <div class="net-badge">-->
-<!--                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>-->
-<!--                  По номеру карты-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </span>-->
-<!--          </article>-->
+          <!-- 03 Агент -->
+          <article class="feat-card static-card">
+            <span class="feat-num">03</span>
+            <span class="feat-title" data-i18n="agent_desc">Агент</span>
+            <div class="feat-desc">
+              <strong data-i18n="pay_agent_label">Оплата:</strong> <span data-i18n="pay_agent_sub">через платёжного агента с поддержкой всех мировых валют.</span>
+
+              <div class="network-icons-row">
+                <div class="net-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="2" y1="12" x2="22" y2="12"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                  </svg>
+                  <span data-i18n="pay_world_curr">Все мировые валюты</span>
+                </div>
+              </div>
+            </div>
+          </article>
         </div>
       </section>
 
       <section id="access" class="section" style="display: flex; flex-direction: column; align-items: center;">
-        <h2 class="section-title" style="text-align: center;">Присоединиться</h2>
-        <p class="muted" style="text-align: center; max-width: 500px; margin-bottom: 2.5rem;">
+        <h2 class="section-title" style="text-align: center;" data-i18n="access_title">Присоединиться</h2>
+        <p class="muted" style="text-align: center; max-width: 500px; margin-bottom: 2.5rem;" data-i18n="access_desc">
           Скачивание софта, оплата и генерация уникальных билдов в личном кабинете. Никаких скучных регистраций — вход в один клик.
         </p>
 
@@ -531,7 +516,7 @@
 
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 1.5rem;">
             <div>
-              <h3 style="margin: 0 0 0.25rem 0; font-size: 1.25rem; font-weight: 500;">Личный кабинет</h3>
+              <h3 style="margin: 0 0 0.25rem 0; font-size: 1.25rem; font-weight: 500;" data-i18n="access_card_title">Личный кабинет</h3>
               <p class="muted small" style="margin: 0;">DeadSouls | ItemSettings</p>
             </div>
             <div style="opacity: 0.3;">
@@ -582,8 +567,8 @@
     >
       <div class="success-panel">
         <div class="success-ring" aria-hidden="true"></div>
-        <h2 id="success-title" class="success-title">Связь установлена</h2>
-        <p class="success-sub">
+        <h2 id="success-title" class="success-title" data-i18n="bridge_success_title">Связь установлена</h2>
+        <p class="success-sub" data-i18n="bridge_success_desc">
           Локальный агент ответил. Сессия активна на этой машине.
         </p>
       </div>
@@ -597,7 +582,7 @@
     >
       <div class="settings-inner">
         <header class="settings-head">
-          <h2 class="settings-title">Конфигурация</h2>
+          <h2 class="settings-title" data-i18n="cfg_title">Конфигурация</h2>
           <button
             type="button"
             class="icon-btn"
@@ -607,15 +592,14 @@
             ×
           </button>
         </header>
-        <p class="muted small">
+        <p class="muted small" data-i18n="cfg_desc">
           Параметры собираются в браузере и отправляются агенту через
-          <code>POST</code> JSON. Путь и формат должны совпадать с твоим
-          приложением.
+          <code>POST</code> JSON.
         </p>
 
         <form id="config-form" class="config-form">
           <div class="field-row">
-            <label class="label" for="cfg-endpoint">Путь POST конфига</label>
+            <label class="label" for="cfg-endpoint" data-i18n="cfg_endpoint">Путь POST конфига</label>
             <input
               type="text"
               id="cfg-endpoint"
@@ -626,7 +610,7 @@
             />
           </div>
           <div class="field-row">
-            <label class="label" for="cfg-app-name">Имя приложения</label>
+            <label class="label" for="cfg-app-name" data-i18n="cfg_app_name">Имя приложения</label>
             <input
               type="text"
               id="cfg-app-name"
@@ -636,7 +620,7 @@
             />
           </div>
           <div class="field-row">
-            <label class="label" for="cfg-mode">Режим</label>
+            <label class="label" for="cfg-mode" data-i18n="cfg_mode">Режим</label>
             <select id="cfg-mode" class="input select">
               <option value="standard">standard</option>
               <option value="quiet">quiet</option>
@@ -645,12 +629,10 @@
           </div>
           <div class="field-row checkbox-row">
             <input type="checkbox" id="cfg-auto" checked />
-            <label for="cfg-auto">Автозапуск моста при старте агента</label>
+            <label for="cfg-auto" data-i18n="cfg_auto">Автозапуск моста при старте агента</label>
           </div>
           <div class="field-row">
-            <label class="label" for="cfg-extra"
-              >Доп. JSON (сливается в тело запроса)</label
-            >
+            <label class="label" for="cfg-extra" data-i18n="cfg_extra">Доп. JSON (сливается в тело запроса)</label>
             <textarea
               id="cfg-extra"
               class="input textarea"
@@ -660,7 +642,7 @@
             ></textarea>
           </div>
           <div class="settings-actions">
-            <button type="submit" class="btn primary" id="btn-send-config">
+            <button type="submit" class="btn primary" id="btn-send-config" data-i18n="cfg_apply">
               Применить к локальному агенту
             </button>
           </div>

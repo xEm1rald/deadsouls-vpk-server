@@ -137,19 +137,14 @@ const DEFAULT_VALUES = {
   versus_screens: "Default Versus Screen", wards: "Default Ward", weathers: "Default Weather"
 };
 
-const GLOBAL_CATEGORY_TITLE = {
-  ancients: "Древние", announcers: "Аннонсер", couriers: "Курьер", cursors: "Курсоры",
-  dire_creep: "Крипы (Dire)", dire_towers: "Башни (Dire)", emblems: "Эмблемы", huds: "Интерфейс (HUD)",
-  kill_banners: "Сообщения о серии убийств", killstreaks: "Киллстрики", loading_screens: "Загрузочные экраны",
-  megakills: "Мега-киллы", music_packs: "Музыка", rad_creep: "Крипы (Radiant)", rad_towers: "Башни (Radiant)",
-  river_vials: "Виалы реки", roshans: "Рошан", shaders: "Шейдеры экрана", terrains: "Ландшафты",
-  tormentors: "Торменторы", versus_screens: "Экраны Versus", wards: "Варды", weathers: "Погода",
-};
+function globalCategoryTitle(catId) {
+  return window.t('cat_' + catId) || catId.split("_").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+}
 
 const GLOBAL_SECTION_LAYOUT = [
-  { title: "Звук", items: ["music_packs", "announcers", "megakills"] },
-  { title: "Интерфейс", items: ["loading_screens", "versus_screens", "huds", "killstreaks", "cursors",  "kill_banners"] },
-  { title: "Окружение", items: ["couriers", "wards", "terrains", "dire_creep", "rad_creep", "dire_towers", "rad_towers", "ancients", "roshans", "tormentors", "shaders", "weathers", "emblems", "river_vials"] }
+  { titleKey: "cat_sound", items: ["music_packs", "announcers", "megakills"] },
+  { titleKey: "cat_interface", items: ["loading_screens", "versus_screens", "huds", "killstreaks", "cursors",  "kill_banners"] },
+  { titleKey: "cat_env", items: ["couriers", "wards", "terrains", "dire_creep", "rad_creep", "dire_towers", "rad_towers", "ancients", "roshans", "tormentors", "shaders", "weathers", "emblems", "river_vials"] }
 ];
 
 function getItemColor(item) {
@@ -168,10 +163,6 @@ function getGlobalCategoryIds() {
   return Object.keys(cats).filter((k) => Array.isArray(cats[k]));
 }
 
-function globalCategoryTitle(catId) {
-  return GLOBAL_CATEGORY_TITLE[catId] || catId.split("_").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
-}
-
 function getConfiguredGlobalSections() {
   const available = new Set(getGlobalCategoryIds());
   const used = new Set();
@@ -180,11 +171,11 @@ function getConfiguredGlobalSections() {
   for (const section of GLOBAL_SECTION_LAYOUT) {
     const items = section.items.filter((id) => available.has(id) && !used.has(id));
     for (const id of items) used.add(id);
-    if (items.length) sections.push({ title: section.title, items });
+    if (items.length) sections.push({ title: window.t(section.titleKey), items });
   }
 
   const uncategorized = [...available].filter((id) => !used.has(id)).sort((a, b) => a.localeCompare(b, "en"));
-  if (uncategorized.length) sections.push({ title: "Остальное", items: uncategorized });
+  if (uncategorized.length) sections.push({ title: window.t('cat_other'), items: uncategorized });
   return sections;
 }
 
@@ -219,7 +210,7 @@ function buildGlobalTile(catId) {
   const val = document.createElement("span");
   val.className = "tile-value";
   val.id = `val-${catId}`;
-  val.textContent = DEFAULT_VALUES[catId] || "По умолчанию";
+  val.textContent = DEFAULT_VALUES[catId] || window.t('default_val');
 
   const thumb = document.createElement("img");
   thumb.className = "tile-thumb";
@@ -288,7 +279,7 @@ function buildGalleryData(sourceData) {
 
             heroesData[hero].push({
               slotName: visualSlotName,
-              itemName: item ? item.name : "Неизвестный предмет",
+              itemName: item ? item.name : window.t('default_item'),
               url: imgUrl,
               isEffect: false,
               color: getItemColor(item)
@@ -300,7 +291,7 @@ function buildGalleryData(sourceData) {
             const effItem = effList.find((e) => e.id === selectedEffId);
             heroesData[hero].push({
               slotName: visualSlotName,
-              itemName: effItem ? `✨ ${effItem.name}` : "✨ Неизвестный эффект",
+              itemName: effItem ? `✨ ${effItem.name}` : window.t('unknown_effect'),
               url: "",
               isEffect: true
             });
@@ -385,7 +376,7 @@ function renderGallery(containerId, sourceData, emptyMessage) {
     return row;
   }
 
-  const globalsRow = buildRow("Глобальные предметы", globals, true);
+  const globalsRow = buildRow(window.t('global_items'), globals, true);
   if (globalsRow) frag.appendChild(globalsRow);
 
   const heroesKeys = Object.keys(heroesData).sort();
@@ -520,7 +511,7 @@ function renderPresetSelect() {
 
   const placeholder = document.createElement("option");
   placeholder.value = "";
-  placeholder.textContent = names.length ? "(Текущий пресет)" : "Пресетов пока нет";
+  placeholder.textContent = names.length ? window.t('preset_current') : window.t('presets_empty');
   select.appendChild(placeholder);
 
   for (const name of names) {
@@ -554,50 +545,49 @@ function clearActivePreset() {
 function savePresetFromInput() {
   const input = el("preset-name");
   const name = input.value.trim().replace(/\s+/g, " ").slice(0, 48);
-  if (!name) return setPresetStatus("Введите имя пресета.", "err");
+  if (!name) return setPresetStatus(window.t('preset_enter_name'), "err");
 
   presets[name] = cloneSelections(selections);
   savePresetsLocal();
   localStorage.setItem(LS_ACTIVE_PRESET, name);
   renderPresetSelect();
   input.value = "";
-  setPresetStatus(`Пресет "${name}" сохранен.`, "ok");
+  setPresetStatus(window.t('preset_saved').replace('{name}', name), "ok");
 }
 
 function loadSelectedPreset() {
   const select = el("preset-select");
   const name = select?.value;
-  if (!name || !presets[name]) return setPresetStatus("Выберите сохраненный пресет.", "err");
+  if (!name || !presets[name]) return setPresetStatus(window.t('preset_select_req'), "err");
 
   selections = cloneSelections(presets[name]);
   if (!selections.current_hero) selections.current_hero = DEFAULT_VALUES.current_hero;
   saveSelectionsLocal();
   localStorage.setItem(LS_ACTIVE_PRESET, name);
   updateUI();
-  setPresetStatus(`Пресет "${name}" загружен.`, "ok");
+  setPresetStatus(window.t('preset_loaded').replace('{name}', name), "ok");
   setApplyVpkState(false);
 }
 
 function deleteSelectedPreset() {
   const select = el("preset-select");
   const name = select?.value;
-  if (!name || !presets[name]) return setPresetStatus("Нечего удалять.", "err");
+  if (!name || !presets[name]) return setPresetStatus(window.t('preset_none_delete'), "err");
 
   delete presets[name];
   savePresetsLocal();
   if (localStorage.getItem(LS_ACTIVE_PRESET) === name) localStorage.removeItem(LS_ACTIVE_PRESET);
   renderPresetSelect();
-  setPresetStatus(`Пресет "${name}" удален.`, "ok");
+  setPresetStatus(window.t('preset_deleted').replace('{name}', name), "ok");
 }
 
-// ВОЗВРАЩЕНО ИЗ ОРИГИНАЛА: Экспорт пресета
 function exportSelectedPreset() {
   const select = el("preset-select");
   if (!select) return;
   const name = select.value;
 
   if (!name || !presets[name]) {
-    setSaveStatus("Сначала выберите пресет для скачивания.", "err");
+    setSaveStatus(window.t('preset_select_dl'), "err");
     return;
   }
 
@@ -616,10 +606,9 @@ function exportSelectedPreset() {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 
-  setSaveStatus(`Пресет "${name}" скачан.`, "ok");
+  setSaveStatus(window.t('preset_downloaded').replace('{name}', name), "ok");
 }
 
-// ВОЗВРАЩЕНО ИЗ ОРИГИНАЛА: Импорт пресетов через drag & drop
 function setupDragAndDrop() {
   document.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -643,7 +632,7 @@ function setupDragAndDrop() {
     const file = e.dataTransfer.files[0];
 
     if (!file.name.endsWith('.preset')) {
-      setSaveStatus("Неверный формат. Используйте файлы .preset", "err");
+      setSaveStatus(window.t('invalid_format'), "err");
       return;
     }
 
@@ -665,14 +654,14 @@ function setupDragAndDrop() {
           renderPresetPreview(presetName);
         }
 
-        setSaveStatus(`Пресет "${presetName}" успешно загружен!`, "ok");
+        setSaveStatus(window.t('preset_imported').replace('{name}', presetName), "ok");
 
         const presetsSection = el("presets-section");
         if (presetsSection && presetsSection.hidden) {
            presetsSection.hidden = false;
         }
       } catch (err) {
-        setSaveStatus("Ошибка файла: код пресета поврежден.", "err");
+        setSaveStatus(window.t('preset_corrupted'), "err");
       }
     };
     reader.readAsText(file);
@@ -1011,7 +1000,7 @@ function renderHeroGrid() {
   grid.appendChild(frag);
 }
 
-function showPickerModal(title, items, currentId, defaultText = "По умолчанию") {
+function showPickerModal(title, items, currentId, defaultText = window.t('default_val')) {
   const titleEl = el("modal-title");
   const list = el("modal-item-list");
   const search = el("item-search");
@@ -1090,13 +1079,13 @@ function showPickerModal(title, items, currentId, defaultText = "По умолч
 function openGlobalPicker(catId) {
   const items = asItemList(schema?.categories?.[catId]);
   pickerContext = { type: "global", id: catId };
-  showPickerModal(globalCategoryTitle(catId), items, selections[catId], DEFAULT_VALUES[catId] || "По умолчанию");
+  showPickerModal(globalCategoryTitle(catId), items, selections[catId], DEFAULT_VALUES[catId] || window.t('default_val'));
 }
 
 function openHeroPicker(heroId, slot) {
   const items = asItemList(getHeroSlots(heroId)?.[slot]);
   pickerContext = { type: "hero", hero: heroId, slot };
-  showPickerModal(slot, items, selections[`${heroId}_${slot}`], "Стандарт");
+  showPickerModal(slot, items, selections[`${heroId}_${slot}`], window.t('standard'));
 }
 
 function applyPick(id) {
@@ -1136,7 +1125,7 @@ function renderHeroKinetics(heroId) {
     kinArea.innerHTML = "";
     const headerFlex = document.createElement("div");
     headerFlex.style.display = "flex"; headerFlex.style.justifyContent = "space-between"; headerFlex.style.marginBottom = "12px";
-    const title = document.createElement("span"); title.className = "label"; title.textContent = "Кинетические самоцветы";
+    const title = document.createElement("span"); title.className = "label"; title.textContent = window.t('kinetic_gems');
     const gemIcon = document.createElement("img");
     const baseUrl = CDN_URL ? CDN_URL.replace(/\/+$/, "") : "https://cdn.deadsouls.cc";
     gemIcon.src = `${baseUrl}/econ/gem_animation_png.webp`;
@@ -1173,8 +1162,13 @@ function renderHeroKinetics(heroId) {
 }
 
 function updateUI() {
+  // Добавляем перерисовку сеток при смене языка, чтобы категории мгновенно переводились
+  renderGlobalGrid();
+  renderPresetSelect();
+
   updateGlobalTiles();
   updateHeroHeader();
+
   const heroId = selections.current_hero;
   if (heroId) {
     renderHeroSlots(heroId);
@@ -1186,6 +1180,8 @@ function updateUI() {
   }
   renderGallery("main-gallery-area", selections, window.t('empty_gallery'));
 }
+
+window.updateUI = updateUI;
 
 function getDefaultItemId(hero, slot) {
   if (!schema?.effect_targets) return null;
@@ -1202,7 +1198,7 @@ function getDefaultItemId(hero, slot) {
 async function saveToAgent() {
   setSaveStatus(window.t('vpk_building'), undefined);
   const base = getAgentBaseUrl();
-  if (!base) return setSaveStatus("Задай порт на главной (шестерёнка).", "err");
+  if (!base) return setSaveStatus(window.t('agent_port_req'), "err");
   const url = `${base.replace(/\/+$/, "")}/bridge/action/mastervpk`;
 
   const formattedSelections = { skin_changer: {}, effect_targets: {} };
@@ -1217,33 +1213,28 @@ async function saveToAgent() {
         const prefix = `${hero}_`;
         if (key.startsWith(prefix)) {
 
-          // --- ЛОГИКА ДЛЯ PERSONA SELECTOR ---
           if (key.endsWith("_active_persona")) {
-            if (val === "0") break; // Основа, предмет-персона не нужен
+            if (val === "0") break;
 
             const heroLower = hero.toLowerCase();
             const pList = schema.skin_changer[hero].persona_selector;
 
-            // Если у героя в схеме есть список предметов для persona_selector
             if (pList && Array.isArray(pList) && pList.length > 0) {
-              // val обычно "1", "2" и т.д. Сопоставляем с индексом массива (1 -> индекс 0)
               const pIndex = Math.max(0, parseInt(val, 10) - 1);
-              const pItem = pList[pIndex] || pList[0]; // Fallback на первый элемент
+              const pItem = pList[pIndex] || pList[0];
 
               if (pItem && pItem.id) {
                 if (!formattedSelections.skin_changer[heroLower]) {
                   formattedSelections.skin_changer[heroLower] = {};
                 }
-                // Записываем реальный ID предмета из схемы
                 formattedSelections.skin_changer[heroLower]["persona_selector"] = {
                   id: String(pItem.id),
                   style: 1
                 };
               }
             }
-            break; // Переходим к следующему ключу
+            break;
           }
-          // ------------------------------------
 
           const isEffect = key.endsWith("_effect");
           const slot = isEffect ? key.substring(prefix.length, key.length - 7) : key.substring(prefix.length);
@@ -1291,25 +1282,24 @@ async function saveToAgent() {
   try {
     const res = await fetch(url, { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: JSON.stringify(formattedSelections) });
     if (res.ok) { setSaveStatus(window.t('vpk_created'), "ok"); setApplyVpkState(true); }
-    else { setSaveStatus(`Ошибка ${res.status}`, "err"); }
+    else { setSaveStatus(`${window.t('agent_error')} ${res.status}`, "err"); }
   } catch (e) {
-    setSaveStatus("Агент недоступен (сеть / CORS).", "err");
+    setSaveStatus(window.t('agent_unavail'), "err");
   }
 }
 
 async function applyVpk() {
   setSaveStatus(window.t('vpk_installing'), undefined);
   const base = getAgentBaseUrl();
-  if (!base) return setSaveStatus("Задай порт на главной.", "err");
+  if (!base) return setSaveStatus(window.t('agent_port_req'), "err");
 
   try {
     const res = await fetch(`${base.replace(/\/+$/, "")}/bridge/action/applyvpk`, { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: "{}" });
     if (res.ok) setSaveStatus(window.t('vpk_installed'), "ok");
-    else setSaveStatus(`Ошибка ${res.status}`, "err");
-  } catch (e) { setSaveStatus("Агент недоступен.", "err"); }
+    else setSaveStatus(`${window.t('agent_error')} ${res.status}`, "err");
+  } catch (e) { setSaveStatus(window.t('agent_unavail'), "err"); }
 }
 
-// ВОЗВРАЩЕНО ИЗ ОРИГИНАЛА: Закрытие на Escape и клик вне окна
 function onDocumentKeydown(e) {
   if (e.key !== "Escape") return;
   const galleryModal = el("gallery-section");
@@ -1340,7 +1330,7 @@ function wireEvents() {
     if (section) {
       section.hidden = !section.hidden;
       document.body.style.overflow = section.hidden ? "" : "hidden";
-      if (!section.hidden) renderGallery("main-gallery-area", selections, "Пусто.");
+      if (!section.hidden) renderGallery("main-gallery-area", selections, window.t('empty_gallery'));
     }
   });
 
@@ -1360,7 +1350,6 @@ function wireEvents() {
   el("btn-reset-all")?.addEventListener("click", resetSelectionsToDefault);
   el("preset-select")?.addEventListener("change", (e) => renderPresetPreview(e.target.value));
 
-  // ВОЗВРАЩЕНО ИЗ ОРИГИНАЛА: Кнопки экспорта
   el("btn-preset-export")?.addEventListener("click", exportSelectedPreset);
   el("btn-export-gallery")?.addEventListener("click", () => void exportGalleryImages());
   setupDragAndDrop();
@@ -1390,14 +1379,13 @@ function wireEvents() {
     saveSelectionsLocal(); setHeroListOpen(false); updateUI(); clearActivePreset();
   });
 
-  // ПОЧИНИЛИ ВЫБОР ЭФФЕКТОВ:
   el("hero-slots-area")?.addEventListener("click", (e) => {
     const btnEff = e.target.closest("[data-open-effect-picker]");
     if (btnEff) {
         const hero = btnEff.dataset.hero;
         const slot = btnEff.dataset.slot;
-        pickerContext = { type: "effect", hero, slot }; // Вот из-за чего ломалось!
-        return showPickerModal(`Эффект: ${slot}`, getEffectsList(), selections[`${hero}_${slot}_effect`], "Без эффекта");
+        pickerContext = { type: "effect", hero, slot };
+        return showPickerModal(`Эффект: ${slot}`, getEffectsList(), selections[`${hero}_${slot}_effect`], window.t('effect_none'));
     }
 
     const btn = e.target.closest("[data-open-hero-picker]");
@@ -1411,15 +1399,13 @@ function wireEvents() {
 
   el("btn-close-picker")?.addEventListener("click", closePicker);
 
-  // ВОЗВРАЩЕНО ИЗ ОРИГИНАЛА: Закрытие по клавишам
   document.addEventListener("keydown", onDocumentKeydown);
   el("picker-modal")?.addEventListener("click", onModalBackdropClick);
 }
 
-// ВОЗВРАЩЕНО ИЗ ОРИГИНАЛА: Экспорт картинок галереи (html2canvas)
 async function exportGalleryImages() {
   if (typeof html2canvas === "undefined") {
-    alert("Библиотека html2canvas не загружена. Проверьте подключение в HTML.");
+    alert(window.t('html2canvas_miss'));
     return;
   }
 
@@ -1435,7 +1421,7 @@ async function exportGalleryImages() {
     const heroKeys = Object.keys(heroesData).sort();
 
     if (globals.length === 0 && heroKeys.length === 0) {
-      alert("Нет выбранных предметов для экспорта.");
+      alert(window.t('export_empty'));
       return;
     }
 
@@ -1444,7 +1430,7 @@ async function exportGalleryImages() {
     let currentPage = [];
 
     if (globals.length > 0) {
-      currentPage.push({ title: "Глобальные предметы", data: globals, isGlobal: true });
+      currentPage.push({ title: window.t('global_items'), data: globals, isGlobal: true });
     }
 
     for (const h of heroKeys) {
@@ -1485,7 +1471,7 @@ async function exportGalleryImages() {
 
       const watermark = document.createElement("div");
       watermark.className = "export-watermark";
-      watermark.textContent = `@DeadSouls_VPK | ItemSettings (Часть ${i + 1} из ${pages.length})`;
+      watermark.textContent = `@DeadSouls_VPK | ItemSettings (${i + 1} / ${pages.length})`;
       exportContainer.appendChild(watermark);
 
       const imagePromises = [];
@@ -1521,13 +1507,13 @@ async function exportGalleryImages() {
             const img = document.createElement("img");
             img.className = "export-img";
             img.crossOrigin = "anonymous";
-            img.src = item.url + "?v=" + Date.now(); // Для html2canvas нужен чистый url, кэш Blob он ломает
+            img.src = item.url + "?v=" + Date.now();
 
             const promise = new Promise((resolve) => {
               img.onload = resolve;
               img.onerror = () => {
                 img.style.display = "none";
-                imgWrap.innerHTML = `<span style="font-size:2rem;color:#555;">НЕТ ФОТО</span>`;
+                imgWrap.innerHTML = `<span style="font-size:2rem;color:#555;">${window.t('no_photo')}</span>`;
                 resolve();
               };
             });
@@ -1565,12 +1551,12 @@ async function exportGalleryImages() {
         link.href = canvas.toDataURL("image/png");
         link.click();
       } catch (e) {
-        alert("Ошибка безопасности: Ваш сервер Cloudflare R2 блокирует сохранение картинок. Требуется настройка CORS на стороне R2.");
+        alert(window.t('export_cors'));
       }
       await new Promise(res => setTimeout(res, 800));
     }
   } catch (err) {
-    alert("Произошла ошибка при создании скриншотов. Проверьте консоль.");
+    alert(window.t('export_err'));
   } finally {
     btn.textContent = originalText;
     btn.disabled = false;

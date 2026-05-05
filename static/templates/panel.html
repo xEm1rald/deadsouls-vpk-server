@@ -72,11 +72,7 @@
           <span class="logo-sub">Panel</span>
         </a>
         <div class="topbar-end">
-          <select id="lang-switcher" class="input" style="width: auto; padding: 0.2rem 0.5rem; height: 2.35rem; cursor: pointer; background: var(--bg-elevated); margin-right: 12px;">
-            <option value="ru">🇷🇺 RU</option>
-            <option value="uk">🇺🇦 UK</option>
-            <option value="en">🇬🇧 EN</option>
-          </select>
+
           <span
             id="save-status"
             class="save-status muted small"
@@ -103,6 +99,9 @@
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
           </a>
+          <button type="button" class="btn ghost home-icon-btn lang-switcher-btn">
+            RU
+          </button>
         </div>
       </header>
     </div>
@@ -204,6 +203,7 @@
               <input
                 type="text"
                 class="input search-box"
+                data-i18n-placeholder="search_hero"
                 placeholder="Поиск героя…"
                 id="hero-search"
                 spellcheck="false"

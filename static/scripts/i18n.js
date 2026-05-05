@@ -172,7 +172,25 @@ const translations = {
     cat_tormentors: "Торменторы",
     cat_versus_screens: "Экраны Versus",
     cat_wards: "Варды",
-    cat_weathers: "Погода"
+    cat_weathers: "Погода",
+
+    pay_currencies: "Валюты:",
+    pay_card: "По номеру карты",
+    pay_sbp: "СБП QR",
+    pay_crypto: "Криптовалюта",
+    pay_balance: "Баланс сайта",
+    pay_crypto_label: "Криптовалюты:",
+    pay_crypto_sub: "Прямые переводы в популярных блокчейнах.",
+    pay_agent_label: "Оплата:",
+    pay_agent_sub: "через платёжного агента с поддержкой всех мировых валют.",
+    pay_world_curr: "Все мировые валюты",
+    access_card_title: "Личный кабинет",
+
+    agent_buy_msg: "Хочу купить `{plan}` скинченджера. Мой ID: `{id}`",
+    plan_7days: "7 дней",
+    plan_14days: "14 дней",
+    plan_1mon: "1 Месяц",
+    plan_life: "Lifetime"
   },
   uk: {
     nav_panel: "Панель",
@@ -339,7 +357,25 @@ const translations = {
     cat_tormentors: "Торментори",
     cat_versus_screens: "Екрани Versus",
     cat_wards: "Варди",
-    cat_weathers: "Погода"
+    cat_weathers: "Погода",
+
+    pay_currencies: "Валюти:",
+    pay_card: "За номером картки",
+    pay_sbp: "СБП QR",
+    pay_crypto: "Криптовалюта",
+    pay_balance: "Баланс сайту",
+    pay_crypto_label: "Криптовалюти:",
+    pay_crypto_sub: "Прямі перекази в популярних блокчейнах.",
+    pay_agent_label: "Оплата:",
+    pay_agent_sub: "через платіжного агента з підтримкою всіх світових валют.",
+    pay_world_curr: "Всі світові валюти",
+    access_card_title: "Особистий кабінет",
+
+    agent_buy_msg: "Хочу купити `{plan}` скінченджера. Мій ID: `{id}`",
+    plan_7days: "7 днів",
+    plan_14days: "14 днів",
+    plan_1mon: "1 Місяць",
+    plan_life: "Назавжди"
   },
   en: {
     nav_panel: "Panel",
@@ -506,7 +542,25 @@ const translations = {
     cat_tormentors: "Tormentors",
     cat_versus_screens: "Versus Screens",
     cat_wards: "Wards",
-    cat_weathers: "Weather"
+    cat_weathers: "Weather",
+
+    pay_currencies: "Currencies:",
+    pay_card: "By Card",
+    pay_sbp: "SBP QR",
+    pay_crypto: "Cryptocurrency",
+    pay_balance: "Site Balance",
+    pay_crypto_label: "Cryptocurrencies:",
+    pay_crypto_sub: "Direct transfers in popular blockchains.",
+    pay_agent_label: "Payment:",
+    pay_agent_sub: "via payment agent supporting all world currencies.",
+    pay_world_curr: "All World Currencies",
+    access_card_title: "Dashboard",
+
+    agent_buy_msg: "I want to buy the `{plan}` skinchanger subscription. My ID: `{id}`",
+    plan_7days: "7 Days",
+    plan_14days: "14 Days",
+    plan_1mon: "1 Month",
+    plan_life: "Lifetime",
   }
 };
 
@@ -537,22 +591,46 @@ function applyLanguage(lang) {
 document.addEventListener("DOMContentLoaded", () => {
   const savedLang = localStorage.getItem('ds_lang') || 'ru';
 
-  const switchers = document.querySelectorAll('.lang-switcher');
+  // Порядок переключения языков
+  const LANGUAGES = ['ru', 'uk', 'en'];
+  const LANG_LABELS = {
+    'ru': 'RU',
+    'uk': 'UK',
+    'en': 'EN'
+  };
+
+  const switchers = document.querySelectorAll('.lang-switcher-btn');
+
+  function updateSwitcherLabels(lang) {
+    switchers.forEach(btn => {
+      btn.textContent = LANG_LABELS[lang] || LANG_LABELS['ru'];
+    });
+  }
 
   switchers.forEach(switcher => {
-    switcher.value = savedLang;
-    switcher.addEventListener('change', (e) => {
-      const newLang = e.target.value;
+    switcher.addEventListener('click', (e) => {
+      e.preventDefault();
+
+      const currentLang = localStorage.getItem('ds_lang') || 'ru';
+      const nextIndex = (LANGUAGES.indexOf(currentLang) + 1) % LANGUAGES.length;
+      const newLang = LANGUAGES[nextIndex];
+
       applyLanguage(newLang);
+      updateSwitcherLabels(newLang);
 
-      switchers.forEach(s => { if (s !== e.target) s.value = newLang; });
+      // 1. Обновляем UI в панели (panel.html)
+      if (typeof window.updateUI === 'function') window.updateUI();
 
-      if (typeof updateUI === 'function') updateUI();
-      if (typeof loadUserData === 'function' && localStorage.getItem('token')) {
-         loadUserData(localStorage.getItem('token'));
+      // 2. СРАЗУ ПЕРЕРИСОВЫВАЕМ КАРТОЧКИ ТАРИФОВ (home.html)
+      if (typeof window.renderPlans === 'function') window.renderPlans();
+
+      // 3. Обновляем данные пользователя (home.html)
+      if (typeof window.loadUserData === 'function' && localStorage.getItem('token')) {
+         window.loadUserData(localStorage.getItem('token'));
       }
     });
   });
 
   applyLanguage(savedLang);
+  updateSwitcherLabels(savedLang);
 });

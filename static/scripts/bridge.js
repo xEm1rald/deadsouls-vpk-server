@@ -56,18 +56,17 @@ function updateBridgeUi(status) {
   const row = document.getElementById("poll-status");
   if (!row) return;
 
-  const dot = row.querySelector(".poll-dot");
   const textEl = row.querySelector(".poll-status-text");
   const openPanelBtn = document.getElementById("btn-open-panel");
 
   if (status === "ok") {
-    if (textEl) textEl.textContent = "Есть ответ";
+    if (textEl) textEl.textContent = window.t('bridge_ok');
     if (openPanelBtn) {
       openPanelBtn.disabled = false;
       openPanelBtn.onclick = () => window.location.href = "panel";
     }
   } else {
-    if (textEl) textEl.textContent = "Active pooling";
+    if (textEl) textEl.textContent = window.t('bridge_pooling');
     if (openPanelBtn) openPanelBtn.disabled = true;
   }
 }
