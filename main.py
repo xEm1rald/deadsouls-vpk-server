@@ -300,7 +300,7 @@ async def get_app_version(
     request: Request,
     current_user: database.User = Depends(get_current_user)
 ):
-    return JSONResponse({"app_version": config.APP_TOOLS_VERSION}, status_code=200)
+    return JSONResponse({"app_version": config.APP_SECRET_VERSION}, status_code=200)
 
 # ==========================================
 # FILES MANAGER
