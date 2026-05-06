@@ -270,7 +270,9 @@ async def authenticate(request: Request, body: AuthRequest):
 
 
 @app.post("/api/v1/set")
+@limiter.limit("3/minute")
 async def set_user_hwid(
+    request: Request,
     hwid: str,
     current_user: database.User = Depends(get_current_user)
 ):
@@ -291,6 +293,14 @@ async def set_user_hwid(
     # Всегда возвращаем 200 OK, как и просили
     return JSONResponse({"status": "ok"}, status_code=200)
 
+
+@app.get("/api/v1/version")
+@limiter.limit("15/minute")
+async def get_app_version(
+    request: Request,
+    current_user: database.User = Depends(get_current_user)
+):
+    return JSONResponse({"app_version": config.APP_TOOLS_VERSION}, status_code=200)
 
 # ==========================================
 # FILES MANAGER

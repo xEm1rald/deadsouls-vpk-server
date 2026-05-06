@@ -215,6 +215,7 @@ function buildGlobalTile(catId) {
   const thumb = document.createElement("img");
   thumb.className = "tile-thumb";
   thumb.id = `thumb-${catId}`;
+  thumb.loading = "lazy";
   thumb.hidden = true;
 
   btn.append(lab, val, thumb);
@@ -289,10 +290,19 @@ function buildGalleryData(sourceData) {
           if (selectedEffId) {
             const effList = getEffectsList();
             const effItem = effList.find((e) => e.id === selectedEffId);
+            const baseUrl = CDN_URL ? CDN_URL.replace(/\/+$/, "") : "https://cdn.deadsouls.cc";
+
+            let effUrl = "";
+            if (effItem) {
+              // Берем имя эффекта, делаем маленькими буквами и меняем пробелы на _
+              const safeEffName = effItem.name.toLowerCase().replace(/ /g, "_").replace(/[^a-z0-9_]/g, "");
+              effUrl = `${baseUrl}/econ/unusual_effects/${safeEffName}.webp`;
+            }
+
             heroesData[hero].push({
               slotName: visualSlotName,
               itemName: effItem ? `✨ ${effItem.name}` : window.t('unknown_effect'),
-              url: "",
+              url: effUrl,
               isEffect: true
             });
           }
@@ -1025,6 +1035,9 @@ function showPickerModal(title, items, currentId, defaultText = window.t('defaul
       const baseUrl = CDN_URL ? CDN_URL.replace(/\/+$/, "") : "https://cdn.deadsouls.cc";
       const img = document.createElement("img");
       img.className = "item-option-thumb";
+      img.loading = "lazy";
+
+      // Для кнопки "Сбросить" всегда используем дефолтную пустую картинку
       applyCachedImage(img, `${baseUrl}/econ/default_no_item.webp`);
 
       const label = document.createElement("span");
@@ -1050,14 +1063,22 @@ function showPickerModal(title, items, currentId, defaultText = window.t('defaul
 
       let url = getItemImageUrl(i);
 
-      if (!url && pickerContext && pickerContext.type === "hero") {
+      // Если стандартного URL нет (как у эффектов), собираем его динамически
+      if (!url && pickerContext) {
         const baseUrl = CDN_URL ? CDN_URL.replace(/\/+$/, "") : "https://cdn.deadsouls.cc";
-        url = `${baseUrl}/econ/default_no_item.webp`;
+        if (pickerContext.type === "hero") {
+          url = `${baseUrl}/econ/default_no_item.webp`;
+        } else if (pickerContext.type === "effect") {
+          // Форматируем имя текущего эффекта для ссылки
+          const safeEffName = i.name.toLowerCase().replace(/ /g, "_").replace(/[^a-z0-9_]/g, "");
+          url = `${baseUrl}/econ/unusual_effects/${safeEffName}.webp`;
+        }
       }
 
       if (url) {
         const img = document.createElement("img");
         img.className = "item-option-thumb";
+        img.loading = "lazy";
         applyCachedImage(img, url);
         opt.append(img, label);
       } else {
@@ -1564,7 +1585,9 @@ async function exportGalleryImages() {
 }
 
 function getEffectsList() {
-  return schema?.effects?.map((e) => ({ id: e.path, name: e.name })) || [];
+  return schema?.effects
+    ?.filter((e) => !e.name.toLowerCase().includes("default"))
+    .map((e) => ({ id: e.path, name: e.name })) || [];
 }
 
 async function init() {
