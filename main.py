@@ -199,9 +199,6 @@ async def generate_challenge(request: Request, body: ChallengeRequest):
     if client_ip in banned_ips:
         raise HTTPException(status_code=403, detail="Banned")
 
-    if body.version != config.APP_SECRET_VERSION:
-        raise HTTPException(status_code=426, detail="Upgrade Required")
-
     challenge = secrets.token_hex(16)
     session_id = secrets.token_hex(16)
 
@@ -265,6 +262,7 @@ async def authenticate(request: Request, body: AuthRequest):
     return {
         "status": "success",
         "subscription_ends": str(user.subscription_end_date),
+        "app_version": config.APP_SECRET_VERSION,
         "tools_version": config.APP_TOOLS_VERSION
     }
 
@@ -300,11 +298,44 @@ async def get_app_version(
     request: Request,
     current_user: database.User = Depends(get_current_user)
 ):
-    return JSONResponse({"app_version": config.APP_SECRET_VERSION}, status_code=200)
+    content = {
+        "status": "success",
+        "subscription_ends": str(current_user.subscription_end_date),
+        "app_version": config.APP_SECRET_VERSION,
+        "tools_version": config.APP_TOOLS_VERSION
+    }
+
+    return JSONResponse(content, status_code=200)
 
 # ==========================================
 # FILES MANAGER
 # ==========================================
+
+@app.get("/client/download")
+@limiter.limit("10/minute")
+async def get_client_download_url(
+    request: Request,
+    current_user: database.User = Depends(get_current_user)
+):
+    """
+    Эндпоинт для получения ссылки на скачивание клиента.
+    Проверяет наличие активной подписки.
+    """
+
+    # 1. Проверяем, есть ли подписка и не истекла ли она
+    if not current_user.subscription_end_date or current_user.subscription_end_date < datetime.now(UTC):
+        raise HTTPException(
+            status_code=403,
+            detail="У вас нет активной подписки для скачивания клиента."
+        )
+
+    # 2. Формируем ссылку на клиент.
+    # Берем базовый CDN из конфига, чтобы при смене домена не пришлось переписывать код
+    base_cdn = config.CDN_URL.rstrip('/')
+    client_url = f"{base_cdn}/website/data/client.exe"
+
+    # 3. Возвращаем JSON с URL
+    return JSONResponse({"url": client_url})
 
 @app.get('/sdk/{path:path}')
 @limiter.limit("300/minute")

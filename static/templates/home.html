@@ -282,8 +282,16 @@
                 <p style="font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem;" id="user-internal-id" data-i18n="loading">Загрузка...</p>
               </div>
               <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
-                <button type="button" class="btn ghost" id="btn-logout" style="display: none; width: 100%; justify-content: center; color: #f85149; border-color: rgba(248, 81, 73, 0.35);" data-i18n="logout">
-                  Выйти из аккаунта
+                <span class="label" style="display: block; margin-bottom: 8px;" data-i18n="download_client_title">Скачать клиент</span>
+                <p class="muted small" style="margin-top: 0; margin-bottom: 12px;" data-i18n="download_client_desc">Установите локальный агент для применения VPK файлов.</p>
+
+                <button type="button" id="btn-download-client" class="btn ghost" style="display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; padding: 10px; border-color: rgba(255, 255, 255, 0.2);" disabled>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span data-i18n="btn_download">Скачать Agent.exe</span>
                 </button>
               </div>
               <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
@@ -292,6 +300,11 @@
                   <input type="text" id="gift-code-input" class="input" placeholder="DS-XXXX-XXXX-XXXX" style="text-transform: uppercase; text-align: center; letter-spacing: 2px;">
                   <button type="button" class="btn primary" id="btn-apply-gift" style="width: 100%; padding: 10px;" data-i18n="btn_apply">Активировать</button>
                 </div>
+              </div>
+              <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
+                <button type="button" class="btn ghost" id="btn-logout" style="display: none; width: 100%; justify-content: center; color: #f85149; border-color: rgba(248, 81, 73, 0.35);" data-i18n="logout">
+                  Выйти из аккаунта
+                </button>
               </div>
             </div>
 
@@ -357,6 +370,7 @@
 
         const btnApplyGift = document.getElementById('btn-apply-gift');
         const giftCodeInput = document.getElementById('gift-code-input');
+        const btnDownloadClient = document.getElementById('btn-download-client');
 
         const urlParams = new URLSearchParams(window.location.search);
         const paymentStatus = urlParams.get('payment');
@@ -510,6 +524,12 @@
                   if (panelBtn) {
                     panelBtn.style.opacity = '1';
                     panelBtn.style.pointerEvents = 'auto';
+                  }
+
+                  if (btnDownloadClient) {
+                    btnDownloadClient.disabled = false;
+                    btnDownloadClient.style.opacity = '1';
+                    btnDownloadClient.style.cursor = 'pointer';
                   }
                 }
               }
@@ -749,6 +769,68 @@
             checkoutBtn.disabled = false;
           }
         });
+
+        if (btnDownloadClient) {
+          btnDownloadClient.addEventListener('click', async () => {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            // Блокируем кнопку на время запроса
+            btnDownloadClient.disabled = true;
+            const originalContent = btnDownloadClient.innerHTML;
+            btnDownloadClient.innerHTML = window.t('loading') || 'Загрузка...';
+
+            try {
+              const response = await fetch('/client/download', {
+                method: 'GET', // Или POST, если твой бэкенд требует POST
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+              });
+
+              if (response.ok) {
+                const data = await response.json();
+
+                if (data.url) {
+                  // Создаем невидимую ссылку для скачивания без ухода со страницы
+                  const a = document.createElement('a');
+                  a.href = data.url;
+                  // a.download = 'Agent.exe'; // Можно раскомментировать, если нужно форсировать имя
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                } else {
+                  Swal.fire({
+                    icon: 'error',
+                    title: window.t('swal_error'),
+                    text: 'Сервер не вернул ссылку на скачивание.',
+                    background: '#1a1a1a', color: '#fff'
+                  });
+                }
+              } else {
+                const data = await response.json().catch(() => ({}));
+                Swal.fire({
+                  icon: 'error',
+                  title: window.t('swal_error'),
+                  text: data.detail || 'У вас нет доступа к скачиванию (подписка неактивна).',
+                  background: '#1a1a1a', color: '#fff'
+                });
+              }
+            } catch (err) {
+              console.error(err);
+              Swal.fire({
+                icon: 'error',
+                title: window.t('swal_error'),
+                text: window.t('net_error') || 'Ошибка сети',
+                background: '#1a1a1a', color: '#fff'
+              });
+            } finally {
+              // Возвращаем кнопку в исходное состояние
+              btnDownloadClient.disabled = false;
+              btnDownloadClient.innerHTML = originalContent;
+            }
+          });
+        }
 
         async function checkAuthCode() {
           const urlParams = new URLSearchParams(window.location.search);

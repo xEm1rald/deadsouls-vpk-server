@@ -83,6 +83,9 @@ const translations = {
     agent_desc: "Вся валюта мира",
     status_checking: "Проверка...",
     loading: "Загрузка...",
+    download_client_title: "Скачать клиент",
+    download_client_desc: "Установите локальный агент для применения VPK файлов.",
+    btn_download: "Скачать Agent.exe",
 
     // Панель (panel.html)
     install_vpk: "Установить VPK",
@@ -297,6 +300,9 @@ const translations = {
     agent_desc: "Уся валюта світу",
     status_checking: "Перевірка...",
     loading: "Завантаження...",
+    download_client_title: "Завантажити клієнт",
+    download_client_desc: "Встановіть локальний агент для застосування VPK файлів.",
+    btn_download: "Завантажити Agent.exe",
 
     install_vpk: "Встановити VPK",
     create_vpk: "Створити VPK",
@@ -507,6 +513,9 @@ const translations = {
     agent_desc: "All currencies of the world",
     status_checking: "Checking...",
     loading: "Loading...",
+    download_client_title: "Download Client",
+    download_client_desc: "Install the local agent to apply VPK files.",
+    btn_download: "Download Agent.exe",
 
     install_vpk: "Install VPK",
     create_vpk: "Create VPK",
