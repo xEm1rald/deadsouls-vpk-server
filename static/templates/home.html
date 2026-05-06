@@ -183,7 +183,6 @@
           color: var(--text-muted, #888);
       }
 
-      /* Анимация появления для основного контента */
       @keyframes fadeSlideUp {
         0% {
           opacity: 0;
@@ -195,21 +194,17 @@
         }
       }
 
-      /* Применяем анимацию к main */
       main {
         animation: fadeSlideUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        /* Начинаем с прозрачного состояния, чтобы не было "моргания" */
         opacity: 0;
       }
 
-      /* Класс для отключения анимации (добавляется через JS при обновлении) */
       html.prevent-animation main {
         animation: none !important;
         opacity: 1 !important;
         transform: none !important;
       }
 
-      /* Уважаем настройки системы: если у юзера отключены анимации в ОС */
       @media (prefers-reduced-motion: reduce) {
         main {
           animation: none !important;
@@ -489,6 +484,7 @@
               const data = await response.json();
 
               if (data.id) {
+                internalIdEl.removeAttribute('data-i18n');
                 internalIdEl.textContent = `DS-${String(data.id).padStart(4, '0')}`;
               }
 
@@ -496,7 +492,10 @@
 
               if (data.subscription_end_date === 'None' || !data.subscription_end_date) {
                 subDateEl.textContent = window.t('no_sub');
+                subDateEl.setAttribute('data-i18n', 'no_sub');
+
                 subStatusEl.textContent = window.t('status_inactive');
+                subStatusEl.setAttribute('data-i18n', 'status_inactive');
                 subStatusEl.className = 'status-badge inactive';
 
                 if (panelBtn) {
@@ -509,7 +508,10 @@
 
                 if (subDate < now) {
                   subDateEl.textContent = window.t('sub_expired');
+                  subDateEl.setAttribute('data-i18n', 'sub_expired');
+
                   subStatusEl.textContent = window.t('status_inactive');
+                  subStatusEl.setAttribute('data-i18n', 'status_inactive');
                   subStatusEl.className = 'status-badge inactive';
 
                   if (panelBtn) {
@@ -517,8 +519,11 @@
                     panelBtn.style.pointerEvents = 'none';
                   }
                 } else {
+                  subDateEl.removeAttribute('data-i18n');
                   subDateEl.textContent = data.subscription_end_date.split(' ')[0];
+
                   subStatusEl.textContent = window.t('status_active');
+                  subStatusEl.setAttribute('data-i18n', 'status_active');
                   subStatusEl.className = 'status-badge';
 
                   if (panelBtn) {
@@ -526,7 +531,7 @@
                     panelBtn.style.pointerEvents = 'auto';
                   }
 
-                  if (btnDownloadClient) {
+                  if (typeof btnDownloadClient !== 'undefined' && btnDownloadClient) {
                     btnDownloadClient.disabled = false;
                     btnDownloadClient.style.opacity = '1';
                     btnDownloadClient.style.cursor = 'pointer';
@@ -536,9 +541,11 @@
 
               if (data.hwid === 'None' || !data.hwid) {
                 hwidEl.textContent = window.t('hwid_unbound');
+                hwidEl.setAttribute('data-i18n', 'hwid_unbound');
                 hwidEl.style.cursor = 'default';
                 hwidEl.title = '';
               } else {
+                hwidEl.removeAttribute('data-i18n');
                 hwidEl.dataset.full = data.hwid;
                 hwidEl.dataset.hidden = 'true';
                 const mask = (str) => {
@@ -555,6 +562,8 @@
             console.error(err);
           }
         }
+
+        window.loadUserData = loadUserData;
 
         function updateUIForLoginState() {
           const token = localStorage.getItem('token');
@@ -637,7 +646,6 @@
             const titleStyle = plan.color ? `style="color: ${plan.color};"` : '';
             const price = plan.prices[currencyInfo.key];
 
-            // Получаем перевод по secure_name (например, 'plan_1mon'). Если его нет — берем оригинальный title
             const translatedTitle = window.t('plan_' + plan.secure_name) || plan.title;
 
             card.innerHTML = `
@@ -690,26 +698,20 @@
           if (currentMethod === 'agent') {
             const plan = productsData[currentActivePlanId];
 
-            // 1. Берем переведенное название тарифа
             const planTitle = window.t('plan_' + plan.secure_name) || plan.title;
 
-            // 2. Получаем ID пользователя со страницы (например, "DS-0015")
             const userId = document.getElementById('user-internal-id').textContent;
 
-            // 3. Берем переведенный шаблон сообщения
             let msgTemplate = window.t('agent_buy_msg');
 
-            // Защита от ошибки (если перевода вдруг нет, ставим русский по умолчанию)
             if (msgTemplate === 'agent_buy_msg') {
                msgTemplate = "Хочу купить `{plan}` скинченджера. Мой ID: {id}";
             }
 
-            // 4. Подставляем название тарифа и ID в шаблон
             const finalMessage = msgTemplate
                 .replace('{plan}', planTitle)
                 .replace('{id}', userId);
 
-            // 5. Кодируем и открываем ссылку
             const text = encodeURIComponent(finalMessage);
             window.open(`${TELEGRAM_AGENT_URL}?text=${text}`, '_blank');
             return;
@@ -775,14 +777,13 @@
             const token = localStorage.getItem('token');
             if (!token) return;
 
-            // Блокируем кнопку на время запроса
             btnDownloadClient.disabled = true;
             const originalContent = btnDownloadClient.innerHTML;
             btnDownloadClient.innerHTML = window.t('loading') || 'Загрузка...';
 
             try {
               const response = await fetch('/client/download', {
-                method: 'GET', // Или POST, если твой бэкенд требует POST
+                method: 'GET',
                 headers: {
                   'Authorization': `Bearer ${token}`
                 }
@@ -792,10 +793,9 @@
                 const data = await response.json();
 
                 if (data.url) {
-                  // Создаем невидимую ссылку для скачивания без ухода со страницы
                   const a = document.createElement('a');
                   a.href = data.url;
-                  // a.download = 'Agent.exe'; // Можно раскомментировать, если нужно форсировать имя
+                  // a.download = 'Agent.exe';
                   document.body.appendChild(a);
                   a.click();
                   document.body.removeChild(a);
@@ -825,7 +825,6 @@
                 background: '#1a1a1a', color: '#fff'
               });
             } finally {
-              // Возвращаем кнопку в исходное состояние
               btnDownloadClient.disabled = false;
               btnDownloadClient.innerHTML = originalContent;
             }

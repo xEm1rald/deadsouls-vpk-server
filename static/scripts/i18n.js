@@ -1,6 +1,6 @@
 const translations = {
   ru: {
-    // Навигация & Общее
+    // Навигация + Общее
     nav_panel: "Панель",
     nav_home: "Личный кабинет",
     nav_intro: "О продукте",
@@ -675,7 +675,6 @@ function applyLanguage(lang) {
 document.addEventListener("DOMContentLoaded", () => {
   const savedLang = localStorage.getItem('ds_lang') || 'ru';
 
-  // Порядок переключения языков
   const LANGUAGES = ['ru', 'uk', 'en'];
   const LANG_LABELS = {
     'ru': 'RU',
@@ -702,13 +701,10 @@ document.addEventListener("DOMContentLoaded", () => {
       applyLanguage(newLang);
       updateSwitcherLabels(newLang);
 
-      // 1. Обновляем UI в панели (panel.html)
       if (typeof window.updateUI === 'function') window.updateUI();
 
-      // 2. СРАЗУ ПЕРЕРИСОВЫВАЕМ КАРТОЧКИ ТАРИФОВ (home.html)
       if (typeof window.renderPlans === 'function') window.renderPlans();
 
-      // 3. Обновляем данные пользователя (home.html)
       if (typeof window.loadUserData === 'function' && localStorage.getItem('token')) {
          window.loadUserData(localStorage.getItem('token'));
       }

@@ -14,7 +14,6 @@ const bridgeState = {
   handled: sessionStorage.getItem(BC_STORAGE_CONNECTED) === "1",
 };
 
-// Получаем URL без обращения к DOM
 function getBridgeBaseUrl() {
   const host = localStorage.getItem(BC_LS_HOST) || "127.0.0.1";
   const port = localStorage.getItem(BC_LS_PORT) || "3847";
@@ -51,7 +50,6 @@ async function pollBridge() {
   }
 }
 
-// Обновление индикатора (если он есть на странице)
 function updateBridgeUi(status) {
   const row = document.getElementById("poll-status");
   if (!row) return;
@@ -71,7 +69,6 @@ function updateBridgeUi(status) {
   }
 }
 
-// Переход при успешном коннекте
 function executeSuccessAction() {
   document.body.classList.add("state-blur", "state-success-tint");
   const overlay = document.getElementById("success-overlay");
@@ -82,7 +79,6 @@ function executeSuccessAction() {
   }, 2200);
 }
 
-// Запуск при загрузке
 if (sessionStorage.getItem(BC_STORAGE_CONNECTED) !== "1") {
     bridgeState.timer = setInterval(pollBridge, BC_POLL_MS);
     pollBridge();

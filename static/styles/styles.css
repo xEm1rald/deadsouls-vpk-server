@@ -88,7 +88,6 @@ body {
   position: sticky;
   top: 0;
   z-index: 20;
-  /* якорь для панели шестерёнки */
   isolation: isolate;
 }
 
@@ -443,7 +442,6 @@ main {
 .marquee-viewport {
   overflow: hidden;
   width: 100%;
-  /* Запас по вертикали: наклон/hover не подрезаются сверху/снизу */
   padding-block: 9px;
   box-sizing: border-box;
 }
@@ -471,7 +469,6 @@ main {
   animation-play-state: paused;
 }
 
-/* Для левой ленты */
 @-webkit-keyframes marquee-left {
   from { -webkit-transform: translateX(0); transform: translateX(0); }
   to { -webkit-transform: translateX(-50%); transform: translateX(-50%); }
@@ -481,7 +478,6 @@ main {
   to { transform: translateX(-50%); }
 }
 
-/* Для правой ленты */
 @-webkit-keyframes marquee-right {
   from { -webkit-transform: translateX(-50%); transform: translateX(-50%); }
   to { -webkit-transform: translateX(0); transform: translateX(0); }
@@ -556,7 +552,6 @@ main {
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.42),
     0 0 0 1px rgba(63, 185, 80, 0.12);
   filter: brightness(1.08);
-  /* Без translateY — иначе верх карточки обрезается overflow у ленты */
   transform: perspective(640px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y))
     translateZ(0);
   z-index: 2;
@@ -828,13 +823,10 @@ code {
   padding: 1.5rem;
   border-top: 1px solid var(--border);
   text-align: center;
-  /* Запрещаем футеру сжиматься */
   flex-shrink: 0;
-  /* Дополнительная страховка: автоматически отодвигает футер максимально вниз */
   margin-top: auto;
 }
 
-/* Blur page when overlay / drawer active */
 body.state-blur > .noise,
 body.state-blur > .topbar,
 body.state-blur > main,
@@ -1048,13 +1040,11 @@ body.state-success-tint > .footer {
   color: #f85149;
 }
 
-/* Оранжевый индикатор для активного пуллинга без текста */
 .status-indicator.polling-active {
   background-color: #ff9800 !important;
   box-shadow: 0 0 8px rgba(255, 152, 0, 0.4) !important;
 }
 
-/* Кнопка "В панель" рядом со статусом */
 .btn-go-panel {
   margin-left: 10px;
   padding: 2px 8px;
@@ -1073,7 +1063,6 @@ body.state-success-tint > .footer {
   border-color: var(--muted);
 }
 
-/* === Стили для превью пресета === */
 .preset-preview-area {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
@@ -1169,30 +1158,27 @@ body.state-success-tint > .footer {
   border-bottom: 1px dashed var(--border);
 }
 
-/* --- Анимации для кнопки выхода из аккаунта --- */
 #btn-logout {
   transition: all 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  position: relative; /* Чтобы псевдоэлементы работали внутри */
-  overflow: hidden; /* Скрываем лишнее */
+  position: relative;
+  overflow: hidden;
 }
 
-/* Эффект наведения (усиление сияния и легкий подъем) */
 #btn-logout:hover {
-  background-color: rgba(248, 81, 73, 0.1); /* Легкая красная подсветка */
-  transform: translateY(-2px); /* Плавный подъем */
-  box-shadow: 0 4px 15px rgba(248, 81, 73, 0.4); /* Красное свечение */
+  background-color: rgba(248, 81, 73, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(248, 81, 73, 0.4);
 }
 
-/* Пульсация границы при наведении */
 #btn-logout::before {
   content: '';
   position: absolute;
   top: -2px; left: -2px; right: -2px; bottom: -2px;
-  border-radius: inherit; /* Копируем скругление кнопки */
+  border-radius: inherit;
   border: 1px solid rgba(248, 81, 73, 0.6);
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
-  animation: pulse-border .5s infinite; /* Анимация пульсации */
+  animation: pulse-border .5s infinite;
 }
 
 #btn-logout:hover::before {
@@ -1204,13 +1190,11 @@ body.state-success-tint > .footer {
   100% { transform: scale(1.05); opacity: 0; }
 }
 
-/* Анимация при нажатии (слегка сжимается) */
 #btn-logout:active {
   transform: translateY(1px);
   box-shadow: 0 2px 8px rgba(248, 81, 73, 0.3);
 }
 
-/* Добавляем иконку, которая появляется при наведении (опционально, см. картинку) */
 #btn-logout::after {
   margin-left: 8px;
   opacity: 0;
@@ -1223,12 +1207,11 @@ body.state-success-tint > .footer {
   transform: translateX(0);
 }
 
-/* Стили для кнопки-иконки домика */
 .home-icon-btn {
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  padding: 0.55rem !important; /* Делаем кнопку квадратной */
+  padding: 0.55rem !important;
   width: 2.35rem;
   height: 2.35rem;
   line-height: 1;
@@ -1240,7 +1223,7 @@ body.state-success-tint > .footer {
 }
 
 .home-icon-btn:hover svg {
-  transform: scale(1.1); /* Легкое увеличение иконки при наведении */
+  transform: scale(1.1);
   color: var(--accent);
 }
 
@@ -1280,11 +1263,10 @@ html.prevent-animation main {
   }
 }
 
-/* Контейнер сравнения */
 .comparison-container {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9; /* Соотношение сторон как у видео */
+  aspect-ratio: 16 / 9;
   border-radius: var(--radius);
   border: 1px solid var(--border);
   overflow: hidden;
@@ -1292,7 +1274,6 @@ html.prevent-animation main {
   user-select: none;
 }
 
-/* Общие стили для слоев */
 .comp-layer {
   position: absolute;
   top: 0;
@@ -1304,15 +1285,13 @@ html.prevent-animation main {
 .comp-layer video {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Видео заполняет весь блок без искажений */
+  object-fit: cover;
   display: block;
 }
 
-/* Верхний слой с математическим наклоном (clip-path) */
 .overlay-layer {
   z-index: 2;
-  width: 100%; /* Теперь всегда 100%, никаких сдвигов */
-  /* Делаем скос: смещение на +8% сверху и -8% снизу дает идеальные 15.8 градусов при 16:9 */
+  width: 100%;
   clip-path: polygon(0 0, calc(var(--pos) + 8%) 0, calc(var(--pos) - 8%) 100%, 0 100%);
   border-right: none;
   transform: none;
@@ -1320,7 +1299,6 @@ html.prevent-animation main {
   padding: 0;
 }
 
-/* Видео больше не нужно контр-наклонять */
 .overlay-layer video {
   width: 100%;
   min-width: 100%;
@@ -1331,7 +1309,6 @@ html.prevent-animation main {
   z-index: 1;
 }
 
-/* Ползунок-невидимка поверх всего */
 .comp-slider {
   position: absolute;
   inset: 0;
@@ -1343,7 +1320,6 @@ html.prevent-animation main {
   margin: 0;
 }
 
-/* Линия разделителя */
 .comp-handle {
   position: absolute;
   top: -10%;
@@ -1352,19 +1328,16 @@ html.prevent-animation main {
   width: 2px;
   background: var(--accent);
   z-index: 5;
-  /* Вращаем линию точно по границе обрезки слоя */
   transform: translateX(-50%) rotate(15.8deg);
   pointer-events: none;
 }
 
-/* Кружочек с иконкой */
 .handle-circle {
   position: absolute;
   top: 50%;
   left: 50%;
-  /* Контр-поворот на 15.8 градусов, чтобы стрелки были строго горизонтально */
   transform: translate(-50%, -50%) rotate(-15.8deg);
-  width: 40px; /* Немного увеличим размер под новую иконку */
+  width: 40px;
   height: 40px;
   background: var(--accent);
   color: #000;
@@ -1373,28 +1346,23 @@ html.prevent-animation main {
   align-items: center;
   justify-content: center;
 
-  /* Обводка: 2px сплошная, темная (под цвет фона сайта) */
   border: 2px solid #0a0a0a;
-  /* Дополнительное свечение/кольцо для глубины */
   box-shadow: 0 0 0 1px var(--accent), 0 0 20px rgba(0, 0, 0, 0.6);
 
   z-index: 5;
   transition: transform 0.2s ease, background 0.2s ease;
 }
 
-/* Эффект при наведении на область слайдера */
 .comparison-container:hover .handle-circle {
-  background: #fff; /* Кружочек белеет при наведении */
+  background: #fff;
   transform: translate(-50%, -50%) rotate(-15.8deg) scale(1.1);
 }
 
 .handle-circle svg {
   display: block;
-  /* Убеждаемся, что иконка не искажается */
   flex-shrink: 0;
 }
 
-/* Метки текста */
 .comp-label {
   position: absolute;
   bottom: 1rem;
@@ -1411,35 +1379,33 @@ html.prevent-animation main {
 .label-left {
   left: 1.5rem;
   border-left: 2px solid var(--accent);
-  transform: none; /* Убираем наклон с текста */
+  transform: none;
 }
 .label-right { right: 1rem; }
 
-/* Сетка для способов оплаты на главной */
 .payment-grid-main {
   display: flex;
-  flex-direction: column; /* Располагаем карточки вертикально */
+  flex-direction: column;
   gap: 1rem;
   margin-top: 1.5rem;
-  max-width: 600px; /* Ограничиваем ширину, чтобы в столбик это выглядело аккуратно */
-  margin-left: auto; /* Центрируем весь блок, если нужно */
+  max-width: 600px;
+  margin-left: auto;
   margin-right: auto;
 }
 
-/* Статичная карточка на базе существующего стиля feat-card */
 .feat-card.static-card {
   width: 100%;
   min-height: auto;
   transform: none !important;
   cursor: default;
   display: grid;
-  grid-template-columns: auto 1fr; /* Номер слева, текст справа */
+  grid-template-columns: auto 1fr;
   align-items: start;
   padding: 1.25rem;
 }
 
 .feat-card.static-card .feat-desc {
-  -webkit-line-clamp: unset; /* Позволяем тексту занимать столько места, сколько нужно */
+  -webkit-line-clamp: unset;
   display: block;
 }
 
@@ -1449,7 +1415,6 @@ html.prevent-animation main {
   }
 }
 
-/* Ряд иконок сетей */
 .network-icons-row {
   display: flex;
   flex-wrap: wrap;
@@ -1457,7 +1422,6 @@ html.prevent-animation main {
   margin-top: 0.5rem;
 }
 
-/* Бейджик сети */
 .net-badge {
   display: inline-flex;
   align-items: center;
@@ -1489,9 +1453,7 @@ html.prevent-animation main {
   transform: scale(1.1);
 }
 
-/* --- Анимация для кнопки входа --- */
 #btn-tg-login {
-  /* Гасим излишнюю яркость, делаем её тёмной по умолчанию */
   background: rgba(255, 255, 255, 0.05);
   color: var(--text);
   border-color: var(--border);
@@ -1500,16 +1462,14 @@ html.prevent-animation main {
   position: relative;
 }
 
-/* Эффект наведения: становится зеленой, текст белым, поднимается и светится */
 #btn-tg-login:hover {
   background-color: var(--accent);
   border-color: var(--accent);
-  color: #fff; /* Белый текст на зеленом фоне */
+  color: #fff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(63, 185, 80, 0.4); /* Зеленое свечение */
+  box-shadow: 0 4px 15px rgba(63, 185, 80, 0.4);
 }
 
-/* Пульсирующая рамка */
 #btn-tg-login::before {
   content: '';
   position: absolute;
@@ -1526,7 +1486,6 @@ html.prevent-animation main {
   animation: pulse-border 1s infinite;
 }
 
-/* Нажатие */
 #btn-tg-login:active {
   transform: translateY(1px);
   box-shadow: 0 2px 8px rgba(63, 185, 80, 0.3);
@@ -1537,10 +1496,8 @@ html.prevent-animation main {
   100% { transform: scale(1.05); opacity: 0; }
 }
 
-/* === Плашка VAC-SAFE (Адаптированная под дизайн сайта) === */
 .vac-safe-card {
   max-width: 650px;
-  /* Используем цвета из палитры сайта */
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 2px);
@@ -1553,7 +1510,6 @@ html.prevent-animation main {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  /* Используем фирменный зеленый акцент */
   color: var(--accent);
   background: var(--accent-dim);
   border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
@@ -1586,7 +1542,6 @@ html.prevent-animation main {
   line-height: 1.65;
 }
 
-/* Стилизация inline-кода в стилистике твоего сайта */
 .vac-desc code {
   font-family: var(--font-mono);
   background: var(--bg);

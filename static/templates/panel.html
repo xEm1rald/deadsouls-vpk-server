@@ -37,13 +37,11 @@
           }
           const data = await res.json();
 
-          // Проверка на наличие привязанного HWID
           if (!data.hwid || data.hwid === 'None') {
             window.location.replace('/home');
             return;
           }
 
-          // Проверка на наличие подписки
           if (!data.subscription_end_date || data.subscription_end_date === 'None') {
             window.location.replace('/home');
             return;
@@ -107,17 +105,15 @@
     </div>
 
     <main>
-<!-- Полноэкранная Галерея -->
-<section id="gallery-section" class="fullscreen-overlay" hidden>
-  <div class="fullscreen-header" style="justify-content: flex-end;">
-    <button type="button" class="btn primary" id="btn-export-gallery" data-i18n="save_screenshots">
-      Сохранить скриншоты
-    </button>
-  </div>
-  <div class="fullscreen-content" id="main-gallery-area"></div>
-</section>
+      <section id="gallery-section" class="fullscreen-overlay" hidden>
+        <div class="fullscreen-header" style="justify-content: flex-end;">
+          <button type="button" class="btn primary" id="btn-export-gallery" data-i18n="save_screenshots">
+            Сохранить скриншоты
+          </button>
+        </div>
+        <div class="fullscreen-content" id="main-gallery-area"></div>
+      </section>
 
-      <!-- Модалка Пресетов -->
       <section id="presets-section" class="panel-section section panel-controls" aria-labelledby="label-presets" hidden>
         <span id="label-presets" class="section-label section-label--fat" data-i18n="presets">Пресеты</span>
         <div class="preset-grid card">
@@ -153,7 +149,6 @@
           </div>
           <span class="muted small" id="preset-status" role="status" aria-live="polite"></span>
 
-          <!-- Сюда встраивается Галерея пресета -->
           <div id="preset-preview-area" class="preset-preview-area summary-gallery"></div>
         </div>
       </section>

@@ -28,25 +28,20 @@ function initComparisonSlider() {
 
   if (!container || !slider) return;
 
-  // === ФИКС ДЛЯ SAFARI IOS ===
   const videos = container.querySelectorAll("video");
   videos.forEach(vid => {
-    // Дублируем атрибуты через JS для надежности
     vid.muted = true;
     vid.setAttribute("playsinline", "");
-    vid.setAttribute("webkit-playsinline", ""); // Для поддержки старых версий iOS
+    vid.setAttribute("webkit-playsinline", "");
 
-    // Пытаемся принудительно запустить видео
     const playPromise = vid.play();
     if (playPromise !== undefined) {
       playPromise.catch(() => {
-        // Если Safari заблокировал автоплей (например, включена экономия энергии)
         console.warn("Safari заблокировал автоплей видео. Ожидаем касания пользователя.");
       });
     }
   });
 
-  // Если видео не запустились автоматически, стартуем их при первом касании ползунка
   slider.addEventListener("touchstart", () => {
     videos.forEach(vid => {
       if (vid.paused) {
@@ -54,9 +49,7 @@ function initComparisonSlider() {
       }
     });
   }, { passive: true });
-  // ============================
 
-  // Синхронизируем ширину видео внутри обрезанного слоя с шириной контейнера
   const syncVideoWidth = () => {
     if (overlayVideo) {
       overlayVideo.style.width = container.offsetWidth + "px";
