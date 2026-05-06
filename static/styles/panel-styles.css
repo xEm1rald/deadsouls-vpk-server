@@ -13,7 +13,6 @@ main {
   margin-bottom: 4rem;
 }
 
-/* --- Модальные окна (Пресеты и Галерея) --- */
 #presets-section {
   position: fixed;
   inset: 0;
@@ -65,24 +64,23 @@ main {
 
 .preset-actions {
   display: flex;
-  align-items: center; /* Выравнивает квадратную иконку и текстовые кнопки по центру по вертикали */
-  gap: 0.5rem; /* Аккуратное расстояние между кнопками */
-  width: 100%; /* Контейнер занимает всю ширину */
-  flex-wrap: wrap; /* Если экран узкий (телефон), кнопки, которые не влезли, аккуратно перенесутся на новую строку */
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  flex-wrap: wrap;
 }
 
 .preset-actions .btn {
   flex: 1;
-  text-align: center; /* Текст точно по центру */
+  text-align: center;
   padding-left: 0;
   padding-right: 0;
-  white-space: nowrap; /* Чтобы текст на кнопках не переносился на две строки */
+  white-space: nowrap;
 }
 
-/* Но для кнопки-иконки отменяем растягивание, оставляя её аккуратным квадратом */
 .preset-actions .home-icon-btn {
   flex: 0 0 auto;
-  width: 2.35rem; /* Возвращаем её родную ширину */
+  width: 2.35rem;
 }
 
 .preset-select,
@@ -446,10 +444,10 @@ main {
 }
 
 .modal-card {
-  width: 90vw;          /* Ширина до 90% от ширины экрана на мобилках */
-  max-width: 800px;     /* Максимальная ширина на ПК (можешь поставить 1000px, если нужно еще больше) */
-  height: 85vh;         /* Высота до 85% от высоты экрана */
-  max-height: 900px;    /* Максимальная высота */
+  width: 90vw;
+  max-width: 800px;
+  height: 85vh;
+  max-height: 900px;
   display: flex;
   flex-direction: column;
 }
@@ -476,11 +474,10 @@ main {
 }
 
 .modal-card .item-list {
-  flex: 1;              /* Заставляет список растягиваться на всю доступную высоту */
-  overflow-y: auto;     /* Добавляет скролл, если предметов много */
-  max-height: none;     /* Убираем жесткое ограничение высоты, если оно было */
+  flex: 1;
+  overflow-y: auto;
+  max-height: none;
 
-  /* Сетка предметов: делаем так, чтобы они располагались в 2-3 колонки на широком экране (опционально) */
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 0.5rem;
@@ -588,9 +585,6 @@ main {
   height: 100%;
 }
 
-/* === УНИВЕРСАЛЬНАЯ ГАЛЕРЕЯ === */
-
-/* Блок внутри пресетов со скроллом */
 .preset-preview-area {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
@@ -654,7 +648,7 @@ main {
   flex-direction: column;
   align-items: center;
   gap: 0.35rem;
-  cursor: default; /* Тултип убран, поэтому стандартный курсор */
+  cursor: default;
   transition: transform var(--transition);
 }
 
@@ -712,10 +706,9 @@ main {
   }
 }
 
-/* === ПОЛНОЭКРАННАЯ ГАЛЕРЕЯ (FULLSCREEN OVERLAY) === */
 .fullscreen-overlay {
   position: fixed;
-  top: 72px; /* ВАЖНО: Отступаем от верха, чтобы не прятаться под главной шапкой */
+  top: 72px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -757,9 +750,8 @@ main {
   scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
-/* Специфичный дизайн для сетки внутри полноэкранной галереи */
 #main-gallery-area.summary-gallery {
-  gap: 0; /* Убираем промежутки, делаем сплошным списком как на скрине */
+  gap: 0;
   padding-bottom: 3rem;
 }
 
@@ -785,13 +777,13 @@ main {
 }
 
 #main-gallery-area .summary-items-flex {
-  justify-content: center; /* Центрируем предметы в ряду */
+  justify-content: center;
   gap: 0.5rem;
   padding: 1rem;
 }
 
 #main-gallery-area .summary-item-card {
-  width: 156px; /* Чуть компактнее для вместительности */
+  width: 156px;
 }
 
 #main-gallery-area .summary-img-wrap {
@@ -817,10 +809,9 @@ main {
   }
 }
 
-/* Делаем так, чтобы шапка сайта всегда была поверх полноэкранной галереи */
 .topbar-wrap {
   position: relative;
-  z-index: 10000; /* Галерея имеет 9999, поэтому шапка будет выше */
+  z-index: 10000;
 }
 
 @media (max-width: 880px) {
@@ -829,7 +820,6 @@ main {
   }
 }
 
-/* === Оверлей для Drag & Drop импорта пресетов === */
 body.drag-over-active::after {
   content: "Отпустите файл .preset для загрузки";
   position: fixed;

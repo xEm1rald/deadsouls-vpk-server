@@ -1,4 +1,3 @@
-// panel.js — выбор из website_schema.json и POST на локальный агент
 
 const SCHEMA_URL = "https://cdn.deadsouls.cc/website/data/website_schema.json";
 const CUSTOM_IMAGES_URL = "/data/custom_images.json";
@@ -28,7 +27,6 @@ let collapsedGlobalSections = {};
 
 const el = (id) => document.getElementById(id);
 
-// --- КЭШИРОВАНИЕ ДАННЫХ (JSON) ---
 const CACHE_NAME = 'deadsouls-schema-v1';
 const CACHE_TTL = 1000 * 60 * 60 * 6; // 6 часов
 
@@ -59,7 +57,6 @@ async function fetchCachedJson(url) {
   return null;
 }
 
-// --- КЭШИРОВАНИЕ КАРТИНОК ---
 const IMAGE_CACHE_NAME = 'deadsouls-images-v1';
 const blobCache = new Map();
 
@@ -294,7 +291,6 @@ function buildGalleryData(sourceData) {
 
             let effUrl = "";
             if (effItem) {
-              // Берем имя эффекта, делаем маленькими буквами и меняем пробелы на _
               const safeEffName = effItem.name.toLowerCase().replace(/ /g, "_").replace(/[^a-z0-9_]/g, "");
               effUrl = `${baseUrl}/econ/unusual_effects/${safeEffName}.webp`;
             }
@@ -1037,7 +1033,6 @@ function showPickerModal(title, items, currentId, defaultText = window.t('defaul
       img.className = "item-option-thumb";
       img.loading = "lazy";
 
-      // Для кнопки "Сбросить" всегда используем дефолтную пустую картинку
       applyCachedImage(img, `${baseUrl}/econ/default_no_item.webp`);
 
       const label = document.createElement("span");
@@ -1063,13 +1058,11 @@ function showPickerModal(title, items, currentId, defaultText = window.t('defaul
 
       let url = getItemImageUrl(i);
 
-      // Если стандартного URL нет (как у эффектов), собираем его динамически
       if (!url && pickerContext) {
         const baseUrl = CDN_URL ? CDN_URL.replace(/\/+$/, "") : "https://cdn.deadsouls.cc";
         if (pickerContext.type === "hero") {
           url = `${baseUrl}/econ/default_no_item.webp`;
         } else if (pickerContext.type === "effect") {
-          // Форматируем имя текущего эффекта для ссылки
           const safeEffName = i.name.toLowerCase().replace(/ /g, "_").replace(/[^a-z0-9_]/g, "");
           url = `${baseUrl}/econ/unusual_effects/${safeEffName}.webp`;
         }
@@ -1183,7 +1176,6 @@ function renderHeroKinetics(heroId) {
 }
 
 function updateUI() {
-  // Добавляем перерисовку сеток при смене языка, чтобы категории мгновенно переводились
   renderGlobalGrid();
   renderPresetSelect();
 
