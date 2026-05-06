@@ -457,33 +457,38 @@ main {
 }
 
 .marquee-row--left .marquee-track {
-  animation: marquee-left var(--marquee-duration, 52s) linear infinite;
+  -webkit-animation: marquee-left var(--marquee-duration, 54s) linear infinite;
+  animation: marquee-left var(--marquee-duration, 54s) linear infinite;
 }
 
 .marquee-row--right .marquee-track {
-  animation: marquee-right var(--marquee-duration, 58s) linear infinite;
+  -webkit-animation: marquee-right var(--marquee-duration, 62s) linear infinite;
+  animation: marquee-right var(--marquee-duration, 62s) linear infinite;
 }
 
 .marquee-row:hover .marquee-track {
+  -webkit-animation-play-state: paused;
   animation-play-state: paused;
 }
 
+/* Для левой ленты */
+@-webkit-keyframes marquee-left {
+  from { -webkit-transform: translateX(0); transform: translateX(0); }
+  to { -webkit-transform: translateX(-50%); transform: translateX(-50%); }
+}
 @keyframes marquee-left {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(-50%, 0, 0);
-  }
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
+/* Для правой ленты */
+@-webkit-keyframes marquee-right {
+  from { -webkit-transform: translateX(-50%); transform: translateX(-50%); }
+  to { -webkit-transform: translateX(0); transform: translateX(0); }
+}
 @keyframes marquee-right {
-  from {
-    transform: translate3d(-50%, 0, 0);
-  }
-  to {
-    transform: translate3d(0, 0, 0);
-  }
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
 }
 
 .marquee-group {
