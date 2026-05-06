@@ -3,17 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="DeadSouls ItemSettings — Личный кабинет и управление подпиской."
-    />
+    <meta name="description" content="DeadSouls ItemSettings — Личный кабинет и управление подпиской." />
     <title>DeadSouls | Личный кабинет</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="icon" href="https://cdn.deadsouls.cc/website/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="../styles/styles.css" />
     <style>
       .dashboard-grid {
@@ -187,8 +182,7 @@
           margin-bottom: 32px;
           color: var(--text-muted, #888);
       }
-    </style>
-    <style>
+
       /* Анимация появления для основного контента */
       @keyframes fadeSlideUp {
         0% {
@@ -225,6 +219,7 @@
       }
     </style>
     <script src="../scripts/page-fadein.js"></script>
+    <script src="../scripts/i18n.js"></script>
   </head>
   <body>
     <div class="noise" aria-hidden="true"></div>
@@ -244,86 +239,109 @@
               <rect width="7" height="9" x="14" y="12" rx="1"/>
               <rect width="7" height="5" x="3" y="16" rx="1"/>
             </svg>
-            Панель
+            <span data-i18n="nav_panel">Панель</span>
           </a>
+          <button type="button" class="btn ghost home-icon-btn lang-switcher-btn">
+            RU
+          </button>
         </div>
       </header>
     </div>
 
     <main>
       <section class="section" aria-labelledby="label-dashboard">
-        <span id="label-dashboard" class="section-label section-label--fat">Личный кабинет</span>
+        <span id="label-dashboard" class="section-label section-label--fat" data-i18n="dashboard">Личный кабинет</span>
 
         <div id="login-section" class="card auth-prompt-card" style="display: none;">
-            <h3>Требуется авторизация</h3>
-            <p>Для управления подпиской и оплаты необходимо войти в аккаунт.</p>
+            <h3 data-i18n="auth_req">Требуется авторизация</h3>
+            <p data-i18n="auth_desc">Для управления подпиской и оплаты необходимо войти в аккаунт.</p>
             <a id="tg-login-button" href="#" class="telegram-button">
                 <img src="https://telegram.org/img/t_logo.png" width="24" height="24" alt="TG">
-                Войти через Telegram
+                <span data-i18n="login_tg">Войти через Telegram</span>
             </a>
         </div>
 
         <div id="dashboard-content" style="display: none;">
           <div class="dashboard-grid">
             <div class="card">
-              <h3 class="card-title">Твой аккаунт</h3>
+              <h3 class="card-title" data-i18n="your_account">Твой аккаунт</h3>
               <div class="field-row" style="margin-top: 16px;">
-                <span class="muted small">Статус подписки:</span>
-                <div><span class="status-badge" id="sub-status">Проверка...</span></div>
+                <span class="muted small" data-i18n="sub_status">Статус подписки:</span>
+                <div><span class="status-badge" id="sub-status" data-i18n="status_checking">Проверка...</span></div>
               </div>
               <div class="field-row">
-                <span class="muted small">Истекает:</span>
+                <span class="muted small" data-i18n="expires">Истекает:</span>
                 <p style="font-family: 'IBM Plex Mono', monospace;" id="sub-end-date">...</p>
               </div>
               <div class="field-row">
-                <span class="muted small">HWID:</span>
+                <span class="muted small" data-i18n="hwid_label">HWID:</span>
                 <p style="font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; cursor: pointer; transition: color 0.2s ease;" id="user-hwid" title="Нажмите, чтобы показать/скрыть">...</p>
               </div>
               <div class="field-row">
-                <span class="muted small">Уникальный ID:</span>
-                <p style="font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem;" id="user-internal-id">Загрузка...</p>
+                <span class="muted small" data-i18n="unique_id">Уникальный ID:</span>
+                <p style="font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem;" id="user-internal-id" data-i18n="loading">Загрузка...</p>
               </div>
               <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
-                <button type="button" class="btn ghost" id="btn-logout" style="display: none; width: 100%; justify-content: center; color: #f85149; border-color: rgba(248, 81, 73, 0.35);">
+                <span class="label" style="display: block; margin-bottom: 8px;" data-i18n="download_client_title">Скачать клиент</span>
+                <p class="muted small" style="margin-top: 0; margin-bottom: 12px;" data-i18n="download_client_desc">Установите локальный агент для применения VPK файлов.</p>
+
+                <button type="button" id="btn-download-client" class="btn ghost" style="display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; padding: 10px; border-color: rgba(255, 255, 255, 0.2);" disabled>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span data-i18n="btn_download">Скачать Agent.exe</span>
+                </button>
+              </div>
+              <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
+                <span class="label" style="display: block; margin-bottom: 8px;" data-i18n="activate_gift_title">Активация Gift-кода</span>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                  <input type="text" id="gift-code-input" class="input" placeholder="DS-XXXX-XXXX-XXXX" style="text-transform: uppercase; text-align: center; letter-spacing: 2px;">
+                  <button type="button" class="btn primary" id="btn-apply-gift" style="width: 100%; padding: 10px;" data-i18n="btn_apply">Активировать</button>
+                </div>
+              </div>
+              <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
+                <button type="button" class="btn ghost" id="btn-logout" style="display: none; width: 100%; justify-content: center; color: #f85149; border-color: rgba(248, 81, 73, 0.35);" data-i18n="logout">
                   Выйти из аккаунта
                 </button>
               </div>
             </div>
 
             <div class="card">
-              <h3 class="card-title">Оформление подписки</h3>
-              <p class="muted small" style="margin-bottom: 20px;">
+              <h3 class="card-title" data-i18n="checkout">Оформление подписки</h3>
+              <p class="muted small" style="margin-bottom: 20px;" data-i18n="checkout_desc">
                 Выбери период подписки. Доступ к ItemSettings выдается моментально после оплаты.
               </p>
 
               <div class="plans-grid" id="plans-container"></div>
 
               <div class="checkout-section">
-                <span class="label" style="margin-bottom: 12px; display: block;">Выберите способ оплаты</span>
+                <span class="label" style="margin-bottom: 12px; display: block;" data-i18n="choose_payment">Выберите способ оплаты</span>
 
                 <div class="payment-mosaic" id="payment-methods-grid">
-                  <article class="feat-card payment-method-card active" data-method="cryptocloud" role="button" tabindex="0">
+                  <article class="feat-card payment-method-card active" data-method="funpay" role="button" tabindex="0">
+                    <span class="feat-title">Funpay</span>
+                    <span class="feat-desc" data-i18n="funpay_desc">Оплата в RUB, USD, UAH, USDT и другие</span>
+                  </article>
+
+                  <article class="feat-card payment-method-card" data-method="cryptocloud" role="button" tabindex="0">
                     <span class="feat-title">Cryptocloud</span>
-                    <span class="feat-desc">BTC, ETH, USDT и другие</span>
+                    <span class="feat-desc" data-i18n="crypto_desc">BTC, ETH, USDT и другие</span>
                   </article>
 
-                  <article class="feat-card payment-method-card" data-method="paypal" role="button" tabindex="0">
-                    <span class="feat-title">PayPal</span>
-                    <span class="feat-desc">Оплата в RUB / USD</span>
-                  </article>
-
-                  <article class="feat-card payment-method-card" data-method="monobank" role="button" tabindex="0">
-                    <span class="feat-title">Monobank</span>
-                    <span class="feat-desc">Карты UAH (Украина)</span>
+                  <article class="feat-card payment-method-card" data-method="agent" role="button" tabindex="0">
+                    <span class="feat-title">Agent</span>
+                    <span class="feat-desc" data-i18n="agent_desc">Вся валюта мира</span>
                   </article>
                 </div>
 
                 <div class="total-price-row" style="margin-top: 32px;">
-                  <span>Итого к оплате:</span>
+                  <span data-i18n="total">Итого к оплате:</span>
                   <span class="total-value" id="total-price">...</span>
                 </div>
 
-                <button type="button" class="btn primary" id="btn-checkout" style="width: 100%;">
+                <button type="button" class="btn primary" id="btn-checkout" style="width: 100%;" data-i18n="btn_pay">
                   Перейти к оплате
                 </button>
               </div>
@@ -336,6 +354,8 @@
     <script>
       const CLIENT_ID = "{{ CLIENT_ID }}";
       const REDIRECT_URI = "{{ REDIRECT_URI }}";
+      const TELEGRAM_AGENT_URL = "{{ TELEGRAM_AGENT_URL }}";
+      const FUNPAY_URL = "{{ FUNPAY_URL }}";
 
       document.addEventListener('DOMContentLoaded', () => {
         const loginSection = document.getElementById('login-section');
@@ -348,7 +368,95 @@
         const subDateEl = document.getElementById('sub-end-date');
         const hwidEl = document.getElementById('user-hwid');
 
-        // Логика клика по HWID (Скрытие / Раскрытие)
+        const btnApplyGift = document.getElementById('btn-apply-gift');
+        const giftCodeInput = document.getElementById('gift-code-input');
+        const btnDownloadClient = document.getElementById('btn-download-client');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentStatus = urlParams.get('payment');
+
+        if (paymentStatus) {
+            if (paymentStatus === 'success') {
+                Swal.fire({
+                    icon: 'success',
+                    title: window.t('swal_success'),
+                    text: window.t('swal_success_pay'),
+                    background: '#1a1a1a',
+                    color: '#fff',
+                    confirmButtonColor: '#4caf50'
+                });
+
+                setTimeout(() => {
+                    const token = localStorage.getItem('token');
+                    if (token) {
+                        loadUserData(token);
+                    }
+                }, 3000);
+            } else if (paymentStatus === 'failure') {
+                Swal.fire({
+                    icon: 'error',
+                    title: window.t('swal_error'),
+                    text: window.t('swal_error_pay'),
+                    background: '#1a1a1a',
+                    color: '#fff'
+                });
+            }
+
+            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+        }
+
+        if (btnApplyGift && giftCodeInput) {
+            btnApplyGift.addEventListener('click', async () => {
+                const code = giftCodeInput.value.trim();
+                if (!code) return;
+
+                const token = localStorage.getItem('token');
+                btnApplyGift.disabled = true;
+                btnApplyGift.textContent = '...';
+
+                try {
+                    const response = await fetch('/api/v1/apply_gift', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ code: code })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: window.t('gift_activated'),
+                            text: data.message,
+                            background: '#1a1a1a',
+                            color: '#fff',
+                            confirmButtonColor: '#4caf50'
+                        });
+                        giftCodeInput.value = '';
+                        loadUserData(token);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: window.t('swal_error'),
+                            text: data.detail || window.t('gift_fail'),
+                            background: '#1a1a1a',
+                            color: '#fff'
+                        });
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert(window.t('net_error'));
+                } finally {
+                    btnApplyGift.disabled = false;
+                    btnApplyGift.textContent = window.t('btn_apply');
+                }
+            });
+        }
+
         hwidEl.addEventListener('click', () => {
           const fullHwid = hwidEl.dataset.full;
 
@@ -358,7 +466,7 @@
             const originalText = hwidEl.textContent;
 
             hwidEl.dataset.copied = 'true';
-            hwidEl.textContent = 'Скопировано!';
+            hwidEl.textContent = window.t('copied');
             hwidEl.style.color = '#2ecc71';
 
             setTimeout(() => {
@@ -380,68 +488,63 @@
             if (response.ok) {
               const data = await response.json();
 
-              // -- Установка Уникального ID из базы данных --
               if (data.id) {
                 internalIdEl.textContent = `DS-${String(data.id).padStart(4, '0')}`;
               }
 
-               // -- Обработка подписки --
               const panelBtn = document.getElementById('nav-panel-btn');
 
               if (data.subscription_end_date === 'None' || !data.subscription_end_date) {
-                subDateEl.textContent = 'Нет активной подписки';
-                subStatusEl.textContent = 'Неактивна';
+                subDateEl.textContent = window.t('no_sub');
+                subStatusEl.textContent = window.t('status_inactive');
                 subStatusEl.className = 'status-badge inactive';
 
                 if (panelBtn) {
                   panelBtn.style.opacity = '0.5';
                   panelBtn.style.pointerEvents = 'none';
-                  panelBtn.title = 'Требуется активная подписка';
                 }
               } else {
                 const subDate = new Date(data.subscription_end_date);
                 const now = new Date();
 
                 if (subDate < now) {
-                  subDateEl.textContent = 'Подписка истекла';
-                  subStatusEl.textContent = 'Истекла';
+                  subDateEl.textContent = window.t('sub_expired');
+                  subStatusEl.textContent = window.t('status_inactive');
                   subStatusEl.className = 'status-badge inactive';
 
                   if (panelBtn) {
                     panelBtn.style.opacity = '0.5';
                     panelBtn.style.pointerEvents = 'none';
-                    panelBtn.title = 'Подписка истекла';
                   }
                 } else {
                   subDateEl.textContent = data.subscription_end_date.split(' ')[0];
-                  subStatusEl.textContent = 'Активна';
+                  subStatusEl.textContent = window.t('status_active');
                   subStatusEl.className = 'status-badge';
 
                   if (panelBtn) {
                     panelBtn.style.opacity = '1';
                     panelBtn.style.pointerEvents = 'auto';
-                    panelBtn.title = '';
+                  }
+
+                  if (btnDownloadClient) {
+                    btnDownloadClient.disabled = false;
+                    btnDownloadClient.style.opacity = '1';
+                    btnDownloadClient.style.cursor = 'pointer';
                   }
                 }
               }
 
-              // -- НОВАЯ Обработка HWID --
               if (data.hwid === 'None' || !data.hwid) {
-                hwidEl.textContent = 'Не привязан';
+                hwidEl.textContent = window.t('hwid_unbound');
                 hwidEl.style.cursor = 'default';
                 hwidEl.title = '';
               } else {
-                // Сохраняем полный HWID в data-атрибут
                 hwidEl.dataset.full = data.hwid;
                 hwidEl.dataset.hidden = 'true';
-
-                // Функция маскировки (оставляет первые 4 и последние 4 символа)
                 const mask = (str) => {
                   if (str.length <= 8) return '********';
                   return str.slice(0, 4) + ' •••• •••• ' + str.slice(-4);
                 };
-
-                // Выводим замаскированный вариант
                 hwidEl.textContent = mask(data.hwid);
               }
             } else if (response.status === 401) {
@@ -488,13 +591,14 @@
         const checkoutBtn = document.getElementById('btn-checkout');
 
         const currencyMap = {
+          'funpay':      { key: 'usd', symbol: '$' },
           'cryptocloud': { key: 'usd', symbol: '$' },
-          'paypal':      { key: 'rub', symbol: '₽' },
-          'monobank':    { key: 'uah', symbol: '₴' }
+          'monobank':    { key: 'uah', symbol: '₴' },
+          'agent':       { key: 'usd', symbol: '$' }
         };
 
         let productsData = {};
-        let currentMethod = 'cryptocloud';
+        let currentMethod = 'funpay';
         let currentActivePlanId = null;
 
         function loadProductsData() {
@@ -508,7 +612,7 @@
             })
             .catch(error => {
               console.error(error);
-              plansContainer.innerHTML = '<p class="muted">Не удалось загрузить тарифы.</p>';
+              plansContainer.innerHTML = `<p class="muted">${window.t('plans_load_err')}</p>`;
             });
         }
 
@@ -533,8 +637,11 @@
             const titleStyle = plan.color ? `style="color: ${plan.color};"` : '';
             const price = plan.prices[currencyInfo.key];
 
+            // Получаем перевод по secure_name (например, 'plan_1mon'). Если его нет — берем оригинальный title
+            const translatedTitle = window.t('plan_' + plan.secure_name) || plan.title;
+
             card.innerHTML = `
-              <span class="plan-duration" ${titleStyle}>${plan.title}</span>
+              <span class="plan-duration" ${titleStyle}>${translatedTitle}</span>
               <span class="plan-price">${price} ${currencyInfo.symbol}</span>
             `;
 
@@ -549,6 +656,8 @@
           }
           updateTotal();
         }
+
+        window.renderPlans = renderPlans;
 
         function updateTotal() {
           if (!currentActivePlanId || !productsData[currentActivePlanId]) return;
@@ -578,10 +687,43 @@
         checkoutBtn.addEventListener('click', async () => {
           if (!currentActivePlanId) return;
 
+          if (currentMethod === 'agent') {
+            const plan = productsData[currentActivePlanId];
+
+            // 1. Берем переведенное название тарифа
+            const planTitle = window.t('plan_' + plan.secure_name) || plan.title;
+
+            // 2. Получаем ID пользователя со страницы (например, "DS-0015")
+            const userId = document.getElementById('user-internal-id').textContent;
+
+            // 3. Берем переведенный шаблон сообщения
+            let msgTemplate = window.t('agent_buy_msg');
+
+            // Защита от ошибки (если перевода вдруг нет, ставим русский по умолчанию)
+            if (msgTemplate === 'agent_buy_msg') {
+               msgTemplate = "Хочу купить `{plan}` скинченджера. Мой ID: {id}";
+            }
+
+            // 4. Подставляем название тарифа и ID в шаблон
+            const finalMessage = msgTemplate
+                .replace('{plan}', planTitle)
+                .replace('{id}', userId);
+
+            // 5. Кодируем и открываем ссылку
+            const text = encodeURIComponent(finalMessage);
+            window.open(`${TELEGRAM_AGENT_URL}?text=${text}`, '_blank');
+            return;
+          }
+
+          if (currentMethod === 'funpay') {
+            window.open(FUNPAY_URL, '_blank');
+            return;
+          }
+
           const token = localStorage.getItem('token');
           const currencyInfo = currencyMap[currentMethod];
 
-          checkoutBtn.textContent = 'Создание счета...';
+          checkoutBtn.textContent = window.t('invoice_creating');
           checkoutBtn.disabled = true;
 
           try {
@@ -598,7 +740,7 @@
             });
 
             if (response.status === 401) {
-                alert("Сессия истекла. Пожалуйста, войдите заново.");
+                alert(window.t('session_expired'));
                 localStorage.removeItem('token');
                 window.location.reload();
                 return;
@@ -614,19 +756,81 @@
               }
             } else {
               if (response.status === 429) {
-                alert("Слишком много запросов. Пожалуйста, подождите и попробуйте снова через минуту.");
+                alert(window.t('too_many_req'));
               } else {
-                alert("Ошибка при создании платежа: " + (data.detail || "Неизвестная ошибка"));
+                alert(window.t('pay_create_err') + (data.detail || ""));
               }
             }
           } catch (err) {
             console.error(err);
-            alert("Произошла ошибка сети при создании платежа.");
+            alert(window.t('net_error'));
           } finally {
-            checkoutBtn.textContent = 'Перейти к оплате';
+            checkoutBtn.textContent = window.t('btn_pay');
             checkoutBtn.disabled = false;
           }
         });
+
+        if (btnDownloadClient) {
+          btnDownloadClient.addEventListener('click', async () => {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            // Блокируем кнопку на время запроса
+            btnDownloadClient.disabled = true;
+            const originalContent = btnDownloadClient.innerHTML;
+            btnDownloadClient.innerHTML = window.t('loading') || 'Загрузка...';
+
+            try {
+              const response = await fetch('/client/download', {
+                method: 'GET', // Или POST, если твой бэкенд требует POST
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+              });
+
+              if (response.ok) {
+                const data = await response.json();
+
+                if (data.url) {
+                  // Создаем невидимую ссылку для скачивания без ухода со страницы
+                  const a = document.createElement('a');
+                  a.href = data.url;
+                  // a.download = 'Agent.exe'; // Можно раскомментировать, если нужно форсировать имя
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                } else {
+                  Swal.fire({
+                    icon: 'error',
+                    title: window.t('swal_error'),
+                    text: 'Сервер не вернул ссылку на скачивание.',
+                    background: '#1a1a1a', color: '#fff'
+                  });
+                }
+              } else {
+                const data = await response.json().catch(() => ({}));
+                Swal.fire({
+                  icon: 'error',
+                  title: window.t('swal_error'),
+                  text: data.detail || 'У вас нет доступа к скачиванию (подписка неактивна).',
+                  background: '#1a1a1a', color: '#fff'
+                });
+              }
+            } catch (err) {
+              console.error(err);
+              Swal.fire({
+                icon: 'error',
+                title: window.t('swal_error'),
+                text: window.t('net_error') || 'Ошибка сети',
+                background: '#1a1a1a', color: '#fff'
+              });
+            } finally {
+              // Возвращаем кнопку в исходное состояние
+              btnDownloadClient.disabled = false;
+              btnDownloadClient.innerHTML = originalContent;
+            }
+          });
+        }
 
         async function checkAuthCode() {
           const urlParams = new URLSearchParams(window.location.search);
@@ -651,7 +855,7 @@
                 window.history.replaceState({}, document.title, window.location.pathname);
                 updateUIForLoginState();
               } else {
-                alert('Ошибка: ' + (data.error || 'Не удалось авторизоваться'));
+                alert(window.t('swal_error') + ': ' + (data.error || window.t('auth_err')));
                 updateUIForLoginState();
               }
             } catch (err) {
@@ -675,25 +879,23 @@
         const hwidToBind = urlParams.get('bind_hwid');
 
         if (hwidToBind) {
-            // Берем токен, который сохранился после входа через Telegram
             const token = localStorage.getItem('token');
 
             if (!token) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Вход не выполнен',
-                    text: 'Для привязки устройства сначала войдите в систему через Telegram!',
+                    title: window.t('auth_req'),
+                    text: window.t('hwid_bind_req'),
                     background: '#1a1a1a',
                     color: '#fff',
-                    confirmButtonText: 'Понятно'
+                    confirmButtonText: 'OK'
                 });
                 return;
             }
 
-            // Показываем процесс загрузки
             Swal.fire({
-                title: 'Привязка устройства...',
-                html: 'Пожалуйста, подождите',
+                title: window.t('hwid_binding'),
+                html: window.t('hwid_wait'),
                 timerProgressBar: true,
                 didOpen: () => { Swal.showLoading() },
                 background: '#1a1a1a',
@@ -714,22 +916,21 @@
                 if (response.ok) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Готово!',
-                        text: 'Устройство успешно привязано. Можете возвращаться в программу.',
+                        title: window.t('swal_success'),
+                        text: window.t('hwid_done'),
                         background: '#1a1a1a',
                         color: '#fff',
                         confirmButtonColor: '#4caf50'
                     });
-                    // Очищаем URL от параметра bind_hwid
                     window.history.replaceState(null, '', window.location.pathname);
                 } else {
-                    throw new Error(result.detail || 'Ошибка сервера');
+                    throw new Error(result.detail || 'Server error');
                 }
             } catch (error) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Ошибка',
-                    text: 'Не удалось привязать HWID: ' + error.message,
+                    title: window.t('swal_error'),
+                    text: window.t('hwid_fail') + error.message,
                     background: '#1a1a1a',
                     color: '#fff'
                 });

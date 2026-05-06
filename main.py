@@ -8,6 +8,7 @@ import time
 import base64
 import secrets
 import httpx
+import asyncio
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives import serialization
@@ -31,12 +32,15 @@ import database
 import config
 from payments import payment
 import products
+from admin_bot import bot, dp
 
 
 class PaymentRequest(BaseModel):
     currency: str
     product_id: str
 
+class GiftRequest(BaseModel):
+    code: str
 
 # Модели для десктопной авторизации
 class ChallengeRequest(BaseModel):
@@ -58,8 +62,12 @@ async def lifespan(app: FastAPI):
     print("[+] Запуск сервера. Инициализация БД...")
     await database.init_db()
 
-    print("[+] Установка Monobank Webhook...")
-    await payment.Monobank.on_startup()
+    # print("[+] Установка Monobank Webhook...")
+    # await payment.Monobank.on_startup()
+
+    # Запускаем бота как фоновую задачу (чтобы он не блокировал веб-сервер)
+    print("[+] Запуск Telegram Админ-бота...")
+    bot_task = asyncio.create_task(dp.start_polling(bot))
 
     yield
 
@@ -101,7 +109,9 @@ async def home(request: Request):
         name="home.html",
         context={
             "CLIENT_ID": config.TELEGRAM_CLIENT_ID,
-            "REDIRECT_URI": config.TELEGRAM_REDIRECT_URI
+            "REDIRECT_URI": config.TELEGRAM_REDIRECT_URI,
+            "FUNPAY_URL": config.FUNPAY_URL,
+            "TELEGRAM_AGENT_URL": config.TELEGRAM_AGENT_URL
         }
     )
 
@@ -113,8 +123,8 @@ async def panel(request: Request):
         request=request,
         name="panel.html",
         context={
-            "HERO_RENDER_BASE": config.HERO_RENDER_BASE,
-            "INVENTORY_IMAGE_BASE": config.INVENTORY_IMAGE_BASE
+            "CDN_URL": config.CDN_URL,
+            "VALVE_HERO_RENDERS_CDN_URL": config.HERO_RENDER_URL
         }
     )
 
@@ -147,6 +157,35 @@ async def get_user_info(current_user: database.User = Depends(get_current_user))
         "hwid": current_user.HWID
     })
 
+@app.post("/api/v1/apply_gift")
+@limiter.limit("5/minute")
+async def api_apply_gift(
+        request: Request,
+        body: GiftRequest,
+        current_user: database.User = Depends(get_current_user)
+):
+    result = await database.apply_gift_code(current_user.id, body.code.strip())
+
+    if not result["success"]:
+        raise HTTPException(status_code=400, detail=result["error"])
+
+    gift_code = await database.get_gift_code(body.code.strip())
+
+    await payment.send_payment_webhook(
+        tg_username=json.loads(current_user.tg_data).get("preferred_username", "-- missing --"),
+        paid_value="?",
+        fields={"gift_code": body.code.strip(), "used_by": gift_code.usedby, "userdb_id": current_user.id},
+        product_name=f"Подписка на {gift_code.subtime} дней",
+        author_name="Funpay (Gift-code)",
+        avatar_url="https://cdn.discordapp.com/attachments/1500110526792073317/1500110555120406624/image_1.png?ex=69f73e53&is=69f5ecd3&hm=4ee976493e0e11c09a5f61034773ceb077e3b493d85133f7b4587e772a7b436b"
+    )
+
+    return JSONResponse({
+        "success": True,
+        "message": f"Успешно добавлено {result['days']} дней!",
+        "new_date": result["new_date"]
+    })
+
 
 # ==========================================
 # 🛡️ ZERO-TRUST API (Для десктопного клиента)
@@ -159,9 +198,6 @@ async def generate_challenge(request: Request, body: ChallengeRequest):
 
     if client_ip in banned_ips:
         raise HTTPException(status_code=403, detail="Banned")
-
-    if body.version != config.APP_SECRET_VERSION:
-        raise HTTPException(status_code=426, detail="Upgrade Required")
 
     challenge = secrets.token_hex(16)
     session_id = secrets.token_hex(16)
@@ -191,7 +227,7 @@ async def authenticate(request: Request, body: AuthRequest):
 
     # 2. Проверка HMAC подписи (ИСПОЛЬЗУЕМ CHALLENGE вместо APP_SECRET_KEY)
     expected_mac = hmac.new(
-        session["challenge"].encode('utf-8'),
+        (session["challenge"] + config.APP_SECRET_KEY).encode('utf-8'),
         body.ciphertext.encode('utf-8'),
         hashlib.sha256
     ).hexdigest()
@@ -200,7 +236,7 @@ async def authenticate(request: Request, body: AuthRequest):
         raise HTTPException(status_code=403, detail="Invalid signature")
 
     # 3. Попытка расшифровки (доказывает, что клиент знает HWID)
-    key_material = (session["challenge"] + session["hwid"]).encode('utf-8')
+    key_material = (session["challenge"] + session["hwid"] + config.APP_SECRET_KEY).encode('utf-8')
     aes_key = hashlib.sha256(key_material).digest()
 
     try:
@@ -226,12 +262,15 @@ async def authenticate(request: Request, body: AuthRequest):
     return {
         "status": "success",
         "subscription_ends": str(user.subscription_end_date),
+        "app_version": config.APP_SECRET_VERSION,
         "tools_version": config.APP_TOOLS_VERSION
     }
 
 
 @app.post("/api/v1/set")
+@limiter.limit("3/minute")
 async def set_user_hwid(
+    request: Request,
     hwid: str,
     current_user: database.User = Depends(get_current_user)
 ):
@@ -253,17 +292,76 @@ async def set_user_hwid(
     return JSONResponse({"status": "ok"}, status_code=200)
 
 
+@app.get("/api/v1/version")
+@limiter.limit("15/minute")
+async def get_app_version(
+    request: Request,
+    current_user: database.User = Depends(get_current_user)
+):
+    content = {
+        "status": "success",
+        "subscription_ends": str(current_user.subscription_end_date),
+        "app_version": config.APP_SECRET_VERSION,
+        "tools_version": config.APP_TOOLS_VERSION
+    }
+
+    return JSONResponse(content, status_code=200)
+
 # ==========================================
 # FILES MANAGER
 # ==========================================
 
+@app.get("/client/download")
+@limiter.limit("10/minute")
+async def get_client_download_url(
+    request: Request,
+    current_user: database.User = Depends(get_current_user)
+):
+    """
+    Эндпоинт для получения ссылки на скачивание клиента.
+    Проверяет наличие активной подписки.
+    """
+
+    # 1. Проверяем, есть ли подписка и не истекла ли она
+    if not current_user.subscription_end_date or current_user.subscription_end_date < datetime.now(UTC):
+        raise HTTPException(
+            status_code=403,
+            detail="У вас нет активной подписки для скачивания клиента."
+        )
+
+    # 2. Формируем ссылку на клиент.
+    # Берем базовый CDN из конфига, чтобы при смене домена не пришлось переписывать код
+    base_cdn = config.CDN_URL.rstrip('/')
+    client_url = f"{base_cdn}/MAMA/YA/SUKA/GANDON/EBANIY/EBI/MENYA/POLNOSTYII/ItemSettings.exe"
+
+    # 3. Возвращаем JSON с URL
+    return JSONResponse({"url": client_url})
+
+@app.get('/sdk/{path:path}')
+@limiter.limit("300/minute")
+async def static_assets(request: Request, path: str):
+    link = f"{config.CDN_URL.strip('/')}/{path.strip('/')}"
+    return RedirectResponse(
+        url=link,
+        status_code=307,
+        headers={"Cache-Control": "public, max-age=3600"} # Кешировать редирект на 1 час
+    )
+
 @app.get('/{filename:path}')
 @limiter.limit("200/minute")
 async def static_assets(request: Request, filename: str):
-    file_path = BASE_DIR / filename
-    if file_path.exists() and file_path.is_file():
-        return FileResponse(file_path)
-    raise HTTPException(status_code=404, detail="File not found")
+    try:
+        file_path = (BASE_DIR / filename).resolve()
+        base_dir_resolved = BASE_DIR.resolve()
+
+        if not file_path.is_relative_to(base_dir_resolved):
+            raise HTTPException(status_code=403, detail="Forbidden")
+
+        if file_path.exists() and file_path.is_file():
+            return FileResponse(file_path)
+        raise HTTPException(status_code=404, detail="File not found")
+    except Exception:
+        raise HTTPException(status_code=404, detail="File not found")
 
 
 # ==========================================
@@ -294,6 +392,8 @@ async def telegram_auth_oidc(request: Request):
                 "redirect_uri": config.TELEGRAM_REDIRECT_URI
             }
         )
+
+    print("[Telegram OIDC] Code exchange response:", response.status_code, response.text)
 
     if response.status_code != 200:
         return JSONResponse(
@@ -423,14 +523,11 @@ async def handle_postback_cryptocloud(request: Request):
 
         await payment.send_payment_webhook(
             tg_username=json.loads(user_db.tg_data).get("preferred_username", "-- missing --"),
-            order_id=payment_db.order_id,
-            amount=payment_db.amount,
-            currency=payment_db.currency,
-            invoice_id=invoice_id,
+            fields={"order_id": order_id, "invoice_id": invoice_id, "userdb_id": user_db.id},
+            paid_value=f"{payment_db.amount} {payment_db.currency}",
             product_name=product.get('name'),
-            user_id=user_db.id,
             author_name="CryptoCloud",
-            avatar_url="https://app.cryptocloud.plus/img/icons/cc.svg"
+            avatar_url="https://cdn.discordapp.com/attachments/1500110526792073317/1500118140544221224/cc.png?ex=69f74563&is=69f5f3e3&hm=874b0713fb033c8c94cb5b8fba8856f44bd0d5d0cdf11892cd3a09c9dcb58636"
         )
 
         return end_response
@@ -438,161 +535,146 @@ async def handle_postback_cryptocloud(request: Request):
         return PlainTextResponse("Invalid token", status_code=400)
 
 
-@app.post('/payment/monobank')
-@limiter.limit("2/minute")
-async def monobank_payment(
-        request: Request,
-        req: PaymentRequest,
-        current_user: database.User = Depends(get_current_user)
-):
-    product = products.get(req.product_id)
-
-    if req.currency.lower() != "uah":
-        raise HTTPException(status_code=400, detail="Invalid currency")
-    if not product:
-        raise HTTPException(status_code=400, detail="Invalid product")
-
-    price_uah = product.get("prices", {}).get("uah")
-    if price_uah is None:
-        raise HTTPException(status_code=400, detail="Для этого товара не указана цена в UAH")
-
-    try:
-        link = (payment
-                .Monobank(
-            user=str(current_user.tg_id),
-            amount=int(price_uah),
-            product=product.get("secure_name")
-        )
-                .create_link())
-
-        if not link:
-            raise HTTPException(status_code=404, detail="Payment url not found.")
-
-        print("[Monobank] {} - Created url for {} UAH  - {}".format(current_user.id, price_uah, product.get("name")))
-
-        return JSONResponse({"url": link})
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-def verify_mono_signature(x_sign_base64: str, body_bytes: bytes) -> bool:
-    try:
-        # 1. Декодируем подпись из Base64
-        signature = base64.b64decode(x_sign_base64)
-
-        # 2. Загружаем публичный ключ Monobank
-        public_key = serialization.load_pem_public_key(
-            config.MONOBANK_TOKEN.encode('utf-8')
-        )
-
-        # 3. Проверяем подпись (Monobank использует ECDSA с SHA256)
-        public_key.verify(
-            signature,
-            body_bytes,
-            ec.ECDSA(hashes.SHA256())
-        )
-        return True
-    except Exception as e:
-        print(f"[Monobank] Ошибка верификации подписи: {e}")
-        return False
-
-@app.post('/payment/monobank/callback')
-async def handle_postback_monobank(request: Request):
-    raw = await request.body()
-    end_response = PlainTextResponse("OK", status_code=200)
-
-    try:
-        data = json.loads(raw)
-
-        if data.get("type") != "StatementItem":
-            return end_response
-
-        comment = data.get('data', {}).get("statementItem", {}).get("comment", None)
-        if not comment:
-            return end_response
-
-        operation_amount = int(data.get('data', {}).get("statementItem", {}).get("operationAmount", 0))
-        user, product = comment.split(" | ")
-
-        product_data = {p.get("secure_name"): p for p in products.get_list().values()}.get(product)
-
-        if not product_data:
-            print("Invalid product")
-            return end_response
-
-        if product_data.get("prices", {}).get("uah") != int(operation_amount * 0.01):
-            return end_response
-
-        print(
-            f"[Monobank] {user} paid {int(operation_amount * 0.01)} UAH for {product_data.get('name')} - successfully")
-
-        try:
-            user = int(user)
-        except:
-            print("[Monobank] Unavailable to give subscription: Invalid user '{}'".format(user))
-            return end_response
-
-        user_db = await database.get_user(tg_id=str(user))
-        if not user_db:
-            print("[Monobank] Unavailable to give subscription: User not exists '{}'".format(user))
-
-        if user_db.subscription_end_date and user_db.subscription_end_date > datetime.now(UTC):
-            new_end_date = user_db.subscription_end_date + timedelta(days=product_data.get("duration", 0))
-        else:
-            new_end_date = datetime.now(UTC) + timedelta(days=product_data.get("duration", 0))
-
-        await database.update_user(
-            user_id=user_db.id,
-            subscription_end_date=new_end_date
-        )
-        print(user_db.tg_data)
-        await payment.send_payment_webhook(
-            tg_username=json.loads(user_db.tg_data).get("preferred_username", "-- missing --"),
-            order_id="-1",
-            amount=int(operation_amount * 0.01),
-            currency="UAH",
-            product_name=product_data.get('name'),
-            user_id=user_db.id or str(user),
-            author_name="Monobank",
-            avatar_url="https://send.monobank.ua/img/favicon/android/android-icon-144x144.png"
-        )
-
-        return end_response
-
-    except Exception as e:
-        print(f"Error processing Monobank callback: {str(e)}")
-        return end_response
+# @app.post('/payment/monobank')
+# @limiter.limit("2/minute")
+# async def monobank_payment(
+#         request: Request,
+#         req: PaymentRequest,
+#         current_user: database.User = Depends(get_current_user)
+# ):
+#     product = products.get(req.product_id)
+#
+#     if req.currency.lower() != "uah":
+#         raise HTTPException(status_code=400, detail="Invalid currency")
+#     if not product:
+#         raise HTTPException(status_code=400, detail="Invalid product")
+#
+#     price_uah = product.get("prices", {}).get("uah")
+#     if price_uah is None:
+#         raise HTTPException(status_code=400, detail="Для этого товара не указана цена в UAH")
+#
+#     try:
+#         link = (payment
+#                 .Monobank(
+#             user=str(current_user.tg_id),
+#             amount=int(price_uah),
+#             product=product.get("secure_name")
+#         )
+#                 .create_link())
+#
+#         if not link:
+#             raise HTTPException(status_code=404, detail="Payment url not found.")
+#
+#         print("[Monobank] {} - Created url for {} UAH  - {}".format(current_user.id, price_uah, product.get("name")))
+#
+#         return JSONResponse({"url": link})
+#
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post('/payment/paypal')
-async def paypal_payment(
-        user: str = Form(default=None),
-        currency: str = Form(default=""),
-        product_id: str = Form(default="")
-):
-    product = products.get(product_id)
+# def verify_mono_signature(x_sign_base64: str, body_bytes: bytes) -> bool:
+#     try:
+#         # 1. Декодируем подпись из Base64
+#         signature = base64.b64decode(x_sign_base64)
+#
+#         # 2. Загружаем публичный ключ Monobank
+#         public_key = serialization.load_pem_public_key(
+#             config.MONOBANK_TOKEN.encode('utf-8')
+#         )
+#
+#         # 3. Проверяем подпись (Monobank использует ECDSA с SHA256)
+#         public_key.verify(
+#             signature,
+#             body_bytes,
+#             ec.ECDSA(hashes.SHA256())
+#         )
+#         return True
+#     except Exception as e:
+#         print(f"[Monobank] Ошибка верификации подписи: {e}")
+#         return False
 
-    if currency.lower() not in ["rub", "usd"]:
-        return PlainTextResponse("Invalid currency", status_code=401)
-    if not product:
-        return PlainTextResponse("Invalid product", status_code=401)
+# @app.post('/payment/monobank/callback')
+# async def handle_postback_monobank(request: Request):
+#     raw = await request.body()
+#     print(request.headers)
+#     x_sign = request.headers.get("X-Sign")
+#     print(x_sign)
+#
+#     if not x_sign or not verify_mono_signature(x_sign, raw):
+#         return PlainTextResponse("Forbidden", status_code=403)
+#
+#     end_response = PlainTextResponse("OK", status_code=200)
+#
+#     try:
+#         data = json.loads(raw)
+#
+#         if data.get("type") != "StatementItem":
+#             return end_response
+#
+#         comment = data.get('data', {}).get("statementItem", {}).get("comment", None)
+#         if not comment:
+#             return end_response
+#
+#         operation_amount = int(data.get('data', {}).get("statementItem", {}).get("operationAmount", 0))
+#         user, product = comment.split(" | ")
+#
+#         product_data = {p.get("secure_name"): p for p in products.get_list().values()}.get(product)
+#
+#         if not product_data:
+#             print("Invalid product")
+#             return end_response
+#
+#         if product_data.get("prices", {}).get("uah") != int(operation_amount * 0.01):
+#             return end_response
+#
+#         print(
+#             f"[Monobank] {user} paid {int(operation_amount * 0.01)} UAH for {product_data.get('name')} - successfully")
+#
+#         try:
+#             user = int(user)
+#         except:
+#             print("[Monobank] Unavailable to give subscription: Invalid user '{}'".format(user))
+#             return end_response
+#
+#         user_db = await database.get_user(tg_id=str(user))
+#         if not user_db:
+#             print("[Monobank] Unavailable to give subscription: User not exists '{}'".format(user))
+#
+#         if user_db.subscription_end_date and user_db.subscription_end_date > datetime.now(UTC):
+#             new_end_date = user_db.subscription_end_date + timedelta(days=product_data.get("duration", 0))
+#         else:
+#             new_end_date = datetime.now(UTC) + timedelta(days=product_data.get("duration", 0))
+#
+#         await database.update_user(
+#             user_id=user_db.id,
+#             subscription_end_date=new_end_date
+#         )
+#
+#         await database.create_monobank_payment(
+#             user_id=user_db.id,
+#             amount=operation_amount * 0.01,
+#             product_id=product,  # Сюда запишется secure_name тарифа
+#             comment=comment
+#         )
+#
+#         await payment.send_payment_webhook(
+#             tg_username=json.loads(user_db.tg_data).get("preferred_username", "-- missing --"),
+#             order_id="-1",
+#             amount=int(operation_amount * 0.01),
+#             currency="UAH",
+#             product_name=product_data.get('name'),
+#             user_id=user_db.id or str(user),
+#             author_name="Monobank",
+#             avatar_url="https://send.monobank.ua/img/favicon/android/android-icon-144x144.png"
+#         )
+#
+#         return end_response
+#
+#     except Exception as e:
+#         print(f"Error processing Monobank callback: {str(e)}")
+#         return end_response
 
-    try:
-        link = (payment
-                .Paypal(
-            user=user,
-            amount=product.get("prices").get(currency.lower()),
-            product=product.get("name")
-        )
-                .create_link())
-
-        if link:
-            return RedirectResponse(url=link, status_code=303)
-        else:
-            return PlainTextResponse("Ошибка: Ссылка на оплату не найдена.", status_code=404)
-
-    except Exception as e:
-        return PlainTextResponse(f"Произошла внутренняя ошибка: {str(e)}", status_code=400)
 
 
 if __name__ == '__main__':

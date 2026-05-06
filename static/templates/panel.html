@@ -10,6 +10,7 @@
     <title>DeadSouls | ItemSettings — панель</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="icon" href="https://cdn.deadsouls.cc/website/favicon.ico">
     <link
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
@@ -35,6 +36,14 @@
             return;
           }
           const data = await res.json();
+
+          // Проверка на наличие привязанного HWID
+          if (!data.hwid || data.hwid === 'None') {
+            window.location.replace('/home');
+            return;
+          }
+
+          // Проверка на наличие подписки
           if (!data.subscription_end_date || data.subscription_end_date === 'None') {
             window.location.replace('/home');
             return;
@@ -50,6 +59,7 @@
         }
       })();
     </script>
+    <script src="../scripts/i18n.js"></script>
   </head>
   <body>
     <div class="noise" aria-hidden="true"></div>
@@ -62,18 +72,15 @@
           <span class="logo-sub">Panel</span>
         </a>
         <div class="topbar-end">
+
           <span
             id="save-status"
             class="save-status muted small"
             role="status"
             aria-live="polite"
           ></span>
-          <button type="button" class="btn primary" id="btn-apply-all">
-            Установить VPK
-          </button>
-          <button type="button" class="btn primary" id="btn-save-all">
-            Cоздать VPK
-          </button>
+          <button type="button" class="btn primary" id="btn-apply-all" data-i18n="install_vpk">Установить VPK</button>
+          <button type="button" class="btn primary" id="btn-save-all" data-i18n="create_vpk">Cоздать VPK</button>
           <button type="button" class="btn primary home-icon-btn" id="btn-open-gallery">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
@@ -86,18 +93,15 @@
               <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
             </svg>
           </button>
-          <a class="btn ghost home-icon-btn" href="/" title="На главную">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-          </a>
           <a class="btn ghost home-icon-btn" href="/home" title="Кабинет">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
           </a>
+          <button type="button" class="btn ghost home-icon-btn lang-switcher-btn">
+            RU
+          </button>
         </div>
       </header>
     </div>
@@ -106,7 +110,7 @@
 <!-- Полноэкранная Галерея -->
 <section id="gallery-section" class="fullscreen-overlay" hidden>
   <div class="fullscreen-header" style="justify-content: flex-end;">
-    <button type="button" class="btn primary" id="btn-export-gallery">
+    <button type="button" class="btn primary" id="btn-export-gallery" data-i18n="save_screenshots">
       Сохранить скриншоты
     </button>
   </div>
@@ -115,18 +119,19 @@
 
       <!-- Модалка Пресетов -->
       <section id="presets-section" class="panel-section section panel-controls" aria-labelledby="label-presets" hidden>
-        <span id="label-presets" class="section-label section-label--fat">Пресеты</span>
+        <span id="label-presets" class="section-label section-label--fat" data-i18n="presets">Пресеты</span>
         <div class="preset-grid card">
           <div class="preset-row">
-            <label class="preset-label" for="preset-select">Сохраненные пресеты</label>
+            <label class="preset-label" for="preset-select" data-i18n="saved_presets">Сохраненные пресеты</label>
             <select id="preset-select" class="input preset-select"></select>
           </div>
           <div class="preset-row">
-            <label class="preset-label" for="preset-name">Имя нового пресета</label>
+            <label class="preset-label" for="preset-name" data-i18n="new_preset_name">Имя нового пресета</label>
             <input
               id="preset-name"
               class="input preset-input"
               type="text"
+              data-i18n-placeholder="new_preset_placeholder"
               placeholder="Например: Ranked / Fun / Demo"
               maxlength="48"
               autocomplete="off"
@@ -134,10 +139,17 @@
             />
           </div>
           <div class="preset-actions">
-            <button type="button" class="btn primary" id="btn-preset-save">Сохранить</button>
-            <button type="button" class="btn ghost" id="btn-preset-load">Загрузить</button>
-            <button type="button" class="btn ghost" id="btn-preset-delete">Удалить</button>
-            <button type="button" class="btn ghost" id="btn-reset-all">Сбросить выбор</button>
+            <button type="button" class="btn primary" id="btn-preset-save" data-i18n="btn_save">Сохранить</button>
+            <button type="button" class="btn ghost" id="btn-preset-load" data-i18n="btn_load">Загрузить</button>
+            <button type="button" class="btn ghost" id="btn-preset-delete" data-i18n="btn_delete">Удалить</button>
+            <button type="button" class="btn ghost" id="btn-reset-all" data-i18n="btn_reset">Сбросить выбор</button>
+            <button type="button" class="btn ghost home-icon-btn" id="btn-preset-export" title="Скачать пресет (Поделиться)" aria-label="Скачать пресет">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                <polyline points="16 6 12 2 8 6"></polyline>
+                <line x1="12" y1="2" x2="12" y2="15"></line>
+              </svg>
+            </button>
           </div>
           <span class="muted small" id="preset-status" role="status" aria-live="polite"></span>
 
@@ -147,13 +159,13 @@
       </section>
 
       <section class="panel-section section" aria-labelledby="label-global">
-        <span id="label-global" class="section-label section-label--fat"
+        <span id="label-global" class="section-label section-label--fat" data-i18n="global"
           >Глобальное</span>
         <div id="global-grid" class="global-grid"></div>
       </section>
 
       <section class="panel-section section" aria-labelledby="label-skin">
-        <span id="label-skin" class="section-label section-label--fat"
+        <span id="label-skin" class="section-label section-label--fat" data-i18n="skinchanger"
           >Скинчейнджер</span>
 
         <div class="skin-layout">
@@ -166,7 +178,7 @@
               aria-controls="hero-drop-list"
             >
               <div class="hero-main-content">
-                <span class="tile-label">Выбор персонажа</span>
+                <span class="tile-label" data-i18n="select_hero">Выбор персонажа</span>
                 <div class="hero-current-name" id="current-hero-name">
                   Выберите героя…
                 </div>
@@ -191,6 +203,7 @@
               <input
                 type="text"
                 class="input search-box"
+                data-i18n-placeholder="search_hero"
                 placeholder="Поиск героя…"
                 id="hero-search"
                 spellcheck="false"
@@ -221,7 +234,7 @@
     >
       <div class="modal-card card">
         <div class="modal-header">
-          <h3 id="modal-title" class="modal-title-text">Выбор</h3>
+          <h3 id="modal-title" class="modal-title-text" data-i18n="modal_selection">Выбор</h3>
           <button
             type="button"
             class="icon-btn"
@@ -235,6 +248,7 @@
           type="text"
           class="input search-box"
           id="item-search"
+          data-i18n-placeholder="search_item"
           placeholder="Поиск…"
           spellcheck="false"
           autocomplete="off"
@@ -245,8 +259,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
       window.APP_CONFIG = {
-        HERO_RENDER_BASE: "{{ HERO_RENDER_BASE }}",
-        INVENTORY_IMAGE_BASE: "{{ INVENTORY_IMAGE_BASE }}"
+        CDN_URL: "{{ CDN_URL }}",
+        VALVE_HERO_RENDERS_CDN_URL: "{{ VALVE_HERO_RENDERS_CDN_URL }}"
       };
     </script>
     <script src="../scripts/panel.js" type="module"></script>

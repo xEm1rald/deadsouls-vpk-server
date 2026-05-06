@@ -5,6 +5,9 @@
     "Default Loading Screen": {
         "image_inventory": "econ/default_no_item"
     },
+    "Default Cursor Pack": {
+        "image_inventory": "econ/default_no_item"
+    },
     "Default Emblem": {
         "image_inventory": "econ/default_no_item"
     },

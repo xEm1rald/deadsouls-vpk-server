@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+import json
 import os
 
 load_dotenv()
@@ -7,14 +8,18 @@ DOMAIN = os.getenv("DOMAIN")
 
 # === DATABASE ===
 DATABASE_URL = os.getenv("DATABASE_URL")
-HERO_RENDER_BASE = os.getenv("HERO_RENDER_BASE")
-INVENTORY_IMAGE_BASE = os.getenv("INVENTORY_IMAGE_BASE")
+if DATABASE_URL and DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql", "postgresql+asyncpg", 1)
+CDN_URL = os.getenv("CDN_URL")
+HERO_RENDER_URL = os.getenv("HERO_RENDER_URL")
 
 # === AUTH ===
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CLIENT_ID = os.getenv("TELEGRAM_CLIENT_ID")
 TELEGRAM_CLIENT_SECRET = os.getenv("TELEGRAM_CLIENT_SECRET")
 TELEGRAM_REDIRECT_URI = DOMAIN + os.getenv("TELEGRAM_REDIRECT_URI")
+TELEGRAM_ADMIN_IDS = json.loads(os.getenv("TELEGRAM_ADMIN_IDS", "[]"))
+TELEGRAM_AGENT_URL = os.getenv("TELEGRAM_AGENT_URL")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
@@ -28,6 +33,8 @@ MONOBANK_WEBHOOK_URL = DOMAIN + os.getenv("MONOBANK_WEBHOOK_URL")
 CRYPTOCLOUD_API_KEY = os.getenv("CRYPTOCLOUD_API_KEY")
 CRYPTOCLOUD_SHOP_ID = os.getenv("CRYPTOCLOUD_SHOP_ID")
 CRYPTOCLOUD_SECRET_KEY = os.getenv("CRYPTOCLOUD_SECRET_KEY")
+
+FUNPAY_URL = os.getenv("FUNPAY_URL")
 
 DISCORD_PAYMENT_INFO_WEBHOOK = os.getenv("DISCORD_PAYMENT_INFO_WEBHOOK")
 

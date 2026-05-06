@@ -1,47 +1,47 @@
 {
+    "99": {
+        "title": "7 дней",
+        "name": "Подписка на 7 дней",
+        "secure_name": "7days",
+        "prices": {
+            "usd": 2.5,
+            "uah": 99,
+            "rub": 169
+        },
+        "duration": 7
+    },
+    "100": {
+        "title": "14 дней",
+        "name": "Подписка на 14 дней",
+        "secure_name": "14days",
+        "prices": {
+            "usd": 3.5,
+            "uah": 149,
+            "rub": 259
+        },
+        "duration": 14
+    },
     "101": {
         "title": "1 Месяц",
         "name": "Подписка на 1 месяц",
         "secure_name": "1mon",
         "prices": {
-            "usd": 10,
-            "uah": 10,
-            "rub": 750
+            "usd": 4.5,
+            "uah": 199,
+            "rub": 349
         },
         "duration": 30
-    },
-    "103": {
-        "title": "3 Месяца",
-        "name": "Подписка на 3 месяца",
-        "secure_name": "3mon",
-        "prices": {
-            "usd": 26,
-            "uah": 1050,
-            "rub": 2100
-        },
-        "duration": 90
-    },
-    "104": {
-        "title": "6 Месяцев",
-        "name": "Подписка на 6 месяцев",
-        "secure_name": "6mon",
-        "prices": {
-            "usd": 45,
-            "uah": 1950,
-            "rub": 4000
-        },
-        "duration": 180
     },
     "105": {
         "title": "Lifetime",
         "name": "Подписка Навсегда",
         "secure_name": "life",
         "prices": {
-            "usd": 100,
-            "uah": 4100,
-            "rub": 7500
+            "usd": 22.5,
+            "uah": 999,
+            "rub": 1699
         },
         "color": "#f1c40f",
-        "duration": 99999
+        "duration": 36500
     }
 }

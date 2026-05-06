@@ -1,0 +1,42 @@
+{
+    "common": {
+        "color_name": "ItemRarityCommon",
+        "hex_color": "#b0c3d9"
+    },
+    "uncommon": {
+        "color_name": "ItemRarityUncommon",
+        "hex_color": "#5e98d9"
+    },
+    "rare": {
+        "color_name": "ItemRarityRare",
+        "hex_color": "#4b69ff"
+    },
+    "mythical": {
+        "color_name": "ItemRarityMythical",
+        "hex_color": "#8847ff"
+    },
+    "legendary": {
+        "color_name": "ItemRarityLegendary",
+        "hex_color": "#d32ce6"
+    },
+    "ancient": {
+        "color_name": "ItemRarityAncient",
+        "hex_color": "#eb4b4b"
+    },
+    "immortal": {
+        "color_name": "ItemRarityImmortal",
+        "hex_color": "#e4ae39"
+    },
+    "arcana": {
+        "color_name": "ItemRarityArcana",
+        "hex_color": "#ade55c"
+    },
+    "strange": {
+        "color_name": "Strange",
+        "hex_color": "#CF6A32"
+    },
+    "seasonal": {
+        "color_name": "Seasonal",
+        "hex_color": "#FFF34F"
+    }
+}

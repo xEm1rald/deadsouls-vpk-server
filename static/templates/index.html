@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="DeadSouls ItemSettings — продвинутый VPK Skinchanger. Универсальная работа с любыми VPK."
-    />
+    <meta name="description" content="DeadSouls ItemSettings — продвинутый VPK Skinchanger. Универсальная работа с любыми VPK." />
     <title>DeadSouls | ItemSettings — VPK Skinchanger</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="icon" href="https://cdn.deadsouls.cc/website/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="../styles/styles.css" />
+    <script src="../scripts/i18n.js"></script>
   </head>
   <body>
     <div class="noise" aria-hidden="true"></div>
@@ -27,11 +23,19 @@
         <span class="logo-sub"></span>
       </a>
         <div class="topbar-end">
-          <nav class="nav">
-            <a href="#intro">О продукте</a>
-            <a href="#features">Возможности</a>
-            <a href="#access">Доступ</a>
-          </nav>
+          <a
+            href="https://t.me/DeadSouls_VPK"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="gear-btn"
+            aria-label="Наш Telegram"
+            title="Наш Telegram"
+            style="display: flex; align-items: center; justify-content: center; text-decoration: none;"
+          >
+            <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor">
+              <path d="M 26.070313 3.996094 C 25.734375 4.011719 25.417969 4.109375 25.136719 4.21875 L 25.132813 4.21875 C 24.847656 4.332031 23.492188 4.902344 21.433594 5.765625 C 19.375 6.632813 16.703125 7.757813 14.050781 8.875 C 8.753906 11.105469 3.546875 13.300781 3.546875 13.300781 L 3.609375 13.277344 C 3.609375 13.277344 3.25 13.394531 2.875 13.652344 C 2.683594 13.777344 2.472656 13.949219 2.289063 14.21875 C 2.105469 14.488281 1.957031 14.902344 2.011719 15.328125 C 2.101563 16.050781 2.570313 16.484375 2.90625 16.722656 C 3.246094 16.964844 3.570313 17.078125 3.570313 17.078125 L 3.578125 17.078125 L 8.460938 18.722656 C 8.679688 19.425781 9.949219 23.597656 10.253906 24.558594 C 10.433594 25.132813 10.609375 25.492188 10.828125 25.765625 C 10.933594 25.90625 11.058594 26.023438 11.207031 26.117188 C 11.265625 26.152344 11.328125 26.179688 11.390625 26.203125 C 11.410156 26.214844 11.429688 26.21875 11.453125 26.222656 L 11.402344 26.210938 C 11.417969 26.214844 11.429688 26.226563 11.441406 26.230469 C 11.480469 26.242188 11.507813 26.246094 11.558594 26.253906 C 12.332031 26.488281 12.953125 26.007813 12.953125 26.007813 L 12.988281 25.980469 L 15.871094 23.355469 L 20.703125 27.0625 L 20.8125 27.109375 C 21.820313 27.550781 22.839844 27.304688 23.378906 26.871094 C 23.921875 26.433594 24.132813 25.875 24.132813 25.875 L 24.167969 25.785156 L 27.902344 6.65625 C 28.007813 6.183594 28.035156 5.742188 27.917969 5.3125 C 27.800781 4.882813 27.5 4.480469 27.136719 4.265625 C 26.769531 4.046875 26.40625 3.980469 26.070313 3.996094 Z M 25.96875 6.046875 C 25.964844 6.109375 25.976563 6.101563 25.949219 6.222656 L 25.949219 6.234375 L 22.25 25.164063 C 22.234375 25.191406 22.207031 25.25 22.132813 25.308594 C 22.054688 25.371094 21.992188 25.410156 21.667969 25.28125 L 15.757813 20.75 L 12.1875 24.003906 L 12.9375 19.214844 C 12.9375 19.214844 22.195313 10.585938 22.59375 10.214844 C 22.992188 9.84375 22.859375 9.765625 22.859375 9.765625 C 22.886719 9.3125 22.257813 9.632813 22.257813 9.632813 L 10.082031 17.175781 L 10.078125 17.15625 L 4.242188 15.191406 L 4.242188 15.1875 C 4.238281 15.1875 4.230469 15.183594 4.226563 15.183594 C 4.230469 15.183594 4.257813 15.171875 4.257813 15.171875 L 4.289063 15.15625 L 4.320313 15.144531 C 4.320313 15.144531 9.53125 12.949219 14.828125 10.71875 C 17.480469 9.601563 20.152344 8.476563 22.207031 7.609375 C 24.261719 6.746094 25.78125 6.113281 25.867188 6.078125 C 25.949219 6.046875 25.910156 6.046875 25.96875 6.046875 Z" />
+            </svg>
+          </a>
 
           <a
             href="home"
@@ -54,6 +58,9 @@
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
           </a>
+          <button type="button" class="btn gear-btn home-icon-btn lang-switcher-btn">
+            RU
+          </button>
         </div>
       </header>
 
@@ -61,17 +68,17 @@
 
     <main>
       <section id="intro" class="section hero">
-        <p class="eyebrow">Самый продвинутый VPK Skinchanger</p>
+        <p class="eyebrow" data-i18n="hero_eyebrow">Самый продвинутый VPK Skinchanger</p>
         <h1 class="hero-title">
           DeadSouls <span class="hero-sep">|</span> ItemSettings
         </h1>
-        <p class="lead">
+        <p class="lead" data-i18n="hero_lead">
           Наш софт уникален тем, что он полностью универсален: он работает с
           любыми VPK-файлами. Неважно, используешь ли ты наши сборки, чужие моды
           или стандартные файлы игры — ты можешь изменять, патчить и пересобирать
           их под себя прямо в интерфейсе программы.
         </p>
-        <p class="muted small bridge-hint">
+        <p class="muted small bridge-hint" data-i18n="hero_bridge_hint">
           Установи десктопный агент и запусти его: в браузере откроется связь с
           локальным сервером на твоём ПК — подтверждение связи и передача
           настроек без смены вкладки.
@@ -79,7 +86,7 @@
       </section>
 
       <section id="features" class="section features-section">
-        <h2 class="section-title">Возможности</h2>
+        <h2 class="section-title" data-i18n="features_title">Возможности</h2>
 
         <div class="features-marquees" aria-label="Возможности по категориям">
           <!-- Верхняя лента → влево, пункты 1–8 -->
@@ -89,85 +96,85 @@
                 <div class="marquee-group" role="list">
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">01</span>
-                    <span class="feat-title">Погода</span>
-                    <span class="feat-desc">Все доступные эффекты: дождь, снег и другое</span>
+                    <span class="feat-title" data-i18n="feat_1_t">Погода</span>
+                    <span class="feat-desc" data-i18n="feat_1_d">Все доступные эффекты: дождь, снег и другое</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">02</span>
-                    <span class="feat-title">Башни</span>
-                    <span class="feat-desc">Все доступные модели вышек обеих сторон</span>
+                    <span class="feat-title" data-i18n="feat_2_t">Башни</span>
+                    <span class="feat-desc" data-i18n="feat_2_d">Все доступные модели вышек обеих сторон</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">03</span>
-                    <span class="feat-title">Крипы</span>
-                    <span class="feat-desc">Замена обычных и осадных крипов</span>
+                    <span class="feat-title" data-i18n="feat_3_t">Крипы</span>
+                    <span class="feat-desc" data-i18n="feat_3_d">Замена обычных и осадных крипов</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">04</span>
-                    <span class="feat-title">Киллстрик-эффекты</span>
-                    <span class="feat-desc">Визуализация серий убийств</span>
+                    <span class="feat-title" data-i18n="feat_4_t">Киллстрик-эффекты</span>
+                    <span class="feat-desc" data-i18n="feat_4_d">Визуализация серий убийств</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">05</span>
-                    <span class="feat-title">Интерфейс</span>
-                    <span class="feat-desc">Огромная библиотека скинов панелей, целая коллекция</span>
+                    <span class="feat-title" data-i18n="feat_5_t">Интерфейс</span>
+                    <span class="feat-desc" data-i18n="feat_5_d">Огромная библиотека скинов панелей, целая коллекция</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">06</span>
-                    <span class="feat-title">Музыкальные наборы</span>
-                    <span class="feat-desc">Все саундтреки игры</span>
+                    <span class="feat-title" data-i18n="feat_6_t">Музыкальные наборы</span>
+                    <span class="feat-desc" data-i18n="feat_6_d">Все саундтреки игры</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">07</span>
-                    <span class="feat-title">Курсоры</span>
-                    <span class="feat-desc">Полная коллекция тематических наборов указателей</span>
+                    <span class="feat-title" data-i18n="feat_7_t">Курсоры</span>
+                    <span class="feat-desc" data-i18n="feat_7_d">Полная коллекция тематических наборов указателей</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">08</span>
-                    <span class="feat-title">Рошаны</span>
-                    <span class="feat-desc">Все существующие модели аегисных груш</span>
+                    <span class="feat-title" data-i18n="feat_8_t">Рошаны</span>
+                    <span class="feat-desc" data-i18n="feat_8_d">Все существующие модели аегисных груш</span>
                   </article>
                 </div>
                 <div class="marquee-group" aria-hidden="true">
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">01</span>
-                    <span class="feat-title">Погода</span>
-                    <span class="feat-desc">Все доступные эффекты: дождь, снег и другое</span>
+                    <span class="feat-title" data-i18n="feat_1_t">Погода</span>
+                    <span class="feat-desc" data-i18n="feat_1_d">Все доступные эффекты: дождь, снег и другое</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">02</span>
-                    <span class="feat-title">Башни</span>
-                    <span class="feat-desc">Все доступные модели вышек обеих сторон</span>
+                    <span class="feat-title" data-i18n="feat_2_t">Башни</span>
+                    <span class="feat-desc" data-i18n="feat_2_d">Все доступные модели вышек обеих сторон</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">03</span>
-                    <span class="feat-title">Крипы</span>
-                    <span class="feat-desc">Замена обычных и осадных крипов</span>
+                    <span class="feat-title" data-i18n="feat_3_t">Крипы</span>
+                    <span class="feat-desc" data-i18n="feat_3_d">Замена обычных и осадных крипов</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">04</span>
-                    <span class="feat-title">Киллстрик-эффекты</span>
-                    <span class="feat-desc">Визуализация серий убийств</span>
+                    <span class="feat-title" data-i18n="feat_4_t">Киллстрик-эффекты</span>
+                    <span class="feat-desc" data-i18n="feat_4_d">Визуализация серий убийств</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">05</span>
-                    <span class="feat-title">Интерфейс</span>
-                    <span class="feat-desc">Огромная библиотека скинов панелей, целая коллекция</span>
+                    <span class="feat-title" data-i18n="feat_5_t">Интерфейс</span>
+                    <span class="feat-desc" data-i18n="feat_5_d">Огромная библиотека скинов панелей, целая коллекция</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">06</span>
-                    <span class="feat-title">Музыкальные наборы</span>
-                    <span class="feat-desc">Все саундтреки игры</span>
+                    <span class="feat-title" data-i18n="feat_6_t">Музыкальные наборы</span>
+                    <span class="feat-desc" data-i18n="feat_6_d">Все саундтреки игры</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">07</span>
-                    <span class="feat-title">Курсоры</span>
-                    <span class="feat-desc">Полная коллекция тематических наборов указателей</span>
+                    <span class="feat-title" data-i18n="feat_7_t">Курсоры</span>
+                    <span class="feat-desc" data-i18n="feat_7_d">Полная коллекция тематических наборов указателей</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">08</span>
-                    <span class="feat-title">Рошаны</span>
-                    <span class="feat-desc">Все существующие модели аегисных груш</span>
+                    <span class="feat-title" data-i18n="feat_8_t">Рошаны</span>
+                    <span class="feat-desc" data-i18n="feat_8_d">Все существующие модели аегисных груш</span>
                   </article>
                 </div>
               </div>
@@ -181,85 +188,85 @@
                 <div class="marquee-group" role="list">
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">09</span>
-                    <span class="feat-title">Торменторы</span>
-                    <span class="feat-desc">Все доступные облики для Терзателей</span>
+                    <span class="feat-title" data-i18n="feat_9_t">Торменторы</span>
+                    <span class="feat-desc" data-i18n="feat_9_d">Все доступные облики для Терзателей</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">10</span>
-                    <span class="feat-title">Ландшафты (Terrains)</span>
-                    <span class="feat-desc">Любые карты, включая редкие и сезонные</span>
+                    <span class="feat-title" data-i18n="feat_10_t">Ландшафты (Terrains)</span>
+                    <span class="feat-desc" data-i18n="feat_10_d">Любые карты, включая редкие и сезонные</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">11</span>
-                    <span class="feat-title">Экраны Versus</span>
-                    <span class="feat-desc">Все доступные заставки героев</span>
+                    <span class="feat-title" data-i18n="feat_11_t">Экраны Versus</span>
+                    <span class="feat-desc" data-i18n="feat_11_d">Все доступные заставки героев</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">12</span>
-                    <span class="feat-title">Эффекты убийства</span>
-                    <span class="feat-desc">Все доступные Kill Banners из игры</span>
+                    <span class="feat-title" data-i18n="feat_12_t">Эффекты убийства</span>
+                    <span class="feat-desc" data-i18n="feat_12_d">Все доступные Kill Banners из игры</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">13</span>
-                    <span class="feat-title">Древние (трон)</span>
-                    <span class="feat-desc">Замена моделей главных строений</span>
+                    <span class="feat-title" data-i18n="feat_13_t">Древние (трон)</span>
+                    <span class="feat-desc" data-i18n="feat_13_d">Замена моделей главных строений</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">14</span>
-                    <span class="feat-title">Шейдеры экрана</span>
-                    <span class="feat-desc">Все уникальные цветовые фильтры игры</span>
+                    <span class="feat-title" data-i18n="feat_14_t">Шейдеры экрана</span>
+                    <span class="feat-desc" data-i18n="feat_14_d">Все уникальные цветовые фильтры игры</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">15</span>
-                    <span class="feat-title">Варды</span>
-                    <span class="feat-desc">Любые модели из коллекции игры</span>
+                    <span class="feat-title" data-i18n="feat_15_t">Варды</span>
+                    <span class="feat-desc" data-i18n="feat_15_d">Любые модели из коллекции игры</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">16</span>
-                    <span class="feat-title">Курьеры</span>
-                    <span class="feat-desc">Все доступные виды «осликов»</span>
+                    <span class="feat-title" data-i18n="feat_16_t">Курьеры</span>
+                    <span class="feat-desc" data-i18n="feat_16_d">Все доступные виды «осликов»</span>
                   </article>
                 </div>
                 <div class="marquee-group" aria-hidden="true">
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">09</span>
-                    <span class="feat-title">Торменторы</span>
-                    <span class="feat-desc">Все доступные облики для Терзателей</span>
+                    <span class="feat-title" data-i18n="feat_9_t">Торменторы</span>
+                    <span class="feat-desc" data-i18n="feat_9_d">Все доступные облики для Терзателей</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">10</span>
-                    <span class="feat-title">Ландшафты (Terrains)</span>
-                    <span class="feat-desc">Любые карты, включая редкие и сезонные</span>
+                    <span class="feat-title" data-i18n="feat_10_t">Ландшафты (Terrains)</span>
+                    <span class="feat-desc" data-i18n="feat_10_d">Любые карты, включая редкие и сезонные</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">11</span>
-                    <span class="feat-title">Экраны Versus</span>
-                    <span class="feat-desc">Все доступные заставки героев</span>
+                    <span class="feat-title" data-i18n="feat_11_t">Экраны Versus</span>
+                    <span class="feat-desc" data-i18n="feat_11_d">Все доступные заставки героев</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">12</span>
-                    <span class="feat-title">Эффекты убийства</span>
-                    <span class="feat-desc">Все доступные Kill Banners из игры</span>
+                    <span class="feat-title" data-i18n="feat_12_t">Эффекты убийства</span>
+                    <span class="feat-desc" data-i18n="feat_12_d">Все доступные Kill Banners из игры</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">13</span>
-                    <span class="feat-title">Древние (трон)</span>
-                    <span class="feat-desc">Замена моделей главных строений</span>
+                    <span class="feat-title" data-i18n="feat_13_t">Древние (трон)</span>
+                    <span class="feat-desc" data-i18n="feat_13_d">Замена моделей главных строений</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">14</span>
-                    <span class="feat-title">Шейдеры экрана</span>
-                    <span class="feat-desc">Все уникальные цветовые фильтры игры</span>
+                    <span class="feat-title" data-i18n="feat_14_t">Шейдеры экрана</span>
+                    <span class="feat-desc" data-i18n="feat_14_d">Все уникальные цветовые фильтры игры</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">15</span>
-                    <span class="feat-title">Варды</span>
-                    <span class="feat-desc">Любые модели из коллекции игры</span>
+                    <span class="feat-title" data-i18n="feat_15_t">Варды</span>
+                    <span class="feat-desc" data-i18n="feat_15_d">Любые модели из коллекции игры</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">16</span>
-                    <span class="feat-title">Курьеры</span>
-                    <span class="feat-desc">Все доступные виды «осликов»</span>
+                    <span class="feat-title" data-i18n="feat_16_t">Курьеры</span>
+                    <span class="feat-desc" data-i18n="feat_16_d">Все доступные виды «осликов»</span>
                   </article>
                 </div>
               </div>
@@ -273,75 +280,75 @@
                 <div class="marquee-group" role="list">
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">17</span>
-                    <span class="feat-title">Эмблемы</span>
-                    <span class="feat-desc">Все редкие визуальные ауры под героем</span>
+                    <span class="feat-title" data-i18n="feat_17_t">Эмблемы</span>
+                    <span class="feat-desc" data-i18n="feat_17_d">Все редкие визуальные ауры под героем</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">18</span>
-                    <span class="feat-title">Загрузочные экраны</span>
-                    <span class="feat-desc">Полная библиотека артов</span>
+                    <span class="feat-title" data-i18n="feat_18_t">Загрузочные экраны</span>
+                    <span class="feat-desc" data-i18n="feat_18_d">Полная библиотека артов</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">19</span>
-                    <span class="feat-title">Мега-киллы</span>
-                    <span class="feat-desc">Все озвучки серий убийств</span>
+                    <span class="feat-title" data-i18n="feat_19_t">Мега-киллы</span>
+                    <span class="feat-desc" data-i18n="feat_19_d">Все озвучки серий убийств</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">20</span>
-                    <span class="feat-title">Аннонсеры</span>
-                    <span class="feat-desc">Все озвучки действий игрока в игре</span>
+                    <span class="feat-title" data-i18n="feat_20_t">Аннонсеры</span>
+                    <span class="feat-desc" data-i18n="feat_20_d">Все озвучки действий игрока в игре</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">21</span>
-                    <span class="feat-title">Окрашивание реки</span>
-                    <span class="feat-desc">Все доступные заклятия воды</span>
+                    <span class="feat-title" data-i18n="feat_21_t">Окрашивание реки</span>
+                    <span class="feat-desc" data-i18n="feat_21_d">Все доступные заклятия воды</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">22</span>
-                    <span class="feat-title">Unusual Effects</span>
-                    <span class="feat-desc">На любого героя и любую часть всех эффектов unusual</span>
+                    <span class="feat-title" data-i18n="feat_22_t">Unusual Effects</span>
+                    <span class="feat-desc" data-i18n="feat_22_d">На любого героя и любую часть всех эффектов unusual</span>
                   </article>
                   <article class="feat-card" role="listitem">
                     <span class="feat-num" aria-hidden="true">23</span>
-                    <span class="feat-title">SkinChanger</span>
-                    <span class="feat-desc">Выбор любой части тела, сета на героя</span>
+                    <span class="feat-title" data-i18n="feat_23_t">SkinChanger</span>
+                    <span class="feat-desc" data-i18n="feat_23_d">Выбор любой части тела, сета на героя</span>
                   </article>
                 </div>
                 <div class="marquee-group" aria-hidden="true">
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">17</span>
-                    <span class="feat-title">Эмблемы</span>
-                    <span class="feat-desc">Все редкие визуальные ауры под героем</span>
+                    <span class="feat-title" data-i18n="feat_17_t">Эмблемы</span>
+                    <span class="feat-desc" data-i18n="feat_17_d">Все редкие визуальные ауры под героем</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">18</span>
-                    <span class="feat-title">Загрузочные экраны</span>
-                    <span class="feat-desc">Полная библиотека артов</span>
+                    <span class="feat-title" data-i18n="feat_18_t">Загрузочные экраны</span>
+                    <span class="feat-desc" data-i18n="feat_18_d">Полная библиотека артов</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">19</span>
-                    <span class="feat-title">Мега-киллы</span>
-                    <span class="feat-desc">Все озвучки серий убийств</span>
+                    <span class="feat-title" data-i18n="feat_19_t">Мега-киллы</span>
+                    <span class="feat-desc" data-i18n="feat_19_d">Все озвучки серий убийств</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">20</span>
-                    <span class="feat-title">Аннонсеры</span>
-                    <span class="feat-desc">Все озвучки действий игрока в игре</span>
+                    <span class="feat-title" data-i18n="feat_20_t">Аннонсеры</span>
+                    <span class="feat-desc" data-i18n="feat_20_d">Все озвучки действий игрока в игре</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">21</span>
-                    <span class="feat-title">Окрашивание реки</span>
-                    <span class="feat-desc">Все доступные заклятия воды</span>
+                    <span class="feat-title" data-i18n="feat_21_t">Окрашивание реки</span>
+                    <span class="feat-desc" data-i18n="feat_21_d">Все доступные заклятия воды</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">22</span>
-                    <span class="feat-title">Unusual Effects</span>
-                    <span class="feat-desc">На любого героя и любую часть всех эффектов unusual</span>
+                    <span class="feat-title" data-i18n="feat_22_t">Unusual Effects</span>
+                    <span class="feat-desc" data-i18n="feat_22_d">На любого героя и любую часть всех эффектов unusual</span>
                   </article>
                   <article class="feat-card" tabindex="-1">
                     <span class="feat-num" aria-hidden="true">23</span>
-                    <span class="feat-title">SkinChanger</span>
-                    <span class="feat-desc">Выбор любой части тела, сета на героя</span>
+                    <span class="feat-title" data-i18n="feat_23_t">SkinChanger</span>
+                    <span class="feat-desc" data-i18n="feat_23_d">Выбор любой части тела, сета на героя</span>
                   </article>
                 </div>
               </div>
@@ -351,17 +358,18 @@
       </section>
 
       <section id="comparison" class="section">
-        <h2 class="section-title" style="text-align: center;">Визуальное сравнение</h2>
+        <h2 class="section-title" style="text-align: center;" data-i18n="comparison_title">Визуальное сравнение</h2>
 
         <div class="comparison-container" id="comp-container" style="--pos: 50%;">
+
           <div class="comp-layer base-layer">
-            <video src="videos/vanilla_1080p_hevc.mp4" muted loop autoplay playsinline></video>
-            <span class="comp-label label-right">Vanilla</span>
+            <video src="https://cdn.deadsouls.cc/website/videos/modded_1080p_h264.mp4" muted loop autoplay playsinline></video>
+            <span class="comp-label label-right">Modded</span>
           </div>
 
           <div class="comp-layer overlay-layer" id="comp-overlay">
-            <video src="videos/modded_1080p_hevc.mp4" muted loop autoplay playsinline></video>
-            <span class="comp-label label-left">Modded</span>
+            <video src="https://cdn.deadsouls.cc/website/videos/vanilla_1080p_h264.mp4" muted loop autoplay playsinline></video>
+            <span class="comp-label label-left">Vanilla</span>
           </div>
 
           <input type="range" min="0" max="100" value="50" class="comp-slider" id="comp-slider">
@@ -376,16 +384,32 @@
         </div>
       </section>
 
+      <section id="vac-safe" class="section" style="display: flex; justify-content: center;">
+        <div class="vac-safe-card">
+          <div class="vac-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span data-i18n="vac_safe_title">VAC-SAFE ТЕХНОЛОГИЯ</span>
+          </div>
+          <h2 class="vac-title" data-i18n="vac_safe_title">Твой Аккаунт Защищён</h2>
+          <p class="vac-desc" data-i18n="vac_safe_desc">
+            DeadSouls использует официальный способ загрузки контента, аналогичный Steam Workshop: файлы игры не изменяются, код не внедряется и память клиента не затрагивается. Этот метод является стандартной частью движка Source 2 и обеспечивает полную безопасность вашего Steam-аккаунта.
+          </p>
+        </div>
+      </section>
+
       <section id="payments" class="section">
-        <h2 class="section-title" style="text-align: center;">Способы оплаты</h2>
-        <p class="muted small" style="text-align: center; margin-bottom: 2rem;">Мы поддерживаем большинство популярных методов оплаты для вашего удобства.</p>
+        <h2 class="section-title" style="text-align: center;" data-i18n="payments_title">Способы оплаты</h2>
+        <p class="muted small" style="text-align: center; margin-bottom: 2rem;" data-i18n="payments_sub">Мы поддерживаем большинство популярных методов оплаты для вашего удобства.</p>
 
         <div class="payment-grid-main">
+          <!-- 01 Funpay -->
           <article class="feat-card static-card">
             <span class="feat-num">01</span>
             <span class="feat-title">Funpay</span>
             <span class="feat-desc">
-              <strong>Валюты:</strong> RUB, USD, UAH, USDT.<br>
+              <strong data-i18n="pay_currencies">Валюты:</strong> RUB, USD, UAH, USDT.<br>
               <div class="network-icons-row">
                 <div class="net-badge">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -400,29 +424,30 @@
                 </div>
                 <div class="net-badge">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                  По номеру карты
+                  <span data-i18n="pay_card">По номеру карты</span>
                 </div>
                 <div class="net-badge" title="Система Быстрых Платежей">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M12 3v18"/></svg>
-                  СБП QR
+                  <span data-i18n="pay_sbp">СБП QR</span>
                 </div>
                 <div class="net-badge">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M6 12h12"/></svg>
-                  Криптовалюта
+                  <span data-i18n="pay_crypto">Криптовалюта</span>
                 </div>
                 <div class="net-badge">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"/></svg>
-                  Баланс сайта
+                  <span data-i18n="pay_balance">Баланс сайта</span>
                 </div>
               </div>
             </span>
           </article>
 
+          <!-- 02 Cryptocloud -->
           <article class="feat-card static-card">
             <span class="feat-num">02</span>
             <span class="feat-title">Cryptocloud</span>
             <div class="feat-desc">
-              <strong>Криптовалюты:</strong> Прямые переводы в популярных блокчейнах.
+              <strong data-i18n="pay_crypto_label">Криптовалюты:</strong> <span data-i18n="pay_crypto_sub">Прямые переводы в популярных блокчейнах.</span>
 
               <div class="network-icons-row">
                 <div class="net-badge" title="Binance Smart Chain">
@@ -453,41 +478,31 @@
             </div>
           </article>
 
+          <!-- 03 Агент -->
           <article class="feat-card static-card">
             <span class="feat-num">03</span>
-            <span class="feat-title">Monobank (Банка)</span>
-            <span class="feat-desc">
-              <strong>Валюта:</strong> UAH.<br>
+            <span class="feat-title" data-i18n="agent_desc">Агент</span>
+            <div class="feat-desc">
+              <strong data-i18n="pay_agent_label">Оплата:</strong> <span data-i18n="pay_agent_sub">через платёжного агента с поддержкой всех мировых валют.</span>
 
               <div class="network-icons-row">
                 <div class="net-badge">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path xmlns="http://www.w3.org/2000/svg" d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.09997 22C7.78997 22.05 6.79997 20.68 5.95997 19.47C4.24997 17 2.93997 12.45 4.69997 9.39C5.56997 7.87 7.12997 6.91 8.81997 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/></svg>
-                  Apple Pay
-                </div>
-                <div class="net-badge" title="Google Pay">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 11h8v1c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8c2.187 0 4.168.879 5.61 2.304l-2.828 2.828A3.99 3.99 0 0 0 12 7c-2.209 0-4 1.791-4 4s1.791 4 4 4c1.858 0 3.411-1.27 3.858-3H12v-1z"/>
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="2" y1="12" x2="22" y2="12"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                   </svg>
-                  Google Pay
-                </div>
-                <div class="net-badge">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z"/></svg>
-                  Mono Pay
-                </div>
-                <div class="net-badge">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                  По номеру карты
+                  <span data-i18n="pay_world_curr">Все мировые валюты</span>
                 </div>
               </div>
-            </span>
+            </div>
           </article>
         </div>
       </section>
 
       <section id="access" class="section" style="display: flex; flex-direction: column; align-items: center;">
-        <h2 class="section-title" style="text-align: center;">Присоединиться</h2>
-        <p class="muted" style="text-align: center; max-width: 500px; margin-bottom: 2.5rem;">
+        <h2 class="section-title" style="text-align: center;" data-i18n="access_title">Присоединиться</h2>
+        <p class="muted" style="text-align: center; max-width: 500px; margin-bottom: 2.5rem;" data-i18n="access_desc">
           Скачивание софта, оплата и генерация уникальных билдов в личном кабинете. Никаких скучных регистраций — вход в один клик.
         </p>
 
@@ -495,7 +510,7 @@
 
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 1.5rem;">
             <div>
-              <h3 style="margin: 0 0 0.25rem 0; font-size: 1.25rem; font-weight: 500;">Личный кабинет</h3>
+              <h3 style="margin: 0 0 0.25rem 0; font-size: 1.25rem; font-weight: 500;" data-i18n="access_card_title">Личный кабинет</h3>
               <p class="muted small" style="margin: 0;">DeadSouls | ItemSettings</p>
             </div>
             <div style="opacity: 0.3;">
@@ -509,23 +524,23 @@
           <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1rem;" class="muted small">
             <li style="display: flex; align-items: center; gap: 12px;">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              <span>Моментальная активация после оплаты</span>
+              <span><span data-i18n="access_feature_1">Моментальная активация после оплаты</span></span>
             </li>
             <li style="display: flex; align-items: center; gap: 12px;">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              <span>Загрузка защищенного агента</span>
+              <span><span data-i18n="access_feature_2">Загрузка защищенного агента</span></span>
             </li>
             <li style="display: flex; align-items: center; gap: 12px;">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              <span>Связь браузера с клиентом игры</span>
+              <span><span data-i18n="access_feature_3">Связь браузера с клиентом игры</span></span>
             </li>
           </ul>
 
           <a href="/home" id="btn-tg-login" class="btn primary" style="display: flex; justify-content: center; align-items: center; gap: 10px; text-decoration: none; padding: 1rem;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 2l-2 20-7-4-3 3v-4l12-11-14 9-5-2 21-8z"></path>
+            <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor">
+              <path d="M 26.070313 3.996094 C 25.734375 4.011719 25.417969 4.109375 25.136719 4.21875 L 25.132813 4.21875 C 24.847656 4.332031 23.492188 4.902344 21.433594 5.765625 C 19.375 6.632813 16.703125 7.757813 14.050781 8.875 C 8.753906 11.105469 3.546875 13.300781 3.546875 13.300781 L 3.609375 13.277344 C 3.609375 13.277344 3.25 13.394531 2.875 13.652344 C 2.683594 13.777344 2.472656 13.949219 2.289063 14.21875 C 2.105469 14.488281 1.957031 14.902344 2.011719 15.328125 C 2.101563 16.050781 2.570313 16.484375 2.90625 16.722656 C 3.246094 16.964844 3.570313 17.078125 3.570313 17.078125 L 3.578125 17.078125 L 8.460938 18.722656 C 8.679688 19.425781 9.949219 23.597656 10.253906 24.558594 C 10.433594 25.132813 10.609375 25.492188 10.828125 25.765625 C 10.933594 25.90625 11.058594 26.023438 11.207031 26.117188 C 11.265625 26.152344 11.328125 26.179688 11.390625 26.203125 C 11.410156 26.214844 11.429688 26.21875 11.453125 26.222656 L 11.402344 26.210938 C 11.417969 26.214844 11.429688 26.226563 11.441406 26.230469 C 11.480469 26.242188 11.507813 26.246094 11.558594 26.253906 C 12.332031 26.488281 12.953125 26.007813 12.953125 26.007813 L 12.988281 25.980469 L 15.871094 23.355469 L 20.703125 27.0625 L 20.8125 27.109375 C 21.820313 27.550781 22.839844 27.304688 23.378906 26.871094 C 23.921875 26.433594 24.132813 25.875 24.132813 25.875 L 24.167969 25.785156 L 27.902344 6.65625 C 28.007813 6.183594 28.035156 5.742188 27.917969 5.3125 C 27.800781 4.882813 27.5 4.480469 27.136719 4.265625 C 26.769531 4.046875 26.40625 3.980469 26.070313 3.996094 Z M 25.96875 6.046875 C 25.964844 6.109375 25.976563 6.101563 25.949219 6.222656 L 25.949219 6.234375 L 22.25 25.164063 C 22.234375 25.191406 22.207031 25.25 22.132813 25.308594 C 22.054688 25.371094 21.992188 25.410156 21.667969 25.28125 L 15.757813 20.75 L 12.1875 24.003906 L 12.9375 19.214844 C 12.9375 19.214844 22.195313 10.585938 22.59375 10.214844 C 22.992188 9.84375 22.859375 9.765625 22.859375 9.765625 C 22.886719 9.3125 22.257813 9.632813 22.257813 9.632813 L 10.082031 17.175781 L 10.078125 17.15625 L 4.242188 15.191406 L 4.242188 15.1875 C 4.238281 15.1875 4.230469 15.183594 4.226563 15.183594 C 4.230469 15.183594 4.257813 15.171875 4.257813 15.171875 L 4.289063 15.15625 L 4.320313 15.144531 C 4.320313 15.144531 9.53125 12.949219 14.828125 10.71875 C 17.480469 9.601563 20.152344 8.476563 22.207031 7.609375 C 24.261719 6.746094 25.78125 6.113281 25.867188 6.078125 C 25.949219 6.046875 25.910156 6.046875 25.96875 6.046875 Z"></path>
             </svg>
-            Войти через Telegram
+            <span data-i18n="login_tg_btn">Войти через Telegram</span>
           </a>
         </div>
       </section>
@@ -533,7 +548,7 @@
     </main>
 
     <footer class="footer">
-      <span class="muted small" translate="no">DeadSouls 2026</span>
+      <span class="muted small" translate="no" data-i18n="footer_text">DeadSouls 2026</span>
     </footer>
 
     <div
@@ -546,8 +561,8 @@
     >
       <div class="success-panel">
         <div class="success-ring" aria-hidden="true"></div>
-        <h2 id="success-title" class="success-title">Связь установлена</h2>
-        <p class="success-sub">
+        <h2 id="success-title" class="success-title" data-i18n="bridge_success_title">Связь установлена</h2>
+        <p class="success-sub" data-i18n="bridge_success_desc">
           Локальный агент ответил. Сессия активна на этой машине.
         </p>
       </div>
@@ -561,7 +576,7 @@
     >
       <div class="settings-inner">
         <header class="settings-head">
-          <h2 class="settings-title">Конфигурация</h2>
+          <h2 class="settings-title" data-i18n="cfg_title">Конфигурация</h2>
           <button
             type="button"
             class="icon-btn"
@@ -571,15 +586,14 @@
             ×
           </button>
         </header>
-        <p class="muted small">
+        <p class="muted small" data-i18n="cfg_desc">
           Параметры собираются в браузере и отправляются агенту через
-          <code>POST</code> JSON. Путь и формат должны совпадать с твоим
-          приложением.
+          <code>POST</code> JSON.
         </p>
 
         <form id="config-form" class="config-form">
           <div class="field-row">
-            <label class="label" for="cfg-endpoint">Путь POST конфига</label>
+            <label class="label" for="cfg-endpoint" data-i18n="cfg_endpoint">Путь POST конфига</label>
             <input
               type="text"
               id="cfg-endpoint"
@@ -590,7 +604,7 @@
             />
           </div>
           <div class="field-row">
-            <label class="label" for="cfg-app-name">Имя приложения</label>
+            <label class="label" for="cfg-app-name" data-i18n="cfg_app_name">Имя приложения</label>
             <input
               type="text"
               id="cfg-app-name"
@@ -600,7 +614,7 @@
             />
           </div>
           <div class="field-row">
-            <label class="label" for="cfg-mode">Режим</label>
+            <label class="label" for="cfg-mode" data-i18n="cfg_mode">Режим</label>
             <select id="cfg-mode" class="input select">
               <option value="standard">standard</option>
               <option value="quiet">quiet</option>
@@ -609,12 +623,10 @@
           </div>
           <div class="field-row checkbox-row">
             <input type="checkbox" id="cfg-auto" checked />
-            <label for="cfg-auto">Автозапуск моста при старте агента</label>
+            <label for="cfg-auto" data-i18n="cfg_auto">Автозапуск моста при старте агента</label>
           </div>
           <div class="field-row">
-            <label class="label" for="cfg-extra"
-              >Доп. JSON (сливается в тело запроса)</label
-            >
+            <label class="label" for="cfg-extra" data-i18n="cfg_extra">Доп. JSON (сливается в тело запроса)</label>
             <textarea
               id="cfg-extra"
               class="input textarea"
@@ -624,7 +636,7 @@
             ></textarea>
           </div>
           <div class="settings-actions">
-            <button type="submit" class="btn primary" id="btn-send-config">
+            <button type="submit" class="btn primary" id="btn-send-config" data-i18n="cfg_apply">
               Применить к локальному агенту
             </button>
           </div>
