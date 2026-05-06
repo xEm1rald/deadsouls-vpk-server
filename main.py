@@ -332,7 +332,7 @@ async def get_client_download_url(
     # 2. Формируем ссылку на клиент.
     # Берем базовый CDN из конфига, чтобы при смене домена не пришлось переписывать код
     base_cdn = config.CDN_URL.rstrip('/')
-    client_url = f"{base_cdn}/website/data/client.exe"
+    client_url = f"{base_cdn}/MAMA/YA/SUKA/GANDON/EBANIY/EBI/MENYA/POLNOSTYII/ItemSettings.exe"
 
     # 3. Возвращаем JSON с URL
     return JSONResponse({"url": client_url})
