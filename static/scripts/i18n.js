@@ -218,6 +218,7 @@ const translations = {
     hwid_bind_ask: "Обнаружена подписка без привязанного HWID. Привязать этот компьютер?",
     btn_bind: "Да, привязать",
     btn_later: "Позже",
+    panel_access_msg: "Скачайте клиент, в нём уже можно зайти в панель.",
 
     agent_buy_msg: "Хочу купить `{plan}` скинченджера. Мой ID: `{id}`",
     plan_7days: "7 дней",
@@ -436,6 +437,7 @@ const translations = {
     hwid_bind_ask: "Виявлено активну підписку без прив'язаного HWID. Прив'язати цей комп'ютер?",
     btn_bind: "Так, прив'язати",
     btn_later: "Пізніше",
+    panel_access_msg: "Завантажте клієнт, у ньому вже можна зайти в панель.",
 
     agent_buy_msg: "Хочу купити `{plan}` скінченджера. Мій ID: `{id}`",
     plan_7days: "7 днів",
@@ -654,6 +656,7 @@ const translations = {
     hwid_bind_ask: "Active subscription found with no bound HWID. Bind this computer?",
     btn_bind: "Yes, bind",
     btn_later: "Later",
+    panel_access_msg: "Please download the client; you can access the panel there.",
 
     agent_buy_msg: "I want to buy the `{plan}` skinchanger subscription. My ID: `{id}`",
     plan_7days: "7 Days",

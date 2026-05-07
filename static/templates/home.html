@@ -370,6 +370,26 @@
         const urlParams = new URLSearchParams(window.location.search);
         const paymentStatus = urlParams.get('payment');
 
+        const panelBtn = document.getElementById('nav-panel-btn');
+
+        if (panelBtn) {
+          panelBtn.addEventListener('click', (e) => {
+            if (!(window.chrome && window.chrome.webview)) {
+              e.preventDefault(); // Останавливаем переход по ссылке /panel
+
+              Swal.fire({
+                icon: 'info',
+                title: window.t('nav_panel'),
+                text: window.t('panel_access_msg'),
+                background: '#1a1a1a',
+                color: '#fff',
+                confirmButtonColor: '#6b8af6',
+                confirmButtonText: 'OK'
+              });
+            }
+          });
+        }
+
         if (paymentStatus) {
             if (paymentStatus === 'success') {
                 Swal.fire({
