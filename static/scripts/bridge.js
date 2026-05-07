@@ -15,7 +15,7 @@ const bridgeState = {
 };
 
 function getBridgeBaseUrl() {
-  const host = localStorage.getItem(BC_LS_HOST) || "127.0.0.1";
+  const host = localStorage.getItem(BC_LS_HOST) || "localhost";
   const port = localStorage.getItem(BC_LS_PORT) || "3847";
   return `http://${host}:${port}`;
 }
