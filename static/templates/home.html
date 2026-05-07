@@ -370,6 +370,26 @@
         const urlParams = new URLSearchParams(window.location.search);
         const paymentStatus = urlParams.get('payment');
 
+        const panelBtn = document.getElementById('nav-panel-btn');
+
+        if (panelBtn) {
+          panelBtn.addEventListener('click', (e) => {
+            if (!(window.chrome && window.chrome.webview)) {
+              e.preventDefault(); // Останавливаем переход по ссылке /panel
+
+              Swal.fire({
+                icon: 'info',
+                title: window.t('nav_panel'),
+                text: window.t('panel_access_msg'),
+                background: '#1a1a1a',
+                color: '#fff',
+                confirmButtonColor: '#6b8af6',
+                confirmButtonText: 'OK'
+              });
+            }
+          });
+        }
+
         if (paymentStatus) {
             if (paymentStatus === 'success') {
                 Swal.fire({
@@ -553,6 +573,13 @@
                   return str.slice(0, 4) + ' •••• •••• ' + str.slice(-4);
                 };
                 hwidEl.textContent = mask(data.hwid);
+              }
+              const hasSub = data.subscription_end_date && new Date(data.subscription_end_date) > new Date();
+              const noHwid = !data.hwid || data.hwid === 'None';
+              const isWebView = window.chrome && window.chrome.webview;
+
+              if (isWebView && hasSub && noHwid) {
+                  showHwidBindPrompt();
               }
             } else if (response.status === 401) {
               localStorage.removeItem('token');
@@ -868,6 +895,60 @@
 
         checkAuthCode();
       });
+
+      function showHwidBindPrompt() {
+          const title = window.t('hwid_bind_title');
+          const text = window.t('hwid_bind_ask');
+          const confirm = window.t('btn_bind');
+          const cancel = window.t('btn_later');
+
+          Swal.fire({
+              title: title === 'hwid_bind_title' ? 'Привязка устройства' : title,
+              text: text === 'hwid_bind_ask' ? 'Обнаружена подписка без привязанного HWID. Привязать этот компьютер?' : text,
+              icon: 'info',
+              showCancelButton: true,
+              confirmButtonText: confirm === 'btn_bind' ? 'Да, привязать' : confirm,
+              cancelButtonText: cancel === 'btn_later' ? 'Позже' : cancel,
+              background: '#1a1a1a',
+              color: '#fff'
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  window.chrome.webview.postMessage({ action: "get_hwid" });
+              }
+          });
+        }
+
+      if (window.chrome && window.chrome.webview) {
+          window.chrome.webview.addEventListener('message', async (event) => {
+              const msg = event.data;
+
+              if (msg.action === "get_hwid_result" && msg.hwid) {
+                  const token = localStorage.getItem('token');
+
+                  // Отправляем полученный HWID на наш сервер (API /api/v1/set)
+                  try {
+                      const res = await fetch(`/api/v1/set?hwid=${encodeURIComponent(msg.hwid)}`, {
+                          method: 'POST',
+                          headers: { 'Authorization': `Bearer ${token}` }
+                      });
+
+                      if (res.ok) {
+                          Swal.fire({
+                              icon: 'success',
+                              title: 'Успешно!',
+                              text: 'Устройство успешно привязано к аккаунту.',
+                              background: '#1a1a1a', color: '#fff'
+                          }).then(() => {
+                              // Обновляем данные пользователя на странице
+                              if (window.loadUserData) window.loadUserData(token);
+                          });
+                      }
+                  } catch (e) {
+                      console.error("Ошибка привязки:", e);
+                  }
+              }
+          });
+      }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
