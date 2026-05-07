@@ -1292,25 +1292,55 @@ async function saveToAgent() {
   if (Object.keys(formattedSelections.skin_changer || {}).length === 0) delete formattedSelections.skin_changer;
   if (Object.keys(formattedSelections.effect_targets || {}).length === 0) delete formattedSelections.effect_targets;
 
-  try {
-    const res = await fetch(url, { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: JSON.stringify(formattedSelections) });
-    if (res.ok) { setSaveStatus(window.t('vpk_created'), "ok"); setApplyVpkState(true); }
-    else { setSaveStatus(`${window.t('agent_error')} ${res.status}`, "err"); }
-  } catch (e) {
-    setSaveStatus(window.t('agent_unavail'), "err");
+  if (window.chrome && window.chrome.webview) {
+    window.chrome.webview.postMessage({
+      action: "mastervpk",
+      payload: formattedSelections
+    });
+  } else {
+    const base = getAgentBaseUrl();
+    if (!base) return setSaveStatus(window.t('agent_port_req'), "err");
+    const url = `${base.replace(/\/+$/, "")}/bridge/action/mastervpk`;
+
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify(formattedSelections)
+      });
+      if (res.ok) {
+        setSaveStatus(window.t('vpk_created'), "ok");
+        setApplyVpkState(true);
+      } else {
+        setSaveStatus(`${window.t('agent_error')} ${res.status}`, "err");
+      }
+    } catch (e) {
+      setSaveStatus(window.t('agent_unavail'), "err");
+    }
   }
 }
 
 async function applyVpk() {
   setSaveStatus(window.t('vpk_installing'), undefined);
-  const base = getAgentBaseUrl();
-  if (!base) return setSaveStatus(window.t('agent_port_req'), "err");
 
-  try {
-    const res = await fetch(`${base.replace(/\/+$/, "")}/bridge/action/applyvpk`, { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: "{}" });
-    if (res.ok) setSaveStatus(window.t('vpk_installed'), "ok");
-    else setSaveStatus(`${window.t('agent_error')} ${res.status}`, "err");
-  } catch (e) { setSaveStatus(window.t('agent_unavail'), "err"); }
+  if (window.chrome && window.chrome.webview) {
+    window.chrome.webview.postMessage({ action: "applyvpk" });
+  } else {
+    const base = getAgentBaseUrl();
+    if (!base) return setSaveStatus(window.t('agent_port_req'), "err");
+
+    try {
+      const res = await fetch(`${base.replace(/\/+$/, "")}/bridge/action/applyvpk`, {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: "{}"
+      });
+      if (res.ok) setSaveStatus(window.t('vpk_installed'), "ok");
+      else setSaveStatus(`${window.t('agent_error')} ${res.status}`, "err");
+    } catch (e) {
+      setSaveStatus(window.t('agent_unavail'), "err");
+    }
+  }
 }
 
 function onDocumentKeydown(e) {
@@ -1598,6 +1628,29 @@ async function init() {
   renderGlobalGrid();
   renderPresetSelect();
   updateUI();
+
+  if (window.chrome && window.chrome.webview) {
+    window.chrome.webview.addEventListener('message', event => {
+      const msg = event.data;
+
+      if (msg.action === "mastervpk_result") {
+        if (msg.success) {
+          setSaveStatus(window.t('vpk_created'), "ok");
+          setApplyVpkState(true);
+        } else {
+          setSaveStatus(`${window.t('agent_error')} ${msg.error || 'Unknown'}`, "err");
+        }
+      }
+
+      if (msg.action === "applyvpk_result") {
+        if (msg.success) {
+          setSaveStatus(window.t('vpk_installed'), "ok");
+        } else {
+          setSaveStatus(`${window.t('agent_error')} ${msg.error || 'Unknown'}`, "err");
+        }
+      }
+    });
+  }
 }
 
 init();
