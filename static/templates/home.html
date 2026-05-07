@@ -554,6 +554,13 @@
                 };
                 hwidEl.textContent = mask(data.hwid);
               }
+              const hasSub = data.subscription_end_date && new Date(data.subscription_end_date) > new Date();
+              const noHwid = !data.hwid || data.hwid === 'None';
+              const isWebView = window.chrome && window.chrome.webview;
+
+              if (isWebView && hasSub && noHwid) {
+                  showHwidBindPrompt();
+              }
             } else if (response.status === 401) {
               localStorage.removeItem('token');
               window.location.reload();
@@ -868,6 +875,56 @@
 
         checkAuthCode();
       });
+
+      function showHwidBindPrompt() {
+            Swal.fire({
+                title: window.t('hwid_bind_title') || 'Привязка HWID',
+                text: window.t('hwid_bind_ask') || 'У вас есть активная подписка, но устройство не привязано. Привязать этот компьютер?',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: window.t('btn_bind') || 'Привязать',
+                cancelButtonText: window.t('btn_later') || 'Позже',
+                background: '#1a1a1a',
+                color: '#fff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Запрашиваем HWID у C++ лаунчера
+                    window.chrome.webview.postMessage({ action: "get_hwid" });
+                }
+            });
+        }
+
+      if (window.chrome && window.chrome.webview) {
+          window.chrome.webview.addEventListener('message', async (event) => {
+              const msg = event.data;
+
+              if (msg.action === "get_hwid_result" && msg.hwid) {
+                  const token = localStorage.getItem('token');
+
+                  // Отправляем полученный HWID на наш сервер (API /api/v1/set)
+                  try {
+                      const res = await fetch(`/api/v1/set?hwid=${encodeURIComponent(msg.hwid)}`, {
+                          method: 'POST',
+                          headers: { 'Authorization': `Bearer ${token}` }
+                      });
+
+                      if (res.ok) {
+                          Swal.fire({
+                              icon: 'success',
+                              title: 'Успешно!',
+                              text: 'Устройство успешно привязано к аккаунту.',
+                              background: '#1a1a1a', color: '#fff'
+                          }).then(() => {
+                              // Обновляем данные пользователя на странице
+                              if (window.loadUserData) window.loadUserData(token);
+                          });
+                      }
+                  } catch (e) {
+                      console.error("Ошибка привязки:", e);
+                  }
+              }
+          });
+      }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -214,6 +214,11 @@ const translations = {
     pay_world_curr: "Все мировые валюты",
     access_card_title: "Личный кабинет",
 
+    hwid_bind_title: "Привязка устройства",
+    hwid_bind_ask: "Обнаружена подписка без привязанного HWID. Привязать этот компьютер?",
+    btn_bind: "Да, привязать",
+    btn_later: "Позже",
+
     agent_buy_msg: "Хочу купить `{plan}` скинченджера. Мой ID: `{id}`",
     plan_7days: "7 дней",
     plan_14days: "14 дней",
@@ -427,6 +432,11 @@ const translations = {
     pay_world_curr: "Всі світові валюти",
     access_card_title: "Особистий кабінет",
 
+    hwid_bind_title: "Прив'язка пристрою",
+    hwid_bind_ask: "Виявлено активну підписку без прив'язаного HWID. Прив'язати цей комп'ютер?",
+    btn_bind: "Так, прив'язати",
+    btn_later: "Пізніше",
+
     agent_buy_msg: "Хочу купити `{plan}` скінченджера. Мій ID: `{id}`",
     plan_7days: "7 днів",
     plan_14days: "14 днів",
@@ -639,6 +649,11 @@ const translations = {
     pay_agent_sub: "via payment agent supporting all world currencies.",
     pay_world_curr: "All World Currencies",
     access_card_title: "Dashboard",
+
+    hwid_bind_title: "Device Binding",
+    hwid_bind_ask: "Active subscription found with no bound HWID. Bind this computer?",
+    btn_bind: "Yes, bind",
+    btn_later: "Later",
 
     agent_buy_msg: "I want to buy the `{plan}` skinchanger subscription. My ID: `{id}`",
     plan_7days: "7 Days",
