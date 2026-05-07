@@ -877,21 +877,25 @@
       });
 
       function showHwidBindPrompt() {
-            Swal.fire({
-                title: window.t('hwid_bind_title') || 'Привязка HWID',
-                text: window.t('hwid_bind_ask') || 'У вас есть активная подписка, но устройство не привязано. Привязать этот компьютер?',
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonText: window.t('btn_bind') || 'Привязать',
-                cancelButtonText: window.t('btn_later') || 'Позже',
-                background: '#1a1a1a',
-                color: '#fff'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Запрашиваем HWID у C++ лаунчера
-                    window.chrome.webview.postMessage({ action: "get_hwid" });
-                }
-            });
+          const title = window.t('hwid_bind_title');
+          const text = window.t('hwid_bind_ask');
+          const confirm = window.t('btn_bind');
+          const cancel = window.t('btn_later');
+
+          Swal.fire({
+              title: title === 'hwid_bind_title' ? 'Привязка устройства' : title,
+              text: text === 'hwid_bind_ask' ? 'Обнаружена подписка без привязанного HWID. Привязать этот компьютер?' : text,
+              icon: 'info',
+              showCancelButton: true,
+              confirmButtonText: confirm === 'btn_bind' ? 'Да, привязать' : confirm,
+              cancelButtonText: cancel === 'btn_later' ? 'Позже' : cancel,
+              background: '#1a1a1a',
+              color: '#fff'
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  window.chrome.webview.postMessage({ action: "get_hwid" });
+              }
+          });
         }
 
       if (window.chrome && window.chrome.webview) {
