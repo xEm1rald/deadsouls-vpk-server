@@ -455,7 +455,7 @@ function saveSelectionsLocal() {
 }
 
 function getAgentBaseUrl() {
-  const host = localStorage.getItem(LS_HOST)?.trim() || "127.0.0.1";
+  const host = localStorage.getItem(LS_HOST)?.trim() || "localhost";
   const port = parseInt(localStorage.getItem(LS_PORT)?.trim() || "3847", 10);
   if (!Number.isFinite(port) || port < 1 || port > 65535) return "";
   return `http://${host}:${port}`;
