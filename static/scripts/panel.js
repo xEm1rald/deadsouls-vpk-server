@@ -141,7 +141,7 @@ function globalCategoryTitle(catId) {
 const GLOBAL_SECTION_LAYOUT = [
   { titleKey: "cat_sound", items: ["music_packs", "announcers", "megakills"] },
   { titleKey: "cat_interface", items: ["loading_screens", "versus_screens", "huds", "killstreaks", "cursors",  "kill_banners"] },
-  { titleKey: "cat_env", items: ["couriers", "wards", "terrains", "dire_creep", "rad_creep", "dire_towers", "rad_towers", "ancients", "roshans", "tormentors", "shaders", "weathers", "emblems", "river_vials"] }
+  { titleKey: "cat_env", items: ["couriers", "wards", "terrains", "dire_creep", "rad_creep", "dire_siege_creep", "rad_siege_creep", "dire_towers", "rad_towers", "ancients", "roshans", "tormentors", "shaders", "weathers", "emblems", "river_vials"] }
 ];
 
 function getItemColor(item) {
