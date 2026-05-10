@@ -30,6 +30,6 @@
         "image_inventory": "econ/default_no_item"
     },
     "Blade of Cruel Reprisal": {
-        "image_inventory": "econ/default_itme"
+        "image_inventory": "econ/default_item"
     }
 }
