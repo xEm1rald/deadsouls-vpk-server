@@ -22,5 +22,14 @@
     },
     "Default Tormentor": {
         "image_inventory": "econ/default_no_item"
+    },
+    "Default Dire Siege Creeps": {
+        "image_inventory": "econ/default_no_item"
+    },
+    "Default Radiant Siege Creeps": {
+        "image_inventory": "econ/default_no_item"
+    },
+    "Blade of Cruel Reprisal": {
+        "image_inventory": "econ/default_item"
     }
 }
