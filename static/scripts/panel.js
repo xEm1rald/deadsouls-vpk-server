@@ -30,7 +30,7 @@ const el = (id) => document.getElementById(id);
 const CACHE_NAME = 'deadsouls-schema-v1';
 const CACHE_TTL = 1000 * 60 * 60 * 6; // 6 часов
 
-async function fetchCachedJson(url) {
+async function fetchCachedJson(url, customTtl = CACHE_TTL) {
   const cacheKey = `ds_cache_time_${url}`;
   const now = Date.now();
   const cachedTime = localStorage.getItem(cacheKey);
@@ -38,11 +38,11 @@ async function fetchCachedJson(url) {
   try {
     if ('caches' in window) {
       const cache = await caches.open(CACHE_NAME);
-      if (cachedTime && (now - parseInt(cachedTime)) < CACHE_TTL) {
+      if (cachedTime && (now - parseInt(cachedTime)) < customTtl) {
         const cachedResponse = await cache.match(url);
         if (cachedResponse) return await cachedResponse.json();
       }
-      const response = await fetch(url);
+      const response = await fetch(url, { cache: 'no-cache' });
       if (response.ok) {
         cache.put(url, response.clone());
         localStorage.setItem(cacheKey, now.toString());
@@ -1619,7 +1619,7 @@ async function init() {
   loadGlobalSectionState();
   wireEvents();
 
-  const fetchedCustomImages = await fetchCachedJson(CUSTOM_IMAGES_URL);
+  const fetchedCustomImages = await fetchCachedJson(CUSTOM_IMAGES_URL, 1000 * 60 * 5); // 5 minute cache
   if (fetchedCustomImages) customImages = fetchedCustomImages;
 
   const fetchedSchema = await fetchCachedJson(SCHEMA_URL);
