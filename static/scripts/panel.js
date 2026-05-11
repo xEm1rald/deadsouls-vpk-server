@@ -129,6 +129,7 @@ const DEFAULT_VALUES = {
   dire_towers: "Default Dire Towers", emblems: "Default Emblem", huds: "Default Hud Skin",
   kill_banners: "Default Kill Banners", killstreaks: "Default KillStreak", loading_screens: "Default Loading Screen",
   megakills: "Default Mega-Kill Announcer", music_packs: "Default Music", rad_creep: "Default Radiant Creeps",
+  dire_siege_creep: "Default Dire Siege Creeps", rad_siege_creep: "Default Radiant Siege Creeps",
   rad_towers: "Default Radiant Towers", river_vials: "River Vial: Default", roshans: "Default Roshan",
   shaders: "Default Shaders", terrains: "Default Terrain", tormentors: "Default Tormentor",
   versus_screens: "Default Versus Screen", wards: "Default Ward", weathers: "Default Weather"

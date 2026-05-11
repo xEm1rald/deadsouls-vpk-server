@@ -37,6 +37,10 @@ const translations = {
     feat_22_t: "Unusual Effects", feat_22_d: "На любого героя и любую часть всех эффектов unusual",
     feat_23_t: "SkinChanger", feat_23_d: "Выбор любой части тела, сета на героя",
     comparison_title: "Визуальное сравнение",
+
+    custom_sets_title: "Кастомные сеты",
+    custom_sets_desc: "У нас доступно множество качественных сетов (их не нужно докупать отдельно — всё включено в подписку).",
+
     vac_safe_title: "Твой Аккаунт Защищён",
     vac_safe_desc: "DeadSouls использует официальный способ загрузки контента, аналогичный Steam Workshop: файлы игры не изменяются, код не внедряется и память клиента не затрагивается. Этот метод является стандартной частью движка Source 2 и обеспечивает полную безопасность вашего Steam-аккаунта.",
     payments_title: "Способы оплаты",
@@ -264,6 +268,10 @@ const translations = {
     feat_22_t: "Unusual Effects", feat_22_d: "На будь-якого героя і будь-яку частину всіх ефектів unusual",
     feat_23_t: "SkinChanger", feat_23_d: "Вибір будь-якої частини тіла, сета на героя",
     comparison_title: "Візуальне порівняння",
+
+    custom_sets_title: "Кастомні сети",
+    custom_sets_desc: "У нас доступна велика кількість якісних сетів (їх не потрібно докуповувати окремо — все включено у підписку).",
+
     vac_safe_title: "Твій Акаунт Захищено",
     vac_safe_desc: "DeadSouls використовує офіційний спосіб завантаження контенту, аналогічний Steam Workshop: файли гри не змінюються, код не впроваджується і пам'ять клієнта не зачіпається. Цей метод є стандартною частиною рушія Source 2 і забезпечує повну безпеку вашого Steam-акаунта.",
     payments_title: "Способи оплати",
@@ -485,6 +493,10 @@ const translations = {
     feat_22_t: "Unusual Effects", feat_22_d: "For any hero and any part of all unusual effects",
     feat_23_t: "SkinChanger", feat_23_d: "Selection of any body part or set for the hero",
     comparison_title: "Visual Comparison",
+
+    custom_sets_title: "Custom Sets",
+    custom_sets_desc: "We offer a huge variety of high-quality sets (no need to buy them separately — everything is included in your subscription).",
+
     vac_safe_title: "Your Account is Protected",
     vac_safe_desc: "DeadSouls uses an official content loading method, similar to Steam Workshop: game files are not modified, no code is injected, and the client's memory is not affected. This method is a standard part of the Source 2 engine and ensures the complete safety of your Steam account.",
     payments_title: "Payment Methods",
