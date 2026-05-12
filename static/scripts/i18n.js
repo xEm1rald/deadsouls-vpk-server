@@ -7,6 +7,48 @@ const translations = {
     nav_features: "Возможности",
     nav_access: "Доступ",
     footer_text: "DeadSouls 2026",
+    tos_link: "Пользовательское соглашение",
+    tos_title: "Пользовательское соглашение / Terms of Service",
+    tos_content: `1. Общие положения
+Используя сайт deadsouls.cc и приобретая любые цифровые товары или услуги, пользователь автоматически соглашается с настоящими правилами и условиями.
+Администрация сайта оставляет за собой право изменять данные условия в любое время без предварительного уведомления.
+
+2. Цифровые товары
+Все товары, представленные на сайте deadsouls.cc, являются цифровыми и предоставляются в электронном формате.
+После успешной оплаты и активации товар считается полностью полученным пользователем.
+
+3. Политика возврата средств
+В связи с особенностями цифровых товаров возврат денежных средств не осуществляется.
+Возврат НЕ производится в следующих случаях:
+— пользователь уже получил товар;
+— пользователь авторизовался в программном обеспечении;
+— пользователь привязал Steam-аккаунт;
+— пользователь привязал HWID (компьютер);
+— пользователь передумал после покупки;
+— пользователь не разобрался с использованием товара.
+
+Возврат может быть рассмотрен только в случаях, если:
+— товар не был активирован;
+— выдача товара невозможна по вине администрации.
+
+4. Политика сброса HWID
+Сброс HWID доступен только для подписок типа LifeTime, если иное не указано на странице товара.
+Для временных подписок (1 день / 7 дней / 30 дней и т.д.) сброс HWID не предоставляется.
+
+5. Ответственность пользователя
+Пользователь полностью несёт ответственность за безопасность своего аккаунта, сохранность доступа к Steam и корректное использование ПО. Передача доступа третьим лицам запрещена.
+
+6. Доступность сервиса
+Администрация не гарантирует бесперебойную работу. Технические работы могут временно влиять на работоспособность.
+
+7. Запрещённые действия
+Запрещено обходить защиту, модифицировать ПО или наносить вред инфраструктуре. Нарушение ведет к блокировке.
+
+8. Ограничение ответственности
+Использование сервиса осуществляется пользователем на свой страх и риск.
+
+9. Поддержка
+По всем вопросам обращайтесь через официальные каналы, указанные на сайте.`,
 
     // Лендинг (index.html)
     hero_eyebrow: "Самый продвинутый VPK Skinchanger",
@@ -239,6 +281,48 @@ const translations = {
     nav_features: "Можливості",
     nav_access: "Доступ",
     footer_text: "DeadSouls 2026",
+    tos_link: "Угода користувача",
+    tos_title: "Угода користувача / Terms of Service",
+    tos_content: `1. Загальні положення
+Використовуючи сайт deadsouls.cc і купуючи будь-які цифрові товари або послуги, користувач автоматично погоджується з цими правилами та умовами.
+Адміністрація сайту залишає за собою право змінювати ці умови в будь-який час без попереднього повідомлення.
+
+2. Цифрові товари
+Усі товари, представлені на сайті deadsouls.cc, є цифровими та надаються в електронному форматі.
+Після успішної оплати та активації товар вважається повністю отриманим користувачем.
+
+3. Політика повернення коштів
+У зв'язку з особливостями цифрових товарів повернення грошових коштів не здійснюється.
+Повернення НЕ проводиться у таких випадках:
+— користувач вже отримав товар;
+— користувач авторизувався в програмному забезпеченні;
+— користувач прив'язав Steam-акаунт;
+— користувач прив'язав HWID (комп'ютер);
+— користувач передумав після покупки;
+— користувач не розібрався з використанням товару.
+
+Повернення може бути розглянуто лише у випадках, якщо:
+— товар не був активований;
+— видача товару неможлива з вини адміністрації.
+
+4. Політика скидання HWID
+Скидання HWID доступне лише для підписок типу LifeTime, якщо інше не зазначено на сторінці товару.
+Для тимчасових підписок (1 день / 7 днів / 30 днів тощо) скидання HWID не надається.
+
+5. Відповідальність користувача
+Користувач несе повну відповідальність за безпеку свого акаунта, збереження доступу до Steam та коректне використання ПЗ. Передача доступу третім особам заборонена.
+
+6. Доступність сервісу
+Адміністрація не гарантує безперебійну роботу. Технічні роботи можуть тимчасово впливати на працездатність.
+
+7. Заборонені дії
+Заборонено обходити захист, модифікувати ПЗ або завдавати шкоди інфраструктурі. Порушення веде до блокування.
+
+8. Обмеження відповідальності
+Використання сервісу здійснюється користувачем на свій страх і ризик.
+
+9. Підтримка
+З усіх питань звертайтеся через офіційні канали, вказані на сайті.`,
 
     hero_eyebrow: "Найпросунутіший VPK Skinchanger",
     hero_lead: "Наш софт унікальний тим, що він повністю універсальний: він працює з будь-якими VPK-файлами. Неважливо, чи використовуєш ти наші збірки, чужі моди або стандартні файли гри — ти можеш змінювати, патчити і перезбирати їх під себе прямо в інтерфейсі програми.",
@@ -464,6 +548,48 @@ const translations = {
     nav_features: "Features",
     nav_access: "Access",
     footer_text: "DeadSouls 2026",
+    tos_link: "Terms of Service",
+    tos_title: "Terms of Service",
+    tos_content: `1. General Provisions
+By using the deadsouls.cc website and purchasing any digital goods or services, the user automatically agrees to these terms and conditions.
+The site administration reserves the right to change these terms at any time without prior notice.
+
+2. Digital Goods
+All goods presented on the deadsouls.cc website are digital and provided in electronic format.
+After successful payment and activation, the product is considered fully received by the user.
+
+3. Refund Policy
+Due to the nature of digital goods, refunds are not provided.
+Refunds are NOT issued in the following cases:
+— the user has already received the product;
+— the user has logged into the software;
+— the user has bound a Steam account;
+— the user has bound their HWID (computer);
+— the user changed their mind after purchase;
+— the user did not understand how to use the product.
+
+A refund may only be considered if:
+— the product has not been activated;
+— delivery of the product is impossible due to the administration's fault.
+
+4. HWID Reset Policy
+HWID reset is only available for LifeTime subscriptions, unless otherwise stated on the product page.
+HWID resets are not provided for temporary subscriptions (1 day / 7 days / 30 days, etc.).
+
+5. User Responsibility
+The user is fully responsible for account security, maintaining access to Steam, and using the software correctly. Transferring access to third parties is prohibited.
+
+6. Service Availability
+The administration does not guarantee uninterrupted service operation. Maintenance may temporarily affect functionality.
+
+7. Prohibited Actions
+It is forbidden to bypass security, modify the software, or harm infrastructure. Violations will lead to an account ban.
+
+8. Limitation of Liability
+Use of the service is at the user's own risk.
+
+9. Support
+For all questions, please contact us through the official support channels listed on the website.`,
 
     hero_eyebrow: "The most advanced VPK Skinchanger",
     hero_lead: "Our software is unique because it is completely universal: it works with any VPK files. Whether you use our builds, third-party mods, or standard game files — you can modify, patch, and rebuild them for yourself right in the program interface.",
