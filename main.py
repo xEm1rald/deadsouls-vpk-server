@@ -124,7 +124,8 @@ async def panel(request: Request):
         name="panel.html",
         context={
             "CDN_URL": config.CDN_URL,
-            "VALVE_HERO_RENDERS_CDN_URL": config.HERO_RENDER_URL
+            "VALVE_HERO_RENDERS_CDN_URL": config.HERO_RENDER_URL,
+            "APP_VERSION": config.APP_SECRET_VERSION
         }
     )
 
