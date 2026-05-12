@@ -27,8 +27,39 @@ let collapsedGlobalSections = {};
 
 const el = (id) => document.getElementById(id);
 
-const CACHE_NAME = 'deadsouls-schema-v1';
+const APP_VERSION = window.APP_CONFIG.APP_VERSION || "v1";
+const CACHE_NAME = `deadsouls-schema-${APP_VERSION}`;
 const CACHE_TTL = 1000 * 60 * 60 * 6; // 6 часов
+
+async function clearOutdatedCaches() {
+  const savedVersionKey = "ds_last_app_version";
+  const savedVersion = localStorage.getItem(savedVersionKey);
+
+  if (savedVersion !== APP_VERSION) {
+    console.log(`[Cache] Обновление версии: ${savedVersion || 'нет'} -> ${APP_VERSION}. Сброс кэша...`);
+
+    if ('caches' in window) {
+      try {
+        const cacheKeys = await caches.keys();
+        for (const key of cacheKeys) {
+          if (key.startsWith('deadsouls-schema-') && key !== CACHE_NAME) {
+            await caches.delete(key);
+          }
+        }
+      } catch (e) {
+        console.warn("[Cache Error] Не удалось очистить старые кэши:", e);
+      }
+    }
+
+    for (const key of Object.keys(localStorage)) {
+      if (key.startsWith('ds_cache_time_')) {
+        localStorage.removeItem(key);
+      }
+    }
+
+    localStorage.setItem(savedVersionKey, APP_VERSION);
+  }
+}
 
 async function fetchCachedJson(url, customTtl = CACHE_TTL) {
   const cacheKey = `ds_cache_time_${url}`;
@@ -1619,6 +1650,8 @@ async function init() {
   loadPresets();
   loadGlobalSectionState();
   wireEvents();
+
+  await clearOutdatedCaches();
 
   const fetchedCustomImages = await fetchCachedJson(CUSTOM_IMAGES_URL, 1000 * 60 * 5); // 5 minute cache
   if (fetchedCustomImages) customImages = fetchedCustomImages;
