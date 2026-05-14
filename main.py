@@ -72,7 +72,8 @@ async def lifespan(app: FastAPI):
     if not config.APP_SECRET_VERSION or not config.APP_TOOLS_VERSION:
         embed = {
             "title": "WARNING: Не найдены версии в БД!",
-            "description": f"config.APP_SECRET_VERSION = None\nconfig.APP_SECRET_VERSION = None",
+            "description": f"config.APP_SECRET_VERSION = None\nconfig.APP_TOOLS_VERSION = None",
+            "color": 4294901760
         }
 
         async with httpx.AsyncClient() as client:
