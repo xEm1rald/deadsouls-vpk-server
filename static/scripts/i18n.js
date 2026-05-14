@@ -132,6 +132,8 @@ const translations = {
     download_client_title: "Скачать клиент",
     download_client_desc: "Установите локальный агент для применения VPK файлов.",
     btn_download: "Скачать Agent.exe",
+    support_hint: "Если у вас возникли проблемы, обращайтесь сюда:",
+    support_tg: "Telegram поддержки",
 
     // Панель (panel.html)
     install_vpk: "Установить VPK",
@@ -403,6 +405,8 @@ const translations = {
     download_client_title: "Завантажити клієнт",
     download_client_desc: "Встановіть локальний агент для застосування VPK файлів.",
     btn_download: "Завантажити Agent.exe",
+    support_hint: "Якщо у вас виникли проблеми, звертайтеся сюди:",
+    support_tg: "Telegram підтримки",
 
     install_vpk: "Встановити VPK",
     create_vpk: "Створити VPK",
@@ -670,6 +674,8 @@ For all questions, please contact us through the official support channels liste
     download_client_title: "Download Client",
     download_client_desc: "Install the local agent to apply VPK files.",
     btn_download: "Download Agent.exe",
+    support_hint: "If you have any problems, contact us here:",
+    support_tg: "Support Telegram",
 
     install_vpk: "Install VPK",
     create_vpk: "Create VPK",

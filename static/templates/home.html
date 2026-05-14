@@ -212,9 +212,38 @@
           transform: none !important;
         }
       }
+
+      .support-banner {
+        background: rgba(107, 138, 246, 0.08);
+        border: 1px solid rgba(107, 138, 246, 0.2);
+        border-radius: 6px;
+        padding: 16px;
+        margin-top: 12px;
+        margin-bottom: -24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .support-banner svg {
+        color: var(--primary-color, #6b8af6);
+        flex-shrink: 0;
+      }
+      .support-banner span {
+        font-size: 0.95rem;
+        line-height: 1.4;
+      }
+      .support-banner a {
+        color: var(--primary-color, #6b8af6);
+        text-decoration: none;
+        font-weight: 600;
+        margin-left: 4px;
+      }
+      .support-banner a:hover {
+        text-decoration: underline;
+      }
     </style>
     <script src="../scripts/page-fadein.js"></script>
-    <script src="../scripts/i18n.js"></script>
+    <script src="../scripts/i18n.js?v=1.0.8"></script>
   </head>
   <body>
     <div class="noise" aria-hidden="true"></div>
@@ -257,6 +286,17 @@
         </div>
 
         <div id="dashboard-content" style="display: none;">
+          <div class="support-banner">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span>
+              <span data-i18n="support_hint">Если у вас возникли проблемы, обращайтесь сюда:</span>
+              <a href="#" id="support-link" target="_blank" data-i18n="support_tg">Telegram поддержки</a>
+            </span>
+          </div>
           <div class="dashboard-grid">
             <div class="card">
               <h3 class="card-title" data-i18n="your_account">Твой аккаунт</h3>
@@ -371,6 +411,11 @@
         const paymentStatus = urlParams.get('payment');
 
         const panelBtn = document.getElementById('nav-panel-btn');
+        const supportLink = document.getElementById('support-link');
+
+        if (supportLink) {
+          supportLink.href = TELEGRAM_AGENT_URL;
+        }
 
         if (panelBtn) {
           panelBtn.addEventListener('click', (e) => {
