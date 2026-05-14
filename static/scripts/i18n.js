@@ -674,6 +674,8 @@ For all questions, please contact us through the official support channels liste
     download_client_title: "Download Client",
     download_client_desc: "Install the local agent to apply VPK files.",
     btn_download: "Download Agent.exe",
+    support_hint: "If you have any problems, contact us here:",
+    support_tg: "Support Telegram",
 
     install_vpk: "Install VPK",
     create_vpk: "Create VPK",
