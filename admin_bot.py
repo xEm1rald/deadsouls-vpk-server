@@ -229,6 +229,9 @@ async def confirm_setver(callback: CallbackQuery):
     app_ver, tools_ver = data.split("|")
 
     # Обновляем переменные в памяти (без записи в .env)
+    await database.set_setting("APP_SECRET_VERSION", app_ver)
+    await database.set_setting("APP_TOOLS_VERSION", tools_ver)
+
     config.APP_SECRET_VERSION = app_ver
     config.APP_TOOLS_VERSION = tools_ver
 
