@@ -11,7 +11,7 @@ cryptocloud_client = AsyncCryptoCloudSDK(CRYPTOCLOUD_API_KEY)
 
 
 class Cryptocloud:
-    def __init__(self, order_id: str, amount: int, product: str):
+    def __init__(self, order_id: str, amount: int | float, product: str):
         self.order_id = order_id
         self.amount = amount
         self.product = product.lower()

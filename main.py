@@ -445,7 +445,7 @@ async def cryptocloud_payment(
         response = (await payment
                     .Cryptocloud(
             order_id=order_id,
-            amount=int(product.get("prices").get("usd")),
+            amount=float(product.get("prices").get("usd")),
             product=product.get("name")
         )
                     .create_invoice())
