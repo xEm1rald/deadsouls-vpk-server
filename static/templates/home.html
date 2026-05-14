@@ -411,6 +411,11 @@
         const paymentStatus = urlParams.get('payment');
 
         const panelBtn = document.getElementById('nav-panel-btn');
+        const supportLink = document.getElementById('support-link');
+
+        if (supportLink) {
+          supportLink.href = TELEGRAM_AGENT_URL;
+        }
 
         if (panelBtn) {
           panelBtn.addEventListener('click', (e) => {
@@ -934,11 +939,6 @@
         }
 
         checkAuthCode();
-
-        const supportLink = document.getElementById('support-link');
-        if (supportLink) {
-          supportLink.href = TELEGRAM_AGENT_URL;
-        }
       });
 
       function showHwidBindPrompt() {
