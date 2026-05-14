@@ -74,6 +74,12 @@ class User(Base):
     monobank_payments: Mapped[list["PaymentMonobank"]] = relationship(back_populates="user",
                                                                       cascade="all, delete-orphan")
 
+class AppSettings(Base):
+    __tablename__ = 'app_settings'
+
+    key: Mapped[str] = mapped_column(String(50), primary_key=True)
+    value: Mapped[str] = mapped_column(String(255), nullable=False)
+
 # --- Функции для работы с БД ---
 
 async def init_db():
@@ -81,6 +87,21 @@ async def init_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     print("[+] Таблицы синхронизированы через ORM.")
+
+
+async def get_setting(key: str, default: str = "") -> str:
+    async with async_session() as session:
+        setting = await session.get(AppSettings, key)
+        return setting.value if setting else default
+
+async def set_setting(key: str, value: str):
+    async with async_session() as session:
+        setting = await session.get(AppSettings, key)
+        if setting:
+            setting.value = value
+        else:
+            session.add(AppSettings(key=key, value=value))
+        await session.commit()
 
 
 async def create_new_user(hwid: str = None, tg_id: str = None, tg_data: str = None) -> int:

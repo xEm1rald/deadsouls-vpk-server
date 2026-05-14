@@ -65,6 +65,20 @@ async def lifespan(app: FastAPI):
     # print("[+] Установка Monobank Webhook...")
     # await payment.Monobank.on_startup()
 
+    # Словить версию
+    config.APP_SECRET_VERSION = await database.get_setting("APP_SECRET_VERSION", None)
+    config.APP_TOOLS_VERSION = await database.get_setting("APP_TOOLS_VERSION", None)
+
+    if not config.APP_SECRET_VERSION or not config.APP_TOOLS_VERSION:
+        embed = {
+            "title": "WARNING: Не найдены версии в БД!",
+            "description": f"config.APP_SECRET_VERSION = None\nconfig.APP_TOOLS_VERSION = None",
+            "color": 4294901760
+        }
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(config.DISCORD_ERROR_WEBHOOK, json={"embeds": [embed]})
+
     # Запускаем бота как фоновую задачу (чтобы он не блокировал веб-сервер)
     print("[+] Запуск Telegram Админ-бота...")
     bot_task = asyncio.create_task(dp.start_polling(bot))
