@@ -189,7 +189,10 @@ async def update_user(
             return False
 
         if hwid is not None:
-            user.HWID = hwid
+            if hwid == "" or hwid.lower() == "none":
+                user.HWID = None
+            else:
+                user.HWID = hwid
         if tg_id is not None:
             user.tg_id = tg_id
         if tg_data is not None:
