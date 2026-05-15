@@ -1241,10 +1241,15 @@ function getDefaultItemId(hero, slot) {
 }
 
 async function saveToAgent() {
+  setSaveButtonState(true);
   setSaveStatus(window.t('vpk_building'), undefined);
+
   const base = getAgentBaseUrl();
-  if (!base) return setSaveStatus(window.t('agent_port_req'), "err");
-  const url = `${base.replace(/\/+$/, "")}/bridge/action/mastervpk`;
+  if (!base && !(window.chrome && window.chrome.webview)) {
+    setSaveStatus(window.t('agent_port_req'), "err");
+    setSaveButtonState(false);
+    return;
+  }
 
   const formattedSelections = { skin_changer: {}, effect_targets: {} };
   const globalCats = getGlobalCategoryIds();
@@ -1330,8 +1335,6 @@ async function saveToAgent() {
       payload: formattedSelections
     });
   } else {
-    const base = getAgentBaseUrl();
-    if (!base) return setSaveStatus(window.t('agent_port_req'), "err");
     const url = `${base.replace(/\/+$/, "")}/bridge/action/mastervpk`;
 
     try {
@@ -1348,18 +1351,31 @@ async function saveToAgent() {
       }
     } catch (e) {
       setSaveStatus(window.t('agent_unavail'), "err");
+    } finally {
+      setSaveButtonState(false);
     }
   }
 }
 
 async function applyVpk() {
+  const btn = el("btn-apply-all");
+  if (btn) {
+    btn.disabled = true;
+    btn.style.cursor = "wait";
+    btn.style.opacity = "0.5";
+  }
+
   setSaveStatus(window.t('vpk_installing'), undefined);
 
   if (window.chrome && window.chrome.webview) {
     window.chrome.webview.postMessage({ action: "applyvpk" });
   } else {
     const base = getAgentBaseUrl();
-    if (!base) return setSaveStatus(window.t('agent_port_req'), "err");
+    if (!base) {
+      setSaveStatus(window.t('agent_port_req'), "err");
+      setApplyVpkState(true);
+      return;
+    }
 
     try {
       const res = await fetch(`${base.replace(/\/+$/, "")}/bridge/action/applyvpk`, {
@@ -1367,10 +1383,15 @@ async function applyVpk() {
         headers: { Accept: "application/json", "Content-Type": "application/json" },
         body: "{}"
       });
-      if (res.ok) setSaveStatus(window.t('vpk_installed'), "ok");
-      else setSaveStatus(`${window.t('agent_error')} ${res.status}`, "err");
+      if (res.ok) {
+        setSaveStatus(window.t('vpk_installed'), "ok");
+      } else {
+        setSaveStatus(`${window.t('agent_error')} ${res.status}`, "err");
+      }
     } catch (e) {
       setSaveStatus(window.t('agent_unavail'), "err");
+    } finally {
+      setApplyVpkState(true);
     }
   }
 }
@@ -1668,6 +1689,8 @@ async function init() {
       const msg = event.data;
 
       if (msg.action === "mastervpk_result") {
+        setSaveButtonState(false);
+
         if (msg.success) {
           setSaveStatus(window.t('vpk_created'), "ok");
           setApplyVpkState(true);
@@ -1677,6 +1700,8 @@ async function init() {
       }
 
       if (msg.action === "applyvpk_result") {
+        setApplyVpkState(true);
+
         if (msg.success) {
           setSaveStatus(window.t('vpk_installed'), "ok");
         } else {
