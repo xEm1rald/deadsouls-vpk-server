@@ -132,7 +132,7 @@ async def cb_confirm_resethwid(callback: CallbackQuery):
     if not is_admin(callback.from_user.id): return
 
     user_id = int(callback.data.split("_")[2])
-    success = await database.update_user(user_id=user_id, hwid=None)
+    success = await database.update_user(user_id=user_id, hwid="")
 
     if success:
         await callback.answer("✅ HWID успешно сброшен!", show_alert=True)
