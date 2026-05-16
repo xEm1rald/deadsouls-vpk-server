@@ -8,7 +8,7 @@ const translations = {
     nav_access: "Доступ",
     footer_text: "DeadSouls 2026",
     tos_link: "Пользовательское соглашение",
-    tos_url: "https://teletype.in/@deadsouls_vpk/jV9_HB8xyJ7"
+    tos_url: "https://teletype.in/@deadsouls_vpk/jV9_HB8xyJ7",
     tos_title: "Пользовательское соглашение / Terms of Service",
     tos_content: `1. Общие положения
 Используя сайт deadsouls.cc и приобретая любые цифровые товары или услуги, пользователь автоматически соглашается с настоящими правилами и условиями.
@@ -285,7 +285,7 @@ const translations = {
     nav_access: "Доступ",
     footer_text: "DeadSouls 2026",
     tos_link: "Угода користувача",
-    tos_url: "https://teletype.in/@deadsouls_vpk/jV9_HB8xyJ7"
+    tos_url: "https://teletype.in/@deadsouls_vpk/jV9_HB8xyJ7",
     tos_title: "Угода користувача / Terms of Service",
     tos_content: `1. Загальні положення
 Використовуючи сайт deadsouls.cc і купуючи будь-які цифрові товари або послуги, користувач автоматично погоджується з цими правилами та умовами.
@@ -555,7 +555,7 @@ const translations = {
     nav_access: "Access",
     footer_text: "DeadSouls 2026",
     tos_link: "Terms of Service",
-    tos_url: "https://teletype.in/@deadsouls_vpk/_r8CWPzFFPk"
+    tos_url: "https://teletype.in/@deadsouls_vpk/_r8CWPzFFPk",
     tos_title: "Terms of Service",
     tos_content: `1. General Provisions
 By using the deadsouls.cc website and purchasing any digital goods or services, the user automatically agrees to these terms and conditions.
