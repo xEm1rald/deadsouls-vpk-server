@@ -10,7 +10,7 @@
     <link rel="icon" href="https://cdn.deadsouls.cc/website/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="../styles/styles.css" />
-    <script src="../scripts/i18n.js?v=1.0.3"></script>
+    <script src="../scripts/i18n.js?v=1.0.4"></script>
     <style>
       .custom-sets-container {
         width: 100%;
@@ -631,46 +631,8 @@
     <footer class="footer">
       <div style="display: flex; justify-content: center; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
         <span class="muted small" translate="no" data-i18n="footer_text">DeadSouls 2026</span>
-        <a href="#" id="btn-tos" class="muted small" style="text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.1);" data-i18n="tos_link">Пользовательское соглашение</a>
-      </div>
+        <a href="https://teletype.in/@deadsouls_vpk/jV9_HB8xyJ7" id="btn-tos" target="_blank" rel="noopener noreferrer" class="muted small" style="text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.1);" data-i18n="tos_link">Пользовательское соглашение</a>      </div>
     </footer>
-
-    <div id="tos-modal" class="sets-modal" style="cursor: default;">
-      <div class="card" style="max-width: 800px; max-height: 85vh; overflow-y: auto; padding: 2.5rem; position: relative; cursor: auto; border: 1px solid rgba(255,255,255,0.1);">
-        <button type="button" class="icon-btn" id="btn-close-tos" style="position: absolute; top: 1.5rem; right: 1.5rem; font-size: 1.5rem;">×</button>
-        <h2 class="section-title" style="margin-top: 0; margin-bottom: 2rem; font-size: 1.5rem; text-align: left;" data-i18n="tos_title">Пользовательское соглашение</h2>
-        <div id="tos-content-area" class="muted small" style="line-height: 1.7; text-align: left; white-space: pre-line;">
-          </div>
-      </div>
-    </div>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const tosModal = document.getElementById("tos-modal");
-        const btnTos = document.getElementById("btn-tos");
-        const btnCloseTos = document.getElementById("btn-close-tos");
-        const tosContentArea = document.getElementById("tos-content-area");
-
-        btnTos?.addEventListener("click", (e) => {
-          e.preventDefault();
-          if (tosContentArea) {
-            tosContentArea.textContent = window.t('tos_content');
-          }
-          tosModal.classList.add("active");
-          document.body.style.overflow = "hidden";
-        });
-
-        const closeTos = () => {
-          tosModal.classList.remove("active");
-          document.body.style.overflow = "";
-        };
-
-        btnCloseTos?.addEventListener("click", closeTos);
-        tosModal?.addEventListener("click", (e) => {
-          if (e.target === tosModal) closeTos();
-        });
-      });
-    </script>
 
     <div
       class="success-overlay"
